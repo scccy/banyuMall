@@ -43,7 +43,7 @@
 ├── 核心服务层 (service-*)
 │   ├── service-base      [✓ 已完成] 全局基础支撑
 │   ├── service-auth      [✓ 已完成] 认证授权服务
-│   ├── service-user      [ ] 用户管理服务
+│   ├── service-user      [✓ 已完成] 用户管理服务
 │   ├── service-gateway   [✓ 已完成] API网关服务
 │   ├── service-task      [ ] 任务管理服务
 │   ├── service-points    [ ] 积分管理服务
@@ -78,11 +78,13 @@
 - [ ] 微信小程序登录（UnionID绑定）
 - [ ] JWT令牌生成/校验（Redis黑名单管理）
 
-#### service-user [ ]
+#### service-user [✓ 已完成]
 用户管理服务
-- [ ] 角色权限：发布者/接单人角色定义
-- [ ] 用户信息CRUD（含敏感信息加密）
-- [ ] 权限控制：基于RBAC的接口鉴权
+- [x] 角色权限：发布者/接单人角色定义
+- [x] 用户信息CRUD（含敏感信息加密）
+- [x] 权限控制：基于RBAC的接口鉴权
+- [x] 用户扩展信息管理
+- [x] 用户配置管理
 
 #### service-task [ ]
 任务管理服务
@@ -215,6 +217,7 @@ mvn spring-boot:run -pl service/service-system
 - OSS集成配置：`.docs/STATE/OSS-INTEGRATION.md`
 - 项目概述：`.docs/STATE/PROJECT-OVERVIEW.md`
 - 基础设施文档：`infra/docs/` 目录
+- 任务完成索引：`TASK-INDEX.md`
 
 ## 部署说明
 
