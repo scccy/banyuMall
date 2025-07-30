@@ -214,6 +214,7 @@ mvn spring-boot:run -pl service/service-system
 - 技术栈配置：`.docs/STATE/TECH-STACK.md`
 - OSS集成配置：`.docs/STATE/OSS-INTEGRATION.md`
 - 项目概述：`.docs/STATE/PROJECT-OVERVIEW.md`
+- 基础设施文档：`infra/docs/` 目录
 
 ## 部署说明
 
