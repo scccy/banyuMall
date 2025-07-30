@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${SERVICE_NAME}
+  namespace: ${NAMESPACE}
+  labels:
+    app: ${SERVICE_NAME}
+    version: ${VERSION}
+    environment: ${ENVIRONMENT}
+spec:
+  replicas: ${REPLICAS:-2}
+  selector:
+    matchLabels:
+      app: ${SERVICE_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${SERVICE_NAME}
+        version: ${VERSION}
+        environment: ${ENVIRONMENT}
+    spec:
+      containers:
+      - name: ${SERVICE_NAME}
+        image: ${REGISTRY}/${SERVICE_NAME}:${VERSION}
+        ports:
+        - containerPort: ${PORT:-8080}
+          name: http
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: ${ENVIRONMENT}
+        - name: NACOS_SERVER_ADDR
+          value: ${NACOS_SERVER_ADDR}
+        - name: NACOS_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: nacos-secret
+              key: username
+        - name: NACOS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nacos-secret
+              key: password
+        - name: MYSQL_HOST
+          value: ${MYSQL_HOST}
+        - name: MYSQL_PORT
+          value: ${MYSQL_PORT}
+        - name: MYSQL_DATABASE
+          value: ${MYSQL_DATABASE}
+        - name: MYSQL_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: username
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        - name: REDIS_HOST
+          value: ${REDIS_HOST}
+        - name: REDIS_PORT
+          value: ${REDIS_PORT}
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: password
+        resources:
+          requests:
+            memory: ${MEMORY_REQUEST:-512Mi}
+            cpu: ${CPU_REQUEST:-250m}
+          limits:
+            memory: ${MEMORY_LIMIT:-1Gi}
+            cpu: ${CPU_LIMIT:-500m}
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: http
+          initialDelaySeconds: ${LIVENESS_INITIAL_DELAY:-60}
+          periodSeconds: ${LIVENESS_PERIOD:-30}
+          timeoutSeconds: ${LIVENESS_TIMEOUT:-5}
+          failureThreshold: ${LIVENESS_FAILURE_THRESHOLD:-3}
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: http
+          initialDelaySeconds: ${READINESS_INITIAL_DELAY:-30}
+          periodSeconds: ${READINESS_PERIOD:-10}
+          timeoutSeconds: ${READINESS_TIMEOUT:-5}
+          failureThreshold: ${READINESS_FAILURE_THRESHOLD:-3}
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      imagePullSecrets:
+      - name: ${REGISTRY}-secret
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30 
