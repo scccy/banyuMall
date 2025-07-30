@@ -1,0 +1,65 @@
+# 用户服务主配置文件
+spring:
+  application:
+    name: service-user
+  profiles:
+    active: dev # 默认使用开发环境，可切换为 prod
+
+server:
+  port: 8082
+  servlet:
+    context-path: /user
+
+# 日志配置
+logging:
+  level:
+    com.origin.user: debug
+    org.springframework.web: debug
+    com.origin.user.feign: debug
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# Feign配置
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 5000
+        read-timeout: 5000
+        logger-level: full
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+
+# 用户服务自定义配置
+user:
+  # 用户配置相关
+  config:
+    # 默认配置类型
+    default-type: string
+    # 最大配置数量
+    max-config-count: 100
+  # 扩展信息相关
+  profile:
+    # 是否允许修改真实姓名
+    allow-real-name-edit: true
+    # 是否允许修改公司信息
+    allow-company-edit: true
+  # 服务间调用配置
+  feign:
+    # 是否启用服务间验证
+    enable-service-validation: true
+    # 认证服务调用超时时间
+    auth-timeout: 3000 

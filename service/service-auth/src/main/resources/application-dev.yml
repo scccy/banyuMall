@@ -1,0 +1,90 @@
+# 认证服务 - 开发环境配置（本地直接连接）
+
+spring:
+  # 数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/banyu_mall?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    username: root
+    password: 123456
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: HikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+  # Redis配置
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: 
+      database: 0
+      timeout: 10000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: -1ms
+          max-idle: 8
+          min-idle: 0
+
+  # MyBatis-Plus配置
+  mybatis-plus:
+    configuration:
+      map-underscore-to-camel-case: true
+      cache-enabled: false
+      call-setters-on-nulls: true
+      jdbc-type-for-null: 'null'
+      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    global-config:
+      db-config:
+        id-type: assign_id
+        logic-delete-field: isDeleted
+        logic-delete-value: 1
+        logic-not-delete-value: 0
+    mapper-locations: classpath*:/mapper/**/*.xml
+    type-aliases-package: com.origin.auth.entity
+
+  # 日志配置
+  logging:
+    level:
+      com.origin: debug
+      org.springframework.security: debug
+      root: info
+
+  # 启动性能优化
+  main:
+    lazy-initialization: true  # 开发环境启用懒加载
+  # JMX配置
+  jmx:
+    enabled: false  # 开发环境关闭JMX
+
+# JWT配置
+jwt:
+  secret: your-secret-key-here-should-be-at-least-32-bytes-long-for-security
+  expiration: 3600000  # 1小时，单位：毫秒
+  header: Authorization
+  tokenPrefix: Bearer
+
+# 安全配置
+security:
+  # 不需要认证的路径
+  permit-all:
+    - /auth/login
+    - /auth/register
+    - /swagger-ui/**
+    - /v3/api-docs/**
+    - /actuator/health
+    - /actuator/info
+
+# Swagger配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+  packages-to-scan: com.origin.auth.controller 

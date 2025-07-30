@@ -1,0 +1,143 @@
+# Nacos配置模板 - service-auth.yml
+# 配置ID: service-auth.yml
+# 配置组: DEFAULT_GROUP
+# 命名空间: prod
+
+# 数据源配置
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${MYSQL_HOST:mysql-service}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:banyu_mall}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:password}
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 50
+      auto-commit: true
+      idle-timeout: 60000
+      pool-name: HikariCP
+      max-lifetime: 3600000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+  # Redis配置
+  data:
+    redis:
+      host: ${REDIS_HOST:redis-service}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: 0
+      timeout: 10000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-wait: -1ms
+          max-idle: 10
+          min-idle: 5
+
+  # MyBatis-Plus配置
+  mybatis-plus:
+    configuration:
+      map-underscore-to-camel-case: true
+      cache-enabled: true
+      call-setters-on-nulls: true
+      jdbc-type-for-null: 'null'
+    global-config:
+      db-config:
+        id-type: assign_id
+        logic-delete-field: isDeleted
+        logic-delete-value: 1
+        logic-not-delete-value: 0
+    mapper-locations: classpath*:/mapper/**/*.xml
+    type-aliases-package: com.origin.auth.entity
+  main:
+    lazy-initialization: false  # 生产环境关闭懒加载
+  jmx:
+    enabled: false  # 生产环境关闭JMX
+  cache:
+    type:
+        redis:
+          time-to-live: 3600000  # 1小时
+          cache-null-values: false
+
+# JWT配置
+jwt:
+  secret: ${JWT_SECRET:your-production-secret-key-here-should-be-at-least-32-bytes-long-for-security}
+  expiration: ${JWT_EXPIRATION:3600000}  # 1小时，单位：毫秒
+  header: Authorization
+  tokenPrefix: Bearer
+
+# 安全配置
+security:
+  # 不需要认证的路径
+  permit-all:
+    - /auth/login
+    - /auth/register
+    - /actuator/health
+    - /actuator/info
+
+# 自定义配置
+auth:
+  # 密码加密配置
+  password:
+    encoder:
+      strength: 12
+  # 登录配置
+  login:
+    lock-duration: 600
+    max-attempts: 5
+  # 令牌配置
+  token:
+    refresh-threshold: 300  # 刷新阈值（秒）
+    blacklist-cleanup-interval: 3600  # 黑名单清理间隔（秒）
+
+
+
+# 线程池配置
+thread:
+  pool:
+    core-size: 20
+    max-size: 50
+    queue-capacity: 1000
+    keep-alive-seconds: 60
+
+# 日志配置
+logging:
+  level:
+    com.origin: info
+    org.springframework.security: warn
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n"
+  file:
+    name: logs/service-auth.log
+    max-size: 100MB
+    max-history: 30
+
+# OpenFeign配置
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 10000
+        read-timeout: 10000
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+  hystrix:
+    enabled: true
+
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true

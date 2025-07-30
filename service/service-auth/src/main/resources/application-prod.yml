@@ -1,0 +1,33 @@
+# 认证服务 - 生产环境配置（连接Nacos）
+
+spring:
+  # 服务注册与发现
+
+  main:
+    lazy-initialization: false  # 生产环境关闭懒加载
+  jmx:
+    enabled: false  # 生产环境关闭JMX
+  cache:
+    type:
+        redis:
+          time-to-live: 3600000  # 1小时
+          cache-null-values: false
+
+
+  login:
+    max-attempts: 3  # 最大登录尝试次数
+    lock-duration: 600  # 锁定时间（秒）
+  # 令牌配置
+  token:
+    refresh-threshold: 300  # 刷新阈值（秒）
+    blacklist-cleanup-interval: 3600  # 黑名单清理间隔（秒）
+
+# 性能优化配置
+
+# 线程池配置
+thread:
+  pool:
+    core-size: 20
+    max-size: 50
+    queue-capacity: 1000
+    keep-alive-seconds: 60 

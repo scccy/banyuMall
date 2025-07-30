@@ -1,0 +1,9 @@
+com.origin.config.MyBatisPlusConfig
+com.origin.config.TransactionConfig
+com.origin.config.WebMvcConfig
+com.origin.config.OpenFeignConfig
+com.origin.config.RedisConfig
+com.origin.config.OssConfig
+com.origin.config.TokenBlacklistConfig
+
+
