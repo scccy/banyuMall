@@ -17,6 +17,14 @@ spring:
       connection-timeout: 30000
       connection-test-query: SELECT 1
 
+  # 数据库初始化配置（开发环境）
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/unified-user-schema.sql
+      data-locations: classpath:db/unified-init-data.sql
+      continue-on-error: true
+
   # Redis配置
   data:
     redis:

@@ -12,6 +12,11 @@ spring:
       max-lifetime: 1200000
       connection-timeout: 20000
 
+  # 数据库健康检查配置
+  sql:
+    init:
+      mode: never  # 用户服务不执行SQL初始化，只读取数据
+
   data:
     redis:
       host: localhost
