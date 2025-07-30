@@ -2,7 +2,10 @@
 
 ## 概述
 
-本目录包含BanyuMall项目的微服务配置文件模板和管理工具，支持多环境配置管理和Nacos配置中心集成。
+本目录包含BanyuMall项目的微服务配置文件模板和管理工具，支持配置分层管理：
+- **公有配置**: 在Nacos中统一管理，包含数据库、Redis、JWT等敏感信息
+- **个性配置**: 各微服务在本地配置文件中管理，包含服务特定配置
+- **环境配置**: 通过Nacos命名空间和环境变量区分不同环境
 
 ## 目录结构
 
@@ -13,10 +16,10 @@ infra/templates/config/
 ├── application-test.yml.template         # 测试环境配置模板
 ├── application-prod.yml.template         # 生产环境配置模板
 ├── application-docker.yml.template       # Docker环境配置模板
-├── nacos-config-template.yml             # 通用Nacos配置模板
-├── nacos-config-template-auth.yml        # 认证服务Nacos配置模板
-├── nacos-config-template-user.yml        # 用户服务Nacos配置模板
-├── nacos-config-template-gateway.yml     # 网关服务Nacos配置模板
+├── nacos-config-template.yml             # 公有配置模板（所有微服务共享）
+├── nacos-config-template-auth.yml        # 认证服务公有配置模板
+├── nacos-config-template-user.yml        # 用户服务公有配置模板
+├── nacos-config-template-gateway.yml     # 网关服务公有配置模板
 ├── create-service-config.sh              # 配置文件生成脚本
 └── README.md                             # 本文件
 ```
@@ -35,16 +38,25 @@ infra/templates/config/
 ./infra/templates/config/create-service-config.sh service-task
 ```
 
-### 2. 配置文件结构
+### 2. 配置分层结构
 
-生成的服务配置文件结构：
+#### 公有配置（Nacos管理）
+```
+Nacos配置中心
+├── 命名空间: dev/test/prod
+│   ├── service-auth.yaml        # 认证服务公有配置
+│   ├── service-user.yaml        # 用户服务公有配置
+│   └── service-gateway.yaml     # 网关服务公有配置
+```
+
+#### 个性配置（本地管理）
 ```
 service/service-xxx/src/main/resources/
 ├── application.yml              # 主配置文件
-├── application-dev.yml          # 开发环境配置
-├── application-test.yml         # 测试环境配置
-├── application-prod.yml         # 生产环境配置
-└── application-docker.yml       # Docker环境配置
+├── application-dev.yml          # 开发环境个性配置
+├── application-test.yml         # 测试环境个性配置
+├── application-prod.yml         # 生产环境个性配置
+└── application-docker.yml       # Docker环境个性配置
 ```
 
 ## 环境配置说明
@@ -77,36 +89,38 @@ service/service-xxx/src/main/resources/
 - **Redis**: redis:6379
 - **特性**: 容器化部署配置
 
-## Nacos配置中心
+## 配置分层管理
 
-### 配置结构
+### 公有配置（Nacos管理）
 ```
 Nacos配置中心
 ├── 命名空间: dev
-│   ├── service-auth-dev.yml
-│   ├── service-user-dev.yml
-│   └── service-gateway-dev.yml
+│   ├── service-auth.yaml        # 认证服务公有配置
+│   ├── service-user.yaml        # 用户服务公有配置
+│   └── service-gateway.yaml     # 网关服务公有配置
 ├── 命名空间: test
-│   ├── service-auth-test.yml
-│   ├── service-user-test.yml
-│   └── service-gateway-test.yml
+│   ├── service-auth.yaml        # 认证服务公有配置
+│   ├── service-user.yaml        # 用户服务公有配置
+│   └── service-gateway.yaml     # 网关服务公有配置
 └── 命名空间: prod
-    ├── service-auth-prod.yml
-    ├── service-user-prod.yml
-    └── service-gateway-prod.yml
+    ├── service-auth.yaml        # 认证服务公有配置
+    ├── service-user.yaml        # 用户服务公有配置
+    └── service-gateway.yaml     # 网关服务公有配置
 ```
 
-### 敏感信息配置
-在Nacos中配置以下敏感信息：
+### 公有配置内容
+在Nacos中配置以下公有信息：
 ```yaml
 # 数据库配置
 datasource:
+  url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}
   username: ${MYSQL_USERNAME}
   password: ${MYSQL_PASSWORD}
 
 # Redis配置
 spring:
   redis:
+    host: ${REDIS_HOST}
     password: ${REDIS_PASSWORD}
 
 # JWT配置
@@ -114,6 +128,34 @@ banyumall:
   security:
     jwt:
       secret: ${JWT_SECRET}
+      expiration: ${JWT_EXPIRATION:86400}
+
+# 文件上传配置
+banyumall:
+  file:
+    upload:
+      max-size: ${FILE_MAX_SIZE:10MB}
+      path: ${FILE_UPLOAD_PATH:/uploads}
+```
+
+### 个性配置（本地管理）
+各微服务在本地配置文件中管理个性配置：
+```yaml
+# 服务特定配置
+banyumall:
+  service:
+    name: ${SERVICE_NAME}
+    version: ${SERVICE_VERSION:1.0.0}
+  
+  # 认证服务个性配置
+  auth:
+    password-encoder-strength: ${PASSWORD_ENCODER_STRENGTH:12}
+    login-attempts-limit: ${LOGIN_ATTEMPTS_LIMIT:5}
+  
+  # 用户服务个性配置
+  user:
+    profile:
+      avatar-upload-path: ${AVATAR_UPLOAD_PATH:/uploads/avatars}
 ```
 
 ## 配置优先级
@@ -172,10 +214,11 @@ curl -X POST "http://localhost:8080/actuator/refresh"
 
 ## 最佳实践
 
-### 1. 配置文件管理
-- 使用模板生成配置文件，避免手动创建
-- 敏感信息配置在Nacos中，不在代码中硬编码
-- 环境无关的配置保留在本地配置文件中
+### 1. 配置分层管理
+- **公有配置**: 在Nacos中统一管理，包含数据库、Redis、JWT等敏感信息
+- **个性配置**: 各微服务在本地配置文件中管理，包含服务特定配置
+- **环境隔离**: 通过Nacos命名空间区分不同环境
+- **配置热更新**: 公有配置支持热更新，个性配置需要重启服务
 
 ### 2. 环境隔离
 - 不同环境使用不同的Nacos命名空间

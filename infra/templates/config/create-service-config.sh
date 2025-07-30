@@ -116,92 +116,13 @@ cp "${TEMPLATES_DIR}/application-prod.yml.template" "${RESOURCES_DIR}/applicatio
 log_info "生成Docker环境配置: application-docker.yml"
 cp "${TEMPLATES_DIR}/application-docker.yml.template" "${RESOURCES_DIR}/application-docker.yml"
 
-# 6. 生成Nacos配置模板
-log_info "生成Nacos配置模板"
+# 6. 生成Nacos配置模板（公有配置）
+log_info "生成Nacos公有配置模板"
 NACOS_TEMPLATE="${TEMPLATES_DIR}/nacos-config-template-${SERVICE_NAME}.yml"
 cp "${TEMPLATES_DIR}/nacos-config-template.yml" "$NACOS_TEMPLATE"
 
-# 替换服务名称
-sed -i.bak "s/\${SERVICE_NAME}/${SERVICE_NAME}/g" "$NACOS_TEMPLATE"
-rm "${NACOS_TEMPLATE}.bak"
-
-# 根据服务类型添加特定配置
-case $SERVICE_NAME in
-    "service-auth")
-        log_info "为认证服务添加特定配置..."
-        cat >> "$NACOS_TEMPLATE" << EOF
-
-# 认证服务特定配置
-banyumall:
-  auth:
-    jwt:
-      secret: \${JWT_SECRET}
-      expiration: \${JWT_EXPIRATION:86400}
-      refresh-expiration: \${JWT_REFRESH_EXPIRATION:604800}
-    security:
-      password-encoder-strength: \${PASSWORD_ENCODER_STRENGTH:12}
-      login-attempts-limit: \${LOGIN_ATTEMPTS_LIMIT:5}
-      lock-duration: \${LOCK_DURATION:300}
-EOF
-        ;;
-    "service-user")
-        log_info "为用户服务添加特定配置..."
-        cat >> "$NACOS_TEMPLATE" << EOF
-
-# 用户服务特定配置
-banyumall:
-  user:
-    profile:
-      avatar-upload-path: \${AVATAR_UPLOAD_PATH:/uploads/avatars}
-      max-avatar-size: \${MAX_AVATAR_SIZE:5MB}
-    verification:
-      email-verification-enabled: \${EMAIL_VERIFICATION_ENABLED:true}
-      phone-verification-enabled: \${PHONE_VERIFICATION_ENABLED:true}
-EOF
-        ;;
-    "service-gateway")
-        log_info "为网关服务添加特定配置..."
-        cat >> "$NACOS_TEMPLATE" << EOF
-
-# 网关服务特定配置
-spring:
-  cloud:
-    gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
-      routes:
-        - id: auth-service
-          uri: lb://service-auth
-          predicates:
-            - Path=/auth/**
-          filters:
-            - StripPrefix=1
-        - id: user-service
-          uri: lb://service-user
-          predicates:
-            - Path=/user/**
-          filters:
-            - StripPrefix=1
-
-banyumall:
-  gateway:
-    cors:
-      allowed-origins: \${CORS_ALLOWED_ORIGINS:*}
-      allowed-methods: \${CORS_ALLOWED_METHODS:*}
-      allowed-headers: \${CORS_ALLOWED_HEADERS:*}
-    rate-limit:
-      enabled: \${RATE_LIMIT_ENABLED:true}
-      default-rate: \${RATE_LIMIT_DEFAULT_RATE:1000}
-    circuit-breaker:
-      enabled: \${CIRCUIT_BREAKER_ENABLED:true}
-EOF
-        ;;
-    *)
-        log_info "为通用服务添加配置..."
-        ;;
-esac
+log_info "Nacos公有配置模板已生成: $NACOS_TEMPLATE"
+log_info "注意: 此模板包含所有微服务共享的配置项，个性配置在各微服务的本地配置文件中管理"
 
 # 显示生成结果
 log_success "配置文件生成完成!"
@@ -216,8 +137,9 @@ echo "  ${NACOS_TEMPLATE}"
 # 显示使用说明
 log_info "使用说明:"
 echo "1. 检查并修改生成的配置文件"
-echo "2. 将Nacos配置模板上传到Nacos控制台"
+echo "2. 将Nacos公有配置模板上传到Nacos控制台（命名为: ${SERVICE_NAME}.yaml）"
 echo "3. 在Nacos中配置敏感信息（数据库密码、Redis密码等）"
-echo "4. 启动服务验证配置"
+echo "4. 在各微服务的本地配置文件中添加个性配置"
+echo "5. 启动服务验证配置"
 
 log_success "配置生成完成!" 

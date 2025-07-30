@@ -28,6 +28,11 @@ spring:
         config-long-poll-timeout: 460
         config-retry-time: 2000
         enable-remote-sync-config: true
+        # 加载公有配置: 微服务名称.yaml
+        shared-configs:
+          - data-id: ${spring.application.name}.yaml
+            group: ${NACOS_GROUP:DEFAULT_GROUP}
+            refresh: true
 
 # 数据库配置（敏感信息从Nacos获取）
 datasource:

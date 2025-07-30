@@ -46,12 +46,8 @@ mybatis-plus:
       logic-not-delete-value: 0
   mapper-locations: classpath*:mapper/**/*.xml
 
-# 业务配置
+# 公有业务配置（所有微服务共享）
 banyumall:
-  service:
-    name: ${SERVICE_NAME}
-    version: ${SERVICE_VERSION:1.0.0}
-    description: BanyuMall微服务
   security:
     jwt:
       secret: ${JWT_SECRET}
@@ -103,13 +99,4 @@ management:
     git:
       mode: full
 
-# 应用信息
-info:
-  app:
-    name: ${SERVICE_NAME}
-    version: ${SERVICE_VERSION:1.0.0}
-    description: BanyuMall微服务
-  build:
-    artifact: ${SERVICE_NAME}
-    version: ${SERVICE_VERSION:1.0.0}
-    time: ${BUILD_TIME:} 
+# 应用信息（个性配置，由各微服务在本地配置） 
