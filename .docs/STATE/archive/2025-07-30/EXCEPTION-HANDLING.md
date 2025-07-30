@@ -116,6 +116,6 @@ return ResultData.fail(ErrorCode.PARAM_ERROR, "参数错误");
 5. **安全考虑**: 避免在错误消息中暴露敏感信息
 
 ## 版本历史
-- 2025-01-27: 创建ErrorCode和BusinessException类
-- 2025-01-27: 修复ResultData中的导入问题
-- 2025-01-27: 建立异常处理架构基线 
+- 2025-07-30: 创建ErrorCode和BusinessException类
+- 2025-07-30: 修复ResultData中的导入问题
+- 2025-07-30: 建立异常处理架构基线 

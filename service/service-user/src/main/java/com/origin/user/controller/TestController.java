@@ -20,13 +20,13 @@ public class TestController {
 
     @Operation(summary = "健康检查", description = "用于验证服务是否正常运行的接口")
     @GetMapping("/health")
-    public ResultData<String> health() {
-        return ResultData.success("User Service is running!");
+    public ResultData health() {
+        return ResultData.ok("User Service is running!");
     }
 
     @Operation(summary = "Knife4j测试", description = "用于验证Knife4j配置是否正常工作的接口")
     @GetMapping("/knife4j")
-    public ResultData<String> knife4jTest() {
-        return ResultData.success("Knife4j configuration is working!");
+    public ResultData knife4jTest() {
+        return ResultData.ok("Knife4j configuration is working!");
     }
 } 

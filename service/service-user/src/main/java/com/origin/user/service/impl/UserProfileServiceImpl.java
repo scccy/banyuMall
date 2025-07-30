@@ -36,7 +36,7 @@ public class UserProfileServiceImpl extends ServiceImpl<UserProfileMapper, UserP
         // 验证用户是否存在
         try {
             ResultData<Boolean> existsResult = authFeignClient.checkUserExists(userId, "Bearer token");
-            if (!existsResult.isSuccess() || !existsResult.getData()) {
+            if (!existsResult.isSuccess() || !Boolean.TRUE.equals(existsResult.getData(Boolean.class))) {
                 log.error("用户不存在，用户ID: {}", userId);
                 return false;
             }

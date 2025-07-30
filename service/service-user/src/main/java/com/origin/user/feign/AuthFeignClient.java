@@ -23,7 +23,7 @@ public interface AuthFeignClient {
      * @return 用户基础信息
      */
     @GetMapping("/auth/user/{userId}")
-    ResultData<Object> getUserInfo(@PathVariable("userId") String userId, 
+    ResultData<Object> getUserInfo(@PathVariable("userId") String userId,
                                   @RequestHeader("Authorization") String token);
 
     /**
@@ -34,7 +34,7 @@ public interface AuthFeignClient {
      * @return 验证结果
      */
     @GetMapping("/auth/user/{userId}/exists")
-    ResultData<Boolean> checkUserExists(@PathVariable("userId") String userId, 
+    ResultData<Boolean> checkUserExists(@PathVariable("userId") String userId,
                                        @RequestHeader("Authorization") String token);
 
     /**
@@ -45,6 +45,6 @@ public interface AuthFeignClient {
      * @return 用户状态
      */
     @GetMapping("/auth/user/{userId}/status")
-    ResultData<Integer> getUserStatus(@PathVariable("userId") String userId, 
+    ResultData<Integer> getUserStatus(@PathVariable("userId") String userId,
                                      @RequestHeader("Authorization") String token);
 } 

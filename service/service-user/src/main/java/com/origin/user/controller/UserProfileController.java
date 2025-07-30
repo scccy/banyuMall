@@ -6,11 +6,13 @@ import com.origin.user.entity.UserProfile;
 import com.origin.user.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+//import javax.servlet.http.HttpServletRequest;
+//import javax.validation.Valid;
 
 /**
  * 用户扩展信息控制器
@@ -37,9 +39,9 @@ public class UserProfileController {
         
         UserProfile profile = userProfileService.getByUserId(userId);
         if (profile == null) {
-            return ResultData.error("用户扩展信息不存在");
+            return ResultData.fail("用户扩展信息不存在");
         }
-        return ResultData.success(profile);
+        return ResultData.ok("获取成功", profile);
     }
 
     @Operation(summary = "创建或更新用户扩展信息")
@@ -62,6 +64,6 @@ public class UserProfileController {
         profile.setDescription(request.getDescription());
         
         boolean success = userProfileService.createOrUpdateProfile(userId, profile);
-        return success ? ResultData.success(true) : ResultData.error("操作失败");
+        return success ? ResultData.ok("操作成功", true) : ResultData.fail("操作失败");
     }
 } 

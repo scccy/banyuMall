@@ -32,7 +32,7 @@ public class AuthController {
      */
     @Operation(summary = "用户登录", description = "处理用户登录请求，返回用户信息和JWT令牌")
     @PostMapping("/login")
-    public ResultData login(@RequestBody @Validated LoginRequest loginRequest) {
+    public ResultData<LoginResponse> login(@RequestBody @Validated LoginRequest loginRequest) {
         LoginResponse loginResponse = sysUserService.login(loginRequest);
         return ResultData.ok("登录成功", loginResponse);
     }
@@ -45,7 +45,7 @@ public class AuthController {
      */
     @Operation(summary = "用户登出", description = "处理用户登出请求，清除用户会话信息")
     @PostMapping("/logout")
-    public ResultData logout(HttpServletRequest request) {
+    public ResultData<String> logout(HttpServletRequest request) {
         // 从请求头中获取token
         String token = request.getHeader("Authorization");
         

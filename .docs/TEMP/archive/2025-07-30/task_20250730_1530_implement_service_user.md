@@ -36,10 +36,10 @@
 - `.docs/STATE/USER-DATA-FLOW-SUMMARY.md` - 用户服务数据流向总结
 
 ## 进度记录
-- 2025-01-27 15:30: 任务创建，开始实现用户服务
-- 2025-01-27 15:35: 重新设计架构，与service-auth共享用户表，创建BaseEntity父类
-- 2025-01-27 15:40: 更新数据库设计和实体类，继承BaseEntity
-- 2025-01-27 15:45: 更新service-auth模块的实体类，统一使用BaseEntity和新的表结构
-- 2025-01-27 16:00: 完成service-user模块的核心实现，包括Mapper、Service、Controller层
-- 2025-01-27 16:05: 完成配置文件创建和架构基线文档更新，任务完成
-- 2025-01-27 16:10: 添加Feign客户端，实现service-user与service-auth的服务间调用 
+- 2025-07-30 15:30: 任务创建，开始实现用户服务
+- 2025-07-30 15:35: 重新设计架构，与service-auth共享用户表，创建BaseEntity父类
+- 2025-07-30 15:40: 更新数据库设计和实体类，继承BaseEntity
+- 2025-07-30 15:45: 更新service-auth模块的实体类，统一使用BaseEntity和新的表结构
+- 2025-07-30 16:00: 完成service-user模块的核心实现，包括Mapper、Service、Controller层
+- 2025-07-30 16:05: 完成配置文件创建和架构基线文档更新，任务完成
+- 2025-07-30 16:10: 添加Feign客户端，实现service-user与service-auth的服务间调用 
