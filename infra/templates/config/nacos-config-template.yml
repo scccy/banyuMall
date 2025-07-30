@@ -1,73 +1,115 @@
-# Nacos配置模板 - infra-gateway.yml
-# 将此配置内容复制到Nacos控制台中
+# BanyuMall微服务Nacos配置模板
+# 使用方法: 复制此文件并根据服务特性修改，然后上传到Nacos配置中心
 
+# 数据库配置
+datasource:
+  url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+  username: ${MYSQL_USERNAME}
+  password: ${MYSQL_PASSWORD}
+  driver-class-name: com.mysql.cj.jdbc.Driver
+  hikari:
+    maximum-pool-size: 20
+    minimum-idle: 5
+    connection-timeout: 30000
+    idle-timeout: 600000
+    max-lifetime: 1800000
+    leak-detection-threshold: 60000
+
+# Redis配置
 spring:
-  cloud:
-    gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
-      routes:
-        # 认证服务路由
-        - id: auth-service
-          uri: lb://service-auth
-          predicates:
-            - Path=/auth/**
-          filters:
-            - StripPrefix=1
-        # 默认路由 - 转发到认证服务
-        - id: default-route
-          uri: lb://service-auth
-          predicates:
-            - Path=/**
-          filters:
-            - StripPrefix=0
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
+    database: ${REDIS_DATABASE}
+    timeout: 3000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: -1ms
+
+# MyBatis Plus配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    call-setters-on-nulls: true
+    jdbc-type-for-null: 'null'
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: assign_id
+      logic-delete-field: is_deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  mapper-locations: classpath*:mapper/**/*.xml
+
+# 业务配置
+banyumall:
+  service:
+    name: ${SERVICE_NAME}
+    version: ${SERVICE_VERSION:1.0.0}
+    description: BanyuMall微服务
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      expiration: ${JWT_EXPIRATION:86400}
+      refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800}
+  file:
+    upload:
+      max-size: ${FILE_MAX_SIZE:10MB}
+      allowed-types: ${FILE_ALLOWED_TYPES:jpg,jpeg,png,gif,pdf,doc,docx}
+      path: ${FILE_UPLOAD_PATH:/uploads}
+  cache:
+    redis:
+      default-ttl: ${CACHE_DEFAULT_TTL:3600}
+      key-prefix: ${CACHE_KEY_PREFIX:banyumall:}
+  task:
+    pool:
+      core-size: ${TASK_CORE_SIZE:10}
+      max-size: ${TASK_MAX_SIZE:20}
+      queue-capacity: ${TASK_QUEUE_CAPACITY:100}
+      keep-alive: ${TASK_KEEP_ALIVE:60}
+
+# 日志配置
+logging:
+  level:
+    com.origin: ${LOG_LEVEL_ORIGIN:INFO}
+    org.springframework.cloud: ${LOG_LEVEL_SPRING_CLOUD:INFO}
+    com.alibaba.nacos: ${LOG_LEVEL_NACOS:INFO}
+    com.baomidou.mybatisplus: ${LOG_LEVEL_MYBATIS_PLUS:INFO}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
 
 # 管理端点配置
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,gateway
+        include: health,info,metrics,prometheus,refresh,env,configprops
+      base-path: /actuator
   endpoint:
     health:
       show-details: always
+      show-components: always
+    info:
+      enabled: true
+  info:
+    env:
+      enabled: true
+    git:
+      mode: full
 
-# 网关特定配置
-gateway:
-  # 跨域配置
-  cors:
-    allowed-origins: "*"
-    allowed-methods: "*"
-    allowed-headers: "*"
-    allow-credentials: true
-  
-  # 限流配置
-  rate-limit:
-    enabled: true
-    default-rate: 1000  # 默认限流：每秒1000个请求
-  
-  # 熔断配置
-  circuit-breaker:
-    enabled: true
-    fallback-uri: forward:/fallback
-  
-  # 路由配置
-  routes:
-    auth-service:
-      path: /auth/**
-      strip-prefix: 1
-      rate-limit: 500  # 认证服务限流：每秒500个请求
-    
-    default-route:
-      path: /**
-      strip-prefix: 0
-      rate-limit: 1000  # 默认限流：每秒1000个请求
-
-# 日志配置
-logging:
-  level:
-    org.springframework.cloud.gateway: INFO
-    com.origin.gateway: DEBUG
-    reactor.netty: WARN 
+# 应用信息
+info:
+  app:
+    name: ${SERVICE_NAME}
+    version: ${SERVICE_VERSION:1.0.0}
+    description: BanyuMall微服务
+  build:
+    artifact: ${SERVICE_NAME}
+    version: ${SERVICE_VERSION:1.0.0}
+    time: ${BUILD_TIME:} 
