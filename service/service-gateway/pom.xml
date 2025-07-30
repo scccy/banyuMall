@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.origin</groupId>
-        <artifactId>infra</artifactId>
+        <artifactId>service</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     
-    <artifactId>infra-gateway</artifactId>
-    <name>infra-gateway</name>
+    <artifactId>service-gateway</artifactId>
+    <name>service-gateway</name>
     <description>API Gateway Service</description>
     
     <dependencies>

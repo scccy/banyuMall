@@ -111,7 +111,7 @@ build_project() {
                 module_path="service/service-user"
                 ;;
             "gateway")
-                module_path="infra/infra-gateway"
+                module_path="service/service-gateway"
                 ;;
             *)
                 log_error "未知服务: $service_name"
@@ -206,17 +206,17 @@ deploy_gateway_service() {
     log_info "部署网关服务..."
     
     # 检查JAR文件是否存在
-    local jar_file="infra/infra-gateway/target/infra-gateway-*.jar"
+    local jar_file="service/service-gateway/target/service-gateway-*.jar"
     if ! ls $jar_file >/dev/null 2>&1; then
         log_error "网关服务JAR文件不存在，请先构建项目"
         exit 1
     fi
     
     # 停止现有服务
-    pkill -f "infra-gateway" || true
+    pkill -f "service-gateway" || true
     
     # 启动服务
-    nohup java -jar infra/infra-gateway/target/infra-gateway-*.jar \
+    nohup java -jar service/service-gateway/target/service-gateway-*.jar \
         --spring.profiles.active="$DEPLOY_ENV" > logs/gateway-service.log 2>&1 &
     
     log_info "网关服务启动完成，PID: $!"
@@ -260,7 +260,7 @@ check_service_status() {
             fi
             ;;
         "gateway")
-            if pgrep -f "infra-gateway" >/dev/null; then
+            if pgrep -f "service-gateway" >/dev/null; then
                 log_info "网关服务运行中"
             else
                 log_warn "网关服务未运行"

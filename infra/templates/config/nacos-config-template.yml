@@ -1,111 +1,73 @@
-# Nacos配置中心模板
-# 使用环境变量替换配置值
+# Nacos配置模板 - infra-gateway.yml
+# 将此配置内容复制到Nacos控制台中
 
-# 数据库配置
 spring:
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:banyu_mall}?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:123456}
-    hikari:
-      minimum-idle: ${DB_MIN_IDLE:5}
-      maximum-pool-size: ${DB_MAX_POOL_SIZE:20}
-      auto-commit: true
-      idle-timeout: ${DB_IDLE_TIMEOUT:30000}
-      pool-name: HikariCP
-      max-lifetime: ${DB_MAX_LIFETIME:1800000}
-      connection-timeout: ${DB_CONNECTION_TIMEOUT:30000}
-      connection-test-query: SELECT 1
-
-  # Redis配置
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
-      database: ${REDIS_DATABASE:0}
-      timeout: ${REDIS_TIMEOUT:10000ms}
-      lettuce:
-        pool:
-          max-active: ${REDIS_MAX_ACTIVE:8}
-          max-wait: ${REDIS_MAX_WAIT:-1ms}
-          max-idle: ${REDIS_MAX_IDLE:8}
-          min-idle: ${REDIS_MIN_IDLE:0}
-
-# JWT配置
-jwt:
-  secret: ${JWT_SECRET:your-secret-key-here-should-be-at-least-32-bytes-long-for-security}
-  expiration: ${JWT_EXPIRATION:3600000}
-  header: Authorization
-  tokenPrefix: Bearer
-
-# 安全配置
-security:
-  permit-all:
-    - /auth/login
-    - /auth/register
-    - /swagger-ui/**
-    - /v3/api-docs/**
-    - /actuator/health
-    - /actuator/info
-
-# 日志配置
-logging:
-  level:
-    com.origin: ${LOG_LEVEL:debug}
-    org.springframework.security: ${SECURITY_LOG_LEVEL:debug}
-    root: ${ROOT_LOG_LEVEL:info}
-  file:
-    name: ${LOG_FILE_PATH:logs/application.log}
-
-# 服务配置
-server:
-  port: ${SERVER_PORT:8080}
-  servlet:
-    context-path: ${CONTEXT_PATH:/}
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # 认证服务路由
+        - id: auth-service
+          uri: lb://service-auth
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+        # 默认路由 - 转发到认证服务
+        - id: default-route
+          uri: lb://service-auth
+          predicates:
+            - Path=/**
+          filters:
+            - StripPrefix=0
 
 # 管理端点配置
 management:
   endpoints:
     web:
       exposure:
-        include: ${MANAGEMENT_ENDPOINTS:health,info,metrics}
+        include: health,info,gateway
   endpoint:
     health:
-      show-details: ${HEALTH_SHOW_DETAILS:always}
+      show-details: always
 
-# Feign配置
-feign:
-  client:
-    config:
-      default:
-        connect-timeout: ${FEIGN_CONNECT_TIMEOUT:5000}
-        read-timeout: ${FEIGN_READ_TIMEOUT:5000}
-        logger-level: ${FEIGN_LOGGER_LEVEL:full}
-  compression:
-    request:
-      enabled: ${FEIGN_COMPRESSION_REQUEST:true}
-    response:
-      enabled: ${FEIGN_COMPRESSION_RESPONSE:true}
+# 网关特定配置
+gateway:
+  # 跨域配置
+  cors:
+    allowed-origins: "*"
+    allowed-methods: "*"
+    allowed-headers: "*"
+    allow-credentials: true
+  
+  # 限流配置
+  rate-limit:
+    enabled: true
+    default-rate: 1000  # 默认限流：每秒1000个请求
+  
+  # 熔断配置
+  circuit-breaker:
+    enabled: true
+    fallback-uri: forward:/fallback
+  
+  # 路由配置
+  routes:
+    auth-service:
+      path: /auth/**
+      strip-prefix: 1
+      rate-limit: 500  # 认证服务限流：每秒500个请求
+    
+    default-route:
+      path: /**
+      strip-prefix: 0
+      rate-limit: 1000  # 默认限流：每秒1000个请求
 
-# 用户服务配置
-user:
-  config:
-    default-type: ${USER_CONFIG_DEFAULT_TYPE:string}
-    max-config-count: ${USER_CONFIG_MAX_COUNT:100}
-  profile:
-    allow-real-name-edit: ${USER_PROFILE_ALLOW_REAL_NAME_EDIT:true}
-    allow-company-edit: ${USER_PROFILE_ALLOW_COMPANY_EDIT:true}
-  feign:
-    enable-service-validation: ${USER_FEIGN_ENABLE_VALIDATION:true}
-    auth-timeout: ${USER_FEIGN_AUTH_TIMEOUT:3000}
-
-# 开发环境配置
-spring:
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
-  main:
-    lazy-initialization: ${LAZY_INITIALIZATION:true}
-  jmx:
-    enabled: ${JMX_ENABLED:false} 
+# 日志配置
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
+    com.origin.gateway: DEBUG
+    reactor.netty: WARN 

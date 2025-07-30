@@ -21,10 +21,10 @@ infra/
 │   ├── notification/           # 通知模板
 │   ├── document/               # 文档模板
 │   └── config/                 # 配置模板
-├── infra-gateway/              # 网关服务
-│   ├── pom.xml                 # 网关Maven配置
-│   ├── src/                    # 网关源码
-│   └── nacos-config-template*.yml # Nacos配置模板
+└── scripts/                    # 基础设施脚本
+    ├── deploy.sh               # 部署脚本
+    ├── backup.sh               # 备份脚本
+    └── monitor.sh              # 监控脚本
 └── scripts/                    # 基础设施脚本
     ├── deploy.sh               # 部署脚本
     ├── backup.sh               # 备份脚本
@@ -74,7 +74,7 @@ java -cp . TemplateProcessor infra/templates/email/welcome.html
 ### 3. 网关部署
 ```bash
 # 构建网关
-cd infra/infra-gateway && mvn clean package
+cd service/service-gateway && mvn clean package
 
 # 部署网关
 ./infra/scripts/deploy.sh gateway
@@ -124,7 +124,7 @@ CONTEXT_PATH=/
 ./mvnw spring-boot:run -pl service/service-user
 
 # 3. 启动网关
-./mvnw spring-boot:run -pl infra/infra-gateway
+./mvnw spring-boot:run -pl service/service-gateway
 ```
 
 ### 2. 生产环境

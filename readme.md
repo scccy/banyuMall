@@ -44,6 +44,7 @@
 │   ├── service-base      [✓ 已完成] 全局基础支撑
 │   ├── service-auth      [✓ 已完成] 认证授权服务
 │   ├── service-user      [ ] 用户管理服务
+│   ├── service-gateway   [✓ 已完成] API网关服务
 │   ├── service-task      [ ] 任务管理服务
 │   ├── service-points    [ ] 积分管理服务
 │   ├── service-file      [ ] 文件管理服务
@@ -55,7 +56,6 @@
 │   ├── biz-task          [ ] 发布者任务管理
 │   └── biz-order         [ ] 接单人订单流程
 └── 基础设施 (infra-*)
-    ├── infra-gateway     [ ] API网关
     ├── infra-registry    [ ] 服务注册发现
     ├── infra-monitor     [ ] 监控服务
     └── infra-log         [ ] 日志服务

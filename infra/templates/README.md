@@ -24,6 +24,8 @@ infra/templates/
 │   └── README.md               # 文档模板说明
 └── config/                      # 配置模板
     ├── nacos-config-template.yml # Nacos配置模板
+    ├── nacos-config-template-auth.yml # Auth服务Nacos配置模板
+    ├── nacos-config-template-user.yml # User服务Nacos配置模板
     ├── docker-compose-template.yml # Docker Compose模板
     └── README.md               # 配置模板说明
 ```
