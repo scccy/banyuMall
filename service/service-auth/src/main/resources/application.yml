@@ -11,6 +11,13 @@ spring:
     import: nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
   application:
     name: service-auth
+  
+  # Spring Security 默认用户配置
+  security:
+    user:
+      name: ${SECURITY_USER_NAME:admin}
+      password: ${SECURITY_USER_PASSWORD:admin123}
+      roles: ${SECURITY_USER_ROLES:ADMIN}
 
   cloud:
     nacos:

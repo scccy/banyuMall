@@ -1,13 +1,18 @@
 package com.origin.auth.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -20,12 +25,35 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Value("${spring.security.user.name:admin}")
+    private String username;
+
+    @Value("${spring.security.user.password:admin123}")
+    private String password;
+
+    @Value("${spring.security.user.roles:ADMIN}")
+    private String roles;
+
     /**
      * 密码加密器
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12); // 使用 BCrypt，强度为12
+    }
+
+    /**
+     * 用户详情服务 - 配置默认用户
+     */
+    @Bean
+    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+        UserDetails user = User.builder()
+                .username(username)
+                .password(passwordEncoder.encode(password))
+                .roles(roles.split(","))
+                .build();
+        
+        return new InMemoryUserDetailsManager(user);
     }
 
     /**
