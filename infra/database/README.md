@@ -10,10 +10,10 @@
 infra/database/
 ├── README.md                    # 本说明文档
 ├── schema/                      # 表结构定义
-│   ├── unified-user-schema.sql  # 统一用户表结构
+│   ├── user-schema.sql  # 统一用户表结构
 │   └── README.md               # 表结构说明
 ├── data/                        # 初始化数据
-│   ├── unified-init-data.sql    # 统一初始化数据
+│   ├── user-init-data.sql    # 统一初始化数据
 │   └── README.md               # 数据说明
 ├── migration/                   # 数据库迁移脚本
 │   ├── V1.0.0__init.sql        # 初始版本
@@ -48,8 +48,8 @@ mysql -u root -p banyu_mall < infra/database/migration/V1.0.0__init.sql
 spring:
   sql:
     init:
-      schema-locations: classpath:../../infra/database/schema/unified-user-schema.sql
-      data-locations: classpath:../../infra/database/data/unified-init-data.sql
+      schema-locations: classpath:../../infra/database/schema/user-schema.sql
+      data-locations: classpath:../../infra/database/data/user-init-data.sql
 ```
 
 ## 版本管理

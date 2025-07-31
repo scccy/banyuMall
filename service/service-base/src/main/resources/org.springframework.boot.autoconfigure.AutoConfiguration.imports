@@ -5,4 +5,6 @@ com.origin.base.config.OpenFeignConfig
 com.origin.base.config.RedisConfig
 com.origin.base.config.OssConfig
 com.origin.base.config.Knife4jConfig
-com.origin.base.config.Log4j2Config 
+com.origin.base.config.Log4j2Config
+com.origin.base.config.Log4j2ServiceNameConfig
+com.origin.base.exception.GlobalExceptionHandler

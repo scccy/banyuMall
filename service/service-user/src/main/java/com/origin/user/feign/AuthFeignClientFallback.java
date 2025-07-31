@@ -1,34 +1,38 @@
 package com.origin.user.feign;
 
 import com.origin.common.dto.ResultData;
+
+import com.origin.user.entity.SysUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 /**
  * 认证服务Feign客户端降级处理
- *
- * @author origin
- * @since 2025-01-27
+ * 
+ * @author scccy
+ * @since 2024-07-30
  */
 @Slf4j
 @Component
 public class AuthFeignClientFallback implements AuthFeignClient {
-
+    
     @Override
-    public ResultData<Object> getUserInfo(String userId, String token) {
-        log.error("调用认证服务获取用户信息失败，用户ID: {}, token: {}", userId, token);
-        return ResultData.fail("获取用户信息失败，服务暂时不可用");
+    public ResultData<Boolean> validateToken(String token) {
+        log.error("认证服务调用失败 - validateToken, token: {}", token);
+        return ResultData.fail("认证服务暂时不可用");
     }
-
+    
     @Override
-    public ResultData<Boolean> checkUserExists(String userId, String token) {
-        log.error("调用认证服务验证用户存在性失败，用户ID: {}, token: {}", userId, token);
-        return ResultData.fail("验证用户失败，服务暂时不可用");
+    public ResultData<SysUser> getUserInfo(String userId) {
+        log.error("认证服务调用失败 - getUserInfo, userId: {}", userId);
+        return ResultData.fail("认证服务暂时不可用");
     }
-
+    
     @Override
-    public ResultData<Integer> getUserStatus(String userId, String token) {
-        log.error("调用认证服务获取用户状态失败，用户ID: {}, token: {}", userId, token);
-        return ResultData.fail("获取用户状态失败，服务暂时不可用");
+    public ResultData<Map<String, Object>> getUserPermissions(String userId) {
+        log.error("认证服务调用失败 - getUserPermissions, userId: {}", userId);
+        return ResultData.fail("认证服务暂时不可用");
     }
 } 

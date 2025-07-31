@@ -1,50 +1,48 @@
 package com.origin.user.feign;
 
 import com.origin.common.dto.ResultData;
+
+import com.origin.user.entity.SysUser;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Map;
 
 /**
  * 认证服务Feign客户端
- *
- * @author origin
- * @since 2025-01-27
+ * 
+ * @author scccy
+ * @since 2024-07-30
  */
 @FeignClient(name = "service-auth", fallback = AuthFeignClientFallback.class)
 public interface AuthFeignClient {
-
+    
     /**
-     * 根据用户ID获取用户基础信息
+     * 验证JWT令牌
      *
-     * @param userId 用户ID
-     * @param token 认证token
-     * @return 用户基础信息
-     */
-    @GetMapping("/auth/user/{userId}")
-    ResultData<Object> getUserInfo(@PathVariable("userId") String userId,
-                                  @RequestHeader("Authorization") String token);
-
-    /**
-     * 验证用户是否存在
-     *
-     * @param userId 用户ID
-     * @param token 认证token
+     * @param token JWT令牌
      * @return 验证结果
      */
-    @GetMapping("/auth/user/{userId}/exists")
-    ResultData<Boolean> checkUserExists(@PathVariable("userId") String userId,
-                                       @RequestHeader("Authorization") String token);
-
+    @PostMapping("/auth/validate")
+    ResultData<Boolean> validateToken(@RequestParam("token") String token);
+    
     /**
-     * 获取用户状态
+     * 获取用户信息
      *
      * @param userId 用户ID
-     * @param token 认证token
-     * @return 用户状态
+     * @return 用户信息
      */
-    @GetMapping("/auth/user/{userId}/status")
-    ResultData<Integer> getUserStatus(@PathVariable("userId") String userId,
-                                     @RequestHeader("Authorization") String token);
+    @GetMapping("/auth/user/info")
+    ResultData<SysUser> getUserInfo(@RequestParam("userId") String userId);
+    
+    /**
+     * 获取用户权限
+     *
+     * @param userId 用户ID
+     * @return 用户权限信息
+     */
+    @GetMapping("/auth/user/permissions")
+    ResultData<Map<String, Object>> getUserPermissions(@RequestParam("userId") String userId);
 } 

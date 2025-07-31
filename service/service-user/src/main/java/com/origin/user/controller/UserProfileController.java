@@ -5,65 +5,107 @@ import com.origin.user.dto.UserUpdateRequest;
 import com.origin.user.entity.UserProfile;
 import com.origin.user.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-//import javax.servlet.http.HttpServletRequest;
-//import javax.validation.Valid;
-
 /**
- * 用户扩展信息控制器
- *
- * @author origin
- * @since 2025-01-27
+ * 用户扩展信息管理控制器
+ * 
+ * @author scccy
+ * @since 2024-07-30
  */
-@Tag(name = "用户扩展信息管理", description = "用户扩展信息相关接口")
+@Tag(name = "用户扩展信息", description = "用户扩展信息管理接口")
 @RestController
-@RequestMapping("/profile")
+@RequestMapping("/user/profile")
 @RequiredArgsConstructor
+@Slf4j
+@Validated
 public class UserProfileController {
 
     private final UserProfileService userProfileService;
 
-    @Operation(summary = "获取用户扩展信息")
+    /**
+     * 获取用户扩展信息
+     *
+     * @param userId 用户ID
+     * @param httpRequest HTTP请求
+     * @return 用户扩展信息
+     */
+    @Operation(summary = "获取用户扩展信息", description = "获取用户的详细资料和公司信息")
     @GetMapping("/{userId}")
-    public ResultData<UserProfile> getUserProfile(
-            @PathVariable String userId,
-            HttpServletRequest request) {
+    public ResultData<UserProfile> getUserProfile(@Parameter(description = "用户ID") @PathVariable String userId,
+                                                 HttpServletRequest httpRequest) {
+        // 从请求头中获取链路追踪信息
+        String requestId = httpRequest.getHeader("X-Request-ID");
+        String clientIp = httpRequest.getHeader("X-Client-IP");
+        String userAgent = httpRequest.getHeader("X-User-Agent");
         
-        // 从请求头获取认证token
-        String token = request.getHeader("Authorization");
+        log.info("获取用户扩展信息 - RequestId: {}, ClientIP: {}, UserAgent: {}, UserId: {}", 
+                requestId, clientIp, userAgent, userId);
         
-        UserProfile profile = userProfileService.getByUserId(userId);
+        UserProfile profile = userProfileService.getProfileByUserId(userId);
         if (profile == null) {
             return ResultData.fail("用户扩展信息不存在");
         }
-        return ResultData.ok("获取成功", profile);
+        
+        return ResultData.ok("获取用户扩展信息成功", profile);
     }
 
-    @Operation(summary = "创建或更新用户扩展信息")
+    /**
+     * 创建或更新用户扩展信息
+     *
+     * @param userId 用户ID
+     * @param request 更新请求
+     * @param httpRequest HTTP请求
+     * @return 操作结果
+     */
+    @Operation(summary = "创建或更新用户扩展信息", description = "创建或更新用户的扩展信息（真实姓名、公司信息等）")
     @PostMapping("/{userId}")
-    public ResultData<Boolean> createOrUpdateProfile(
-            @PathVariable String userId,
-            @Valid @RequestBody UserUpdateRequest request,
-            HttpServletRequest httpRequest) {
+    public ResultData<UserProfile> createOrUpdateProfile(@Parameter(description = "用户ID") @PathVariable String userId,
+                                                        @RequestBody @Valid UserUpdateRequest request,
+                                                        HttpServletRequest httpRequest) {
+        // 从请求头中获取链路追踪信息
+        String requestId = httpRequest.getHeader("X-Request-ID");
+        String clientIp = httpRequest.getHeader("X-Client-IP");
+        String userAgent = httpRequest.getHeader("X-User-Agent");
         
-        // 从请求头获取认证token
-        String token = httpRequest.getHeader("Authorization");
+        log.info("创建或更新用户扩展信息 - RequestId: {}, ClientIP: {}, UserAgent: {}, UserId: {}", 
+                requestId, clientIp, userAgent, userId);
         
-        UserProfile profile = new UserProfile();
-        profile.setRealName(request.getRealName());
-        profile.setCompanyName(request.getCompanyName());
-        profile.setCompanyAddress(request.getCompanyAddress());
-        profile.setContactPerson(request.getContactPerson());
-        profile.setContactPhone(request.getContactPhone());
-        profile.setIndustry(request.getIndustry());
-        profile.setDescription(request.getDescription());
+        UserProfile profile = userProfileService.createOrUpdateProfile(userId, request);
+        return ResultData.ok("用户扩展信息保存成功", profile);
+    }
+
+    /**
+     * 删除用户扩展信息
+     *
+     * @param userId 用户ID
+     * @param httpRequest HTTP请求
+     * @return 删除结果
+     */
+    @Operation(summary = "删除用户扩展信息", description = "删除指定用户的扩展信息")
+    @DeleteMapping("/{userId}")
+    public ResultData<String> deleteProfile(@Parameter(description = "用户ID") @PathVariable String userId,
+                                           HttpServletRequest httpRequest) {
+        // 从请求头中获取链路追踪信息
+        String requestId = httpRequest.getHeader("X-Request-ID");
+        String clientIp = httpRequest.getHeader("X-Client-IP");
+        String userAgent = httpRequest.getHeader("X-User-Agent");
         
-        boolean success = userProfileService.createOrUpdateProfile(userId, profile);
-        return success ? ResultData.ok("操作成功", true) : ResultData.fail("操作失败");
+        log.info("删除用户扩展信息 - RequestId: {}, ClientIP: {}, UserAgent: {}, UserId: {}", 
+                requestId, clientIp, userAgent, userId);
+        
+        boolean success = userProfileService.deleteProfileByUserId(userId);
+        if (success) {
+            return ResultData.ok("用户扩展信息删除成功");
+        } else {
+            return ResultData.fail("用户扩展信息删除失败");
+        }
     }
 } 

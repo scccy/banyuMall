@@ -4,13 +4,17 @@ import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 @Configuration
 @ConditionalOnClass(MybatisConfiguration.class)
 public class MyBatisPlusConfig {
+    
     /**
      * 添加分页插件
      */
@@ -22,6 +26,17 @@ public class MyBatisPlusConfig {
         System.out.println("分页插件加载成功");
         return interceptor;
     }
-
+    
+    /**
+     * 配置SqlSessionFactory，添加mapper扫描路径
+     */
+    @Bean
+    public SqlSessionFactory sqlSessionFactory(SqlSessionFactoryBean sqlSessionFactoryBean) throws Exception {
+        // 设置mapper文件扫描路径
+        sqlSessionFactoryBean.setMapperLocations(
+            new PathMatchingResourcePatternResolver().getResources("classpath*:mapper/*.xml")
+        );
+        return sqlSessionFactoryBean.getObject();
+    }
 }
 

@@ -1,71 +1,94 @@
-# 用户服务 - 开发环境配置（本地直接连接）
+# 用户服务 - 开发环境主配置文件
+# 注意：业务配置和敏感信息已移至Nacos配置中心
+
+# 服务器配置
+server:
+  port: 8082
+
+# Spring基础配置
 spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/banyu_mall?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-    username: root
-    password: 123456
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      minimum-idle: 5
-      maximum-pool-size: 20
-      idle-timeout: 300000
-      max-lifetime: 1200000
-      connection-timeout: 20000
+  # 应用名称
+  application:
+    name: service-user
+  
+  # 配置导入 - 从Nacos加载配置
+  config:
+    import: nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
+  
+  # Nacos服务注册与发现配置
+  cloud:
+    nacos:
+      # 服务发现配置
+      discovery:
+        server-addr: 117.50.197.170:8848
+        username: nacos
+        password: olN2y)]VzEISLITO#_}L0J^$>Nk)1S~W
+        namespace: ba1493dc-20fa-413b-84e1-d929c9a4aeac
+        group: DEFAULT_GROUP
+        # 注册配置
+        register-enabled: true
+        # 心跳间隔
+        heart-beat-interval: 5000
+        # 心跳超时时间
+        heart-beat-timeout: 15000
+        # 实例删除超时时间
+        ip-delete-timeout: 30000
+      
+      # 配置中心配置
+      config:
+        server-addr: 117.50.197.170:8848
+        username: nacos
+        password: olN2y)]VzEISLITO#_}L0J^$>Nk)1S~W
+        namespace: ba1493dc-20fa-413b-84e1-d929c9a4aeac
+        group: DEFAULT_GROUP
+        file-extension: yaml
+        # 配置刷新
+        refresh-enabled: true
+        # 配置超时时间
+        timeout: 3000
+        # 配置重试次数
+        retry-time: 2000
+        # 长轮询超时时间
+        long-poll-timeout: 46000
 
-  # 数据库健康检查配置
-  sql:
-    init:
-      mode: never  # 用户服务不执行SQL初始化，只读取数据
+  # 启动性能优化（开发环境）
+  main:
+    lazy-initialization: true  # 开发环境启用懒加载
+  # JMX配置
+  jmx:
+    enabled: false  # 开发环境关闭JMX
 
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      password: 
-      database: 1
-      timeout: 3000ms
-      lettuce:
-        pool:
-          max-active: 8
-          max-wait: -1ms
-          max-idle: 8
-          min-idle: 0
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  # 应用信息配置
+  info:
+    env:
+      enabled: true
+    git:
+      mode: full
 
-  # MyBatis-Plus配置
-  mybatis-plus:
-    configuration:
-      map-underscore-to-camel-case: true
-      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    global-config:
-      db-config:
-        logic-delete-field: isDeleted
-        logic-delete-value: 1
-        logic-not-delete-value: 0
-        id-type: assign_id
-
-# 日志配置
+# 日志配置（开发环境详细日志）
 logging:
+  config: classpath:log4j2.xml
   level:
     com.origin.user: debug
-    com.baomidou.mybatisplus: debug
+    org.springframework.web: debug
+    com.origin.user.service: debug
+    # 禁用Log4j2包扫描警告
+    org.apache.logging.log4j.status: ERROR
+    org.apache.logging.log4j.core.config: ERROR
+    root: info
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
     name: logs/service-user.log
-
-# Swagger配置
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-  api-docs:
-    path: /v3/api-docs
-  packages-to-scan: com.origin.user.controller
-
-# 用户服务开发环境特定配置
-user:
-  # 开发环境允许的操作
-  dev:
-    allow-delete: true
-    allow-batch-operations: true
-  # 调试模式
-  debug:
-    enabled: true
-    show-sql: true 
+    max-size: 100MB
+    max-history: 30 

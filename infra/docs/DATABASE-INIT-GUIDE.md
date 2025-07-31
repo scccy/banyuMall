@@ -16,8 +16,8 @@ spring:
   sql:
     init:
       mode: always
-      schema-locations: classpath:db/unified-user-schema.sql
-      data-locations: classpath:db/unified-init-data.sql
+      schema-locations: classpath:db/user-schema.sql
+      data-locations: classpath:db/user-init-data.sql
       continue-on-error: true
 ```
 
@@ -34,10 +34,10 @@ spring:
 mysql -u root -p banyu_mall
 
 -- 2. 执行表结构创建
-source /path/to/banyuMall/service/service-auth/src/main/resources/db/unified-user-schema.sql;
+source /path/to/banyuMall/service/service-auth/src/main/resources/db/user-schema.sql;
 
 -- 3. 执行初始化数据
-source /path/to/banyuMall/service/service-auth/src/main/resources/db/unified-init-data.sql;
+source /path/to/banyuMall/service/service-auth/src/main/resources/db/user-init-data.sql;
 ```
 
 ## 生产环境初始化
@@ -51,8 +51,8 @@ source /path/to/banyuMall/service/service-auth/src/main/resources/db/unified-ini
 mysqldump -u root -p banyu_mall > backup_$(date +%Y%m%d_%H%M%S).sql
 
 # 2. 执行初始化脚本
-mysql -u root -p banyu_mall < service/service-auth/src/main/resources/db/unified-user-schema.sql
-mysql -u root -p banyu_mall < service/service-auth/src/main/resources/db/unified-init-data.sql
+mysql -u root -p banyu_mall < service/service-auth/src/main/resources/db/user-schema.sql
+mysql -u root -p banyu_mall < service/service-auth/src/main/resources/db/user-init-data.sql
 ```
 
 ### 配置说明

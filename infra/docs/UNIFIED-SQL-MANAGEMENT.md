@@ -9,8 +9,8 @@
 ### 统一后的SQL文件
 ```
 service/service-auth/src/main/resources/db/
-├── unified-user-schema.sql    # 统一用户表结构
-└── unified-init-data.sql      # 统一初始化数据
+├── user-schema.sql    # 统一用户表结构
+└── user-init-data.sql      # 统一初始化数据
 ```
 
 ### 已删除的重复文件
@@ -78,10 +78,10 @@ service/service-auth/src/main/resources/db/
 ### 1. 数据库初始化
 ```sql
 -- 执行表结构创建
-source unified-user-schema.sql;
+source user-schema.sql;
 
 -- 执行初始化数据
-source unified-init-data.sql;
+source user-init-data.sql;
 ```
 
 ### 2. 服务配置

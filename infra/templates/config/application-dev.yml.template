@@ -82,8 +82,8 @@ mybatis-plus:
 sql:
   init:
     mode: always
-    schema-locations: classpath:../../infra/database/schema/unified-user-schema.sql
-    data-locations: classpath:../../infra/database/data/unified-init-data.sql
+    schema-locations: classpath:../../infra/database/schema/user-schema.sql
+    data-locations: classpath:../../infra/database/data/user-init-data.sql
     continue-on-error: true
 
 # 开发环境特定配置

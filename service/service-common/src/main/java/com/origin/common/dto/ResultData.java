@@ -256,7 +256,7 @@ public class ResultData<T> {
      */
     @SuppressWarnings("unchecked")
     public <R> R getData(Class<R> clazz) {
-        if (this.data != null && clazz.isInstance(this.data)) {
+        if (clazz.isInstance(this.data)) {
             return (R) this.data;
         }
         return null;

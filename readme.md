@@ -96,7 +96,7 @@ banyuMall/
 2. **初始化数据库**
    ```bash
    # 执行数据库初始化脚本
-   mysql -u root -p < infra/database/data/unified-init-data.sql
+   mysql -u root -p < infra/database/data/user-init-data.sql
    ```
 
 3. **启动服务**
