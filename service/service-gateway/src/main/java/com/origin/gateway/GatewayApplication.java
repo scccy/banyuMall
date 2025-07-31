@@ -1,7 +1,5 @@
 package com.origin.gateway;
 
-import com.origin.config.WebMvcConfig;
-import com.origin.common.exception.GlobalExceptionHandler;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -13,11 +11,9 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  * @author origin
  */
 @SpringBootApplication(
-    scanBasePackages = {"com.origin"},
+    scanBasePackages = {"com.origin.gateway", "com.origin.common.util", "com.origin.config.Log4j2Config"},
     exclude = {
-        WebMvcAutoConfiguration.class,
-        WebMvcConfig.class,
-        GlobalExceptionHandler.class
+        WebMvcAutoConfiguration.class
     }
 )
 @EnableDiscoveryClient

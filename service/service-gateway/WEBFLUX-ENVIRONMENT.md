@@ -19,12 +19,20 @@ Check the configured web application type.
 The bean 'requestMappingHandlerMapping', defined in class path resource [org/springframework/boot/autoconfigure/web/servlet/WebMvcAutoConfiguration$EnableWebMvcConfiguration.class], could not be registered. A bean with that name has already been defined in class path resource [org/springframework/web/reactive/config/DelegatingWebFluxConfiguration.class] and overriding is disabled.
 ```
 
+### 3. 自动配置排除错误
+```
+context initialization - cancelling refresh attempt: java.lang.IllegalStateException: The following classes could not be excluded because they are not auto-configuration classes:
+	- com.origin.config.WebMvcConfig
+	- com.origin.common.exception.GlobalExceptionHandler
+```
+
 ## 原因分析
 
 1. **Web环境冲突**: Spring Cloud Gateway需要WebFlux环境，但service-base包含了传统的Servlet Web依赖
 2. **依赖冲突**: `spring-boot-starter-web`与`spring-cloud-starter-gateway`冲突
 3. **配置冲突**: WebMvc和WebFlux配置同时存在，导致Bean名称冲突
 4. **自动配置冲突**: Spring Boot同时检测到Servlet Web和WebFlux的自动配置
+5. **非自动配置类**: 尝试排除非自动配置类导致错误
 
 ## 解决方案
 
@@ -69,15 +77,13 @@ The bean 'requestMappingHandlerMapping', defined in class path resource [org/spr
 
 ### 2. 排除Servlet Web自动配置
 
-在GatewayApplication中排除所有Servlet Web相关的自动配置：
+在GatewayApplication中只排除真正的自动配置类：
 
 ```java
 @SpringBootApplication(
-    scanBasePackages = {"com.origin"},
+    scanBasePackages = {"com.origin.gateway", "com.origin.common.util", "com.origin.config.Log4j2Config"},
     exclude = {
-        WebMvcAutoConfiguration.class,
-        WebMvcConfig.class,
-        GlobalExceptionHandler.class
+        WebMvcAutoConfiguration.class
     }
 )
 @EnableDiscoveryClient
@@ -86,7 +92,32 @@ public class GatewayApplication {
 }
 ```
 
-### 3. 配置WebFlux环境
+### 3. 使用条件注解排除非自动配置类
+
+在service-base中使用条件注解来排除非自动配置类：
+
+#### WebMvcConfig.java
+```java
+@Configuration
+@RequiredArgsConstructor
+@ConditionalOnClass(WebMvcConfigurer.class)
+@ConditionalOnMissingClass("com.origin.gateway.GatewayApplication")
+public class WebMvcConfig implements WebMvcConfigurer {
+    // ...
+}
+```
+
+#### GlobalExceptionHandler.java
+```java
+@Slf4j
+@RestControllerAdvice
+@ConditionalOnMissingClass("com.origin.gateway.GatewayApplication")
+public class GlobalExceptionHandler {
+    // ...
+}
+```
+
+### 4. 配置WebFlux环境
 
 创建专门的WebFlux配置类：
 
@@ -116,7 +147,7 @@ public class GatewayWebConfig implements WebFluxConfigurer {
 }
 ```
 
-### 4. 创建WebFlux异常处理器
+### 5. 创建WebFlux异常处理器
 
 创建Gateway专用的WebFlux异常处理器：
 
@@ -187,8 +218,10 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler {
 
 ### Gateway服务需要排除的配置
 - `WebMvcAutoConfiguration` (Servlet Web自动配置)
-- `WebMvcConfig` (Servlet Web配置)
-- `GlobalExceptionHandler` (Servlet Web异常处理)
+
+### Gateway服务需要条件排除的配置
+- `WebMvcConfig` (Servlet Web配置) - 使用`@ConditionalOnMissingClass`
+- `GlobalExceptionHandler` (Servlet Web异常处理) - 使用`@ConditionalOnMissingClass`
 
 ## 配置验证
 
@@ -224,6 +257,7 @@ curl -X GET "http://localhost:8080/nonexistent"
 4. **性能优化**: WebFlux环境适合高并发场景
 5. **异常处理**: 使用WebFlux的异常处理机制
 6. **CORS配置**: 使用WebFlux的CORS配置方式
+7. **条件注解**: 使用条件注解而不是排除非自动配置类
 
 ## 相关文件
 
@@ -231,4 +265,6 @@ curl -X GET "http://localhost:8080/nonexistent"
 - `service/service-gateway/src/main/java/com/origin/gateway/config/GatewayWebConfig.java`
 - `service/service-gateway/src/main/java/com/origin/gateway/exception/GatewayExceptionHandler.java`
 - `service/service-gateway/src/main/java/com/origin/gateway/GatewayApplication.java`
-- `service/service-gateway/src/main/resources/dev/application.yml` 
+- `service/service-gateway/src/main/resources/dev/application.yml`
+- `service/service-base/src/main/java/com/origin/config/WebMvcConfig.java`
+- `service/service-base/src/main/java/com/origin/common/exception/GlobalExceptionHandler.java` 

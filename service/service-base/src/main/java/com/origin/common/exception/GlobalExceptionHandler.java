@@ -4,6 +4,7 @@ import com.origin.common.ResultData;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -12,17 +13,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-
 import java.util.stream.Collectors;
 
 /**
  * 全局异常处理器
+ * 排除Gateway服务，因为Gateway使用WebFlux异常处理
  *
  * @author origin
  * @since 2025-01-27
  */
 @Slf4j
 @RestControllerAdvice
+@ConditionalOnMissingClass("com.origin.gateway.GatewayApplication")
 public class GlobalExceptionHandler {
 
     /**

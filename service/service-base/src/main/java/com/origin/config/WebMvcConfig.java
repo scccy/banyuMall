@@ -5,6 +5,8 @@ import com.alibaba.fastjson2.JSONWriter;
 import com.alibaba.fastjson2.support.config.FastJsonConfig;
 import com.alibaba.fastjson2.support.spring6.http.converter.FastJsonHttpMessageConverter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -18,9 +20,12 @@ import java.util.List;
 /**
  * 基础WebMvc配置
  * 只包含通用的WebMvc配置，不包含业务相关的拦截器
+ * 排除Gateway服务，因为Gateway使用WebFlux
  */
 @Configuration
 @RequiredArgsConstructor
+@ConditionalOnClass(WebMvcConfigurer.class)
+@ConditionalOnMissingClass("com.origin.gateway.GatewayApplication")
 public class WebMvcConfig implements WebMvcConfigurer {
 
     //开启全局跨域
