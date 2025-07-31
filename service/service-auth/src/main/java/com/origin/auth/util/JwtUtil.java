@@ -1,11 +1,11 @@
 package com.origin.auth.util;
 
-import com.origin.auth.config.JwtConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -23,7 +23,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class JwtUtil {
 
-    private final JwtConfig jwtConfig;
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Value("${jwt.expiration}")
+    private Long expiration;
+
+    @Value("${jwt.refresh-expiration}")
+    private Long refreshExpiration;
 
     /**
      * 生成JWT令牌
@@ -101,49 +108,40 @@ public class JwtUtil {
             Claims claims = getClaimsFromToken(token);
             Date expiration = claims.getExpiration();
             Date now = new Date();
-            
             if (expiration.before(now)) {
-                return 0; // 已过期
+                return 0;
             }
-            
-            return (expiration.getTime() - now.getTime()) / 1000; // 转换为秒
+            return (expiration.getTime() - now.getTime()) / 1000;
         } catch (Exception e) {
             return 0;
         }
     }
 
     /**
-     * 从令牌中获取数据声明
+     * 从令牌中获取声明
      *
      * @param token 令牌
-     * @return 数据声明
+     * @return 声明
      */
     private Claims getClaimsFromToken(String token) {
-        // 去除令牌前缀
-        if (token.startsWith(jwtConfig.getTokenPrefix())) {
-            token = token.substring(jwtConfig.getTokenPrefix().length()).trim();
-        }
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
                 .build()
-                .parseSignedClaims(token)
-                .getPayload();
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     /**
      * 创建令牌
      *
-     * @param claims 数据声明
+     * @param claims 声明
      * @return 令牌
      */
     private String createToken(Map<String, Object> claims) {
-        Date now = new Date();
-        Date expirationDate = new Date(now.getTime() + jwtConfig.getExpiration());
-
-        return jwtConfig.getTokenPrefix() + " " + Jwts.builder()
+        return Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(expirationDate)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -151,17 +149,14 @@ public class JwtUtil {
     /**
      * 创建刷新令牌
      *
-     * @param claims 数据声明
+     * @param claims 声明
      * @return 刷新令牌
      */
     private String createRefreshToken(Map<String, Object> claims) {
-        Date now = new Date();
-        Date expirationDate = new Date(now.getTime() + jwtConfig.getRefreshExpiration());
-
-        return jwtConfig.getTokenPrefix() + " " + Jwts.builder()
+        return Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(expirationDate)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -172,7 +167,6 @@ public class JwtUtil {
      * @return 签名密钥
      */
     private SecretKey getSigningKey() {
-        byte[] keyBytes = jwtConfig.getSecret().getBytes();
-        return Keys.hmacShaKeyFor(keyBytes);
+        return Keys.hmacShaKeyFor(secret.getBytes());
     }
 } 

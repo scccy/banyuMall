@@ -64,7 +64,7 @@ public class AuthControllerTest {
         // 验证结果
         assertNotNull(result);
         assertEquals(200, result.getCode());
-        assertEquals("登录成功", result.getMsg());
+        assertEquals("登录成功", result.getMessage());
         assertNotNull(result.getData());
         LoginResponse responseData = (LoginResponse) result.getData();
         assertEquals(1L, responseData.getUserId());
@@ -86,6 +86,6 @@ public class AuthControllerTest {
         // 验证结果
         assertNotNull(result);
         assertEquals(200, result.getCode());
-        assertEquals("登出成功", result.getMsg());
+        assertEquals("登出成功", result.getMessage());
     }
 }

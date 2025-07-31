@@ -24,7 +24,7 @@ public class JwtInterceptor implements HandlerInterceptor {
     private final JwtUtil jwtUtil;
     private final TokenBlacklistUtil tokenBlacklistUtil;
 
-    @Value("${jwt.header}")
+    @Value("${jwt.header:Authorization}")
     private String tokenHeader;
 
     @Override

@@ -29,11 +29,11 @@ spring:
     nacos:
       # 服务发现配置
       discovery:
-        server-addr: ${NACOS_SERVER_ADDR:117.50.197.170:8848}
-        username: ${NACOS_USERNAME:nacos}
-        password: ${NACOS_PASSWORD:olN2y)]VzEISLITO#_}L0J^$>Nk)1S~W}
-        namespace: ${NACOS_NAMESPACE:ba1493dc-20fa-413b-84e1-d929c9a4aeac}
-        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        server-addr: 117.50.197.170:8848
+        username: nacos
+        password: olN2y)]VzEISLITO#_}L0J^$>Nk)1S~W
+        namespace: ba1493dc-20fa-413b-84e1-d929c9a4aeac
+        group: DEFAULT_GROUP
         # 注册配置
         register-enabled: true
         # 心跳间隔
@@ -45,11 +45,11 @@ spring:
       
       # 配置中心配置
       config:
-        server-addr: ${NACOS_SERVER_ADDR:117.50.197.170:8848}
-        username: ${NACOS_USERNAME:nacos}
-        password: ${NACOS_PASSWORD:olN2y)]VzEISLITO#_}L0J^$>Nk)1S~W}
-        namespace: ${NACOS_NAMESPACE:ba1493dc-20fa-413b-84e1-d929c9a4aeac}
-        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        server-addr: 117.50.197.170:8848
+        username: nacos
+        password: olN2y)]VzEISLITO#_}L0J^$>Nk)1S~W
+        namespace: ba1493dc-20fa-413b-84e1-d929c9a4aeac
+        group: DEFAULT_GROUP
         file-extension: yaml
         # 配置刷新
         refresh-enabled: true

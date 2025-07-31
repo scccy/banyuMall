@@ -44,7 +44,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Value("${jwt.expiration}")
     private Long jwtExpiration;
     
-    @Value("${jwt.tokenPrefix}")
+    @Value("${jwt.token-prefix}")
     private String tokenPrefix;
     
     @Override

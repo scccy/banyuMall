@@ -16,7 +16,7 @@ public class ResultDataTest {
     public void testOk() {
         ResultData result = ResultData.ok();
         assertEquals(200, result.getCode());
-        assertEquals("SUCCESS", result.getMsg());
+        assertEquals("SUCCESS", result.getMessage());
         assertNull(result.getData());
     }
 
@@ -25,7 +25,7 @@ public class ResultDataTest {
         String message = "操作成功";
         ResultData result = ResultData.ok(message);
         assertEquals(200, result.getCode());
-        assertEquals(message, result.getMsg());
+        assertEquals(message, result.getMessage());
         assertNull(result.getData());
     }
 
@@ -35,7 +35,7 @@ public class ResultDataTest {
         String data = "test data";
         ResultData<String> result = ResultData.ok(message, data);
         assertEquals(200, result.getCode());
-        assertEquals(message, result.getMsg());
+        assertEquals(message, result.getMessage());
         assertEquals(data, result.getData());
     }
 
@@ -43,7 +43,7 @@ public class ResultDataTest {
     public void testFail() {
         ResultData result = ResultData.fail();
         assertEquals(500, result.getCode());
-        assertEquals("FAIL", result.getMsg());
+        assertEquals("FAIL", result.getMessage());
         assertNull(result.getData());
     }
 
@@ -52,7 +52,7 @@ public class ResultDataTest {
         String message = "操作失败";
         ResultData result = ResultData.fail(message);
         assertEquals(500, result.getCode());
-        assertEquals(message, result.getMsg());
+        assertEquals(message, result.getMessage());
         assertNull(result.getData());
     }
 
@@ -62,7 +62,7 @@ public class ResultDataTest {
         String message = "参数错误";
         ResultData result = ResultData.fail(code, message);
         assertEquals(code, result.getCode());
-        assertEquals(message, result.getMsg());
+        assertEquals(message, result.getMessage());
         assertNull(result.getData());
     }
 
@@ -70,7 +70,7 @@ public class ResultDataTest {
     public void testFailWithErrorCode() {
         ResultData result = ResultData.fail(ErrorCode.PARAM_ERROR);
         assertEquals(ErrorCode.PARAM_ERROR.getCode(), result.getCode());
-        assertEquals(ErrorCode.PARAM_ERROR.getMessage(), result.getMsg());
+        assertEquals(ErrorCode.PARAM_ERROR.getMessage(), result.getMessage());
         assertNull(result.getData());
     }
 
@@ -79,7 +79,7 @@ public class ResultDataTest {
         String customMessage = "自定义错误消息";
         ResultData result = ResultData.fail(ErrorCode.PARAM_ERROR, customMessage);
         assertEquals(ErrorCode.PARAM_ERROR.getCode(), result.getCode());
-        assertEquals(customMessage, result.getMsg());
+        assertEquals(customMessage, result.getMessage());
         assertNull(result.getData());
     }
 
@@ -89,7 +89,7 @@ public class ResultDataTest {
         String data = "error data";
         ResultData<String> result = ResultData.fail(ErrorCode.PARAM_ERROR, customMessage, data);
         assertEquals(ErrorCode.PARAM_ERROR.getCode(), result.getCode());
-        assertEquals(customMessage, result.getMsg());
+        assertEquals(customMessage, result.getMessage());
         assertEquals(data, result.getData());
     }
 
@@ -97,11 +97,11 @@ public class ResultDataTest {
     public void testChainCall() {
         ResultData<String> result = new ResultData<String>()
                 .setCode(200)
-                .setMsg("链式调用")
+                .setMessage("链式调用")
                 .setData("test");
         
         assertEquals(200, result.getCode());
-        assertEquals("链式调用", result.getMsg());
+        assertEquals("链式调用", result.getMessage());
         assertEquals("test", result.getData());
     }
 
@@ -140,14 +140,14 @@ public class ResultDataTest {
     public void testGetMessageOrDefault() {
         ResultData<String> result = new ResultData<>();
         result.setCode(200);
-        result.setMsg("自定义消息");
+        result.setMessage("自定义消息");
         
         assertEquals("自定义消息", result.getMessageOrDefault("默认消息"));
         
-        result.setMsg(null);
+        result.setMessage(null);
         assertEquals("默认消息", result.getMessageOrDefault("默认消息"));
         
-        result.setMsg("");
+        result.setMessage("");
         assertEquals("默认消息", result.getMessageOrDefault("默认消息"));
     }
 
