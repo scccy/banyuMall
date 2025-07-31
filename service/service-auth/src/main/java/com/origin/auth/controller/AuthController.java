@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final SysUserService sysUserService;
@@ -32,11 +34,21 @@ public class AuthController {
      * 用户登录
      *
      * @param loginRequest 登录请求参数
+     * @param request HTTP请求
      * @return 登录结果
      */
     @Operation(summary = "用户登录", description = "处理用户登录请求，返回用户信息和JWT令牌")
     @PostMapping("/login")
-    public ResultData<LoginResponse> login(@RequestBody @Validated LoginRequest loginRequest) {
+    public ResultData<LoginResponse> login(@RequestBody @Validated LoginRequest loginRequest, 
+                                         HttpServletRequest request) {
+        // 从请求头中获取链路追踪信息
+        String requestId = request.getHeader("X-Request-ID");
+        String clientIp = request.getHeader("X-Client-IP");
+        String userAgent = request.getHeader("X-User-Agent");
+        
+        log.info("Auth Login - RequestId: {}, ClientIP: {}, UserAgent: {}, Username: {}", 
+                requestId, clientIp, userAgent, loginRequest.getUsername());
+        
         LoginResponse loginResponse = sysUserService.login(loginRequest);
         return ResultData.ok("登录成功", loginResponse);
     }

@@ -125,6 +125,8 @@ logging:
     # 禁用Log4j2包扫描警告
     org.apache.logging.log4j.status: ERROR
     org.apache.logging.log4j.core.config: ERROR
+    # 禁用Netty DNS解析器警告
+    io.netty.resolver.dns: WARN
     root: info
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

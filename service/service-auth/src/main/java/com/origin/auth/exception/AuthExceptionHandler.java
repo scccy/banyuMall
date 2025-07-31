@@ -2,6 +2,7 @@ package com.origin.auth.exception;
 
 import com.origin.common.dto.ResultData;
 import com.origin.common.entity.ErrorCode;
+import com.origin.common.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -32,6 +33,35 @@ public class AuthExceptionHandler {
     public ResultData<Object> handleAuthenticationException(Exception e) {
         log.error("认证异常: {}", e.getMessage());
         return ResultData.fail(ErrorCode.UNAUTHORIZED, "认证失败: " + e.getMessage());
+    }
+
+    /**
+     * 处理业务异常
+     * 
+     * @param e 业务异常
+     * @return 错误响应
+     */
+    @ExceptionHandler(BusinessException.class)
+    public ResultData<Object> handleBusinessException(BusinessException e) {
+        log.error("业务异常: {}", e.getMessage());
+        
+        // 根据错误码设置合适的HTTP状态码
+        HttpStatus status;
+        switch (e.getErrorCode()) {
+            case UNAUTHORIZED:
+                status = HttpStatus.UNAUTHORIZED;
+                break;
+            case FORBIDDEN:
+                status = HttpStatus.FORBIDDEN;
+                break;
+            case PARAM_ERROR:
+                status = HttpStatus.BAD_REQUEST;
+                break;
+            default:
+                status = HttpStatus.BAD_REQUEST;
+        }
+        
+        return ResultData.fail(e.getErrorCode(), e.getMessage());
     }
 
     /**

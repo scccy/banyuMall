@@ -39,7 +39,7 @@ public class SecurityConfig {
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12); // 使用 BCrypt，强度为12
+        return new BCryptPasswordEncoder(10); // 使用 BCrypt，强度为10，与数据库中的密码保持一致
     }
 
     /**
@@ -71,7 +71,7 @@ public class SecurityConfig {
                 // 允许登录、登出、验证码等接口无需认证
                 .requestMatchers("/auth/login", "/auth/logout", "/auth/captcha").permitAll()
                 // 允许测试接口无需认证
-                .requestMatchers("/auth/test", "/auth/").permitAll()
+                .requestMatchers("/test/**", "/jwt-test/**", "/password-test/**", "/").permitAll()
                 // 允许 Swagger 相关接口
                 .requestMatchers("/doc.html", "/webjars/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                 // 其他所有请求需要认证

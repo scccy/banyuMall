@@ -13,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -59,7 +60,7 @@ public class AuthControllerTest {
         when(sysUserService.login(any(LoginRequest.class))).thenReturn(loginResponse);
 
         // 调用控制器方法
-        ResultData result = authController.login(loginRequest);
+        ResultData<LoginResponse> result = authController.login(loginRequest, request);
 
         // 验证结果
         assertNotNull(result);
@@ -67,7 +68,7 @@ public class AuthControllerTest {
         assertEquals("登录成功", result.getMessage());
         assertNotNull(result.getData());
         LoginResponse responseData = (LoginResponse) result.getData();
-        assertEquals(1L, responseData.getUserId());
+        assertEquals("1", responseData.getUserId());
         assertEquals("admin", responseData.getUsername());
         assertEquals("系统管理员", responseData.getNickname());
         assertEquals("Bearer eyJhbGciOiJIUzI1NiJ9...", responseData.getToken());
@@ -81,11 +82,52 @@ public class AuthControllerTest {
         when(request.getHeader("Authorization")).thenReturn("Bearer test-token");
         
         // 调用控制器方法
-        ResultData result = authController.logout(request);
+        ResultData<String> result = authController.logout(request);
 
         // 验证结果
         assertNotNull(result);
         assertEquals(200, result.getCode());
         assertEquals("登出成功", result.getMessage());
+    }
+
+    @Test
+    public void testLoginWithRolesAndPermissions() {
+        // 准备测试数据
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setUsername("admin");
+        loginRequest.setPassword("123456");
+
+        List<String> roles = Arrays.asList("ADMIN", "USER");
+        List<String> permissions = Arrays.asList("user:read", "user:write", "system:manage");
+
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setUserId("1");
+        loginResponse.setUsername("admin");
+        loginResponse.setNickname("系统管理员");
+        loginResponse.setRoles(roles);
+        loginResponse.setPermissions(permissions);
+        loginResponse.setToken("Bearer eyJhbGciOiJIUzI1NiJ9...");
+        loginResponse.setTokenType("Bearer");
+        loginResponse.setExpiresIn(3600L);
+
+        // 模拟服务层方法
+        when(sysUserService.login(any(LoginRequest.class))).thenReturn(loginResponse);
+
+        // 调用控制器方法
+        ResultData<LoginResponse> result = authController.login(loginRequest, request);
+
+        // 验证结果
+        assertNotNull(result);
+        assertEquals(200, result.getCode());
+        assertEquals("登录成功", result.getMessage());
+        assertNotNull(result.getData());
+        
+        LoginResponse responseData = (LoginResponse) result.getData();
+        assertEquals("1", responseData.getUserId());
+        assertEquals("admin", responseData.getUsername());
+        assertEquals(roles, responseData.getRoles());
+        assertEquals(permissions, responseData.getPermissions());
+        assertEquals("Bearer", responseData.getTokenType());
+        assertEquals(3600L, responseData.getExpiresIn());
     }
 }

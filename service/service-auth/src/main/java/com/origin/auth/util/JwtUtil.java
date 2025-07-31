@@ -1,25 +1,31 @@
 package com.origin.auth.util;
 
+import com.alibaba.fastjson2.JSON;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * JWT工具类，用于生成和验证JWT令牌
+ * 优化版本 - 支持FastJSON2和角色权限
  * 
  * @author origin
  * @since 2025-01-27
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtUtil {
 
     @Value("${jwt.secret}")
@@ -39,9 +45,31 @@ public class JwtUtil {
      * @return JWT令牌
      */
     public String generateToken(String userId, String username) {
+        return generateToken(userId, username, null, null);
+    }
+
+    /**
+     * 生成JWT令牌（带角色和权限）
+     *
+     * @param userId 用户ID
+     * @param username 用户名
+     * @param roles 角色列表
+     * @param permissions 权限列表
+     * @return JWT令牌
+     */
+    public String generateToken(String userId, String username, List<String> roles, List<String> permissions) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("username", username);
+        
+        if (roles != null && !roles.isEmpty()) {
+            claims.put("roles", JSON.toJSONString(roles));
+        }
+        
+        if (permissions != null && !permissions.isEmpty()) {
+            claims.put("permissions", JSON.toJSONString(permissions));
+        }
+        
         return createToken(claims);
     }
 
@@ -65,8 +93,13 @@ public class JwtUtil {
      * @return 用户ID
      */
     public String getUserIdFromToken(String token) {
-        Claims claims = getClaimsFromToken(token);
-        return claims.get("userId", String.class);
+        try {
+            Claims claims = getClaimsFromToken(token);
+            return claims.get("userId", String.class);
+        } catch (Exception e) {
+            log.error("从JWT令牌获取用户ID失败: {}", e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -76,8 +109,53 @@ public class JwtUtil {
      * @return 用户名
      */
     public String getUsernameFromToken(String token) {
-        Claims claims = getClaimsFromToken(token);
-        return claims.get("username", String.class);
+        try {
+            Claims claims = getClaimsFromToken(token);
+            return claims.get("username", String.class);
+        } catch (Exception e) {
+            log.error("从JWT令牌获取用户名失败: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 从令牌中获取角色列表
+     *
+     * @param token 令牌
+     * @return 角色列表
+     */
+    public List<String> getRolesFromToken(String token) {
+        try {
+            Claims claims = getClaimsFromToken(token);
+            String rolesJson = claims.get("roles", String.class);
+            if (rolesJson != null) {
+                return JSON.parseArray(rolesJson, String.class);
+            }
+            return null;
+        } catch (Exception e) {
+            log.error("从JWT令牌获取角色失败: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 从令牌中获取权限列表
+     *
+     * @param token 令牌
+     * @return 权限列表
+     */
+    public List<String> getPermissionsFromToken(String token) {
+        try {
+            Claims claims = getClaimsFromToken(token);
+            String permissionsJson = claims.get("permissions", String.class);
+            if (permissionsJson != null) {
+                return JSON.parseArray(permissionsJson, String.class);
+            }
+            return null;
+        } catch (Exception e) {
+            log.error("从JWT令牌获取权限失败: {}", e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -90,8 +168,11 @@ public class JwtUtil {
         try {
             Claims claims = getClaimsFromToken(token);
             Date expiration = claims.getExpiration();
-            return !expiration.before(new Date());
+            boolean isValid = !expiration.before(new Date());
+            log.debug("JWT令牌验证结果: {}, 过期时间: {}", isValid, expiration);
+            return isValid;
         } catch (Exception e) {
+            log.error("JWT令牌验证失败: {}", e.getMessage());
             return false;
         }
     }
@@ -166,6 +247,6 @@ public class JwtUtil {
      * @return 签名密钥
      */
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 } 

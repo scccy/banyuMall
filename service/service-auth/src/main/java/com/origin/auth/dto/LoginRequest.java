@@ -14,33 +14,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class LoginRequest {
     
-    // ==================== 请求追踪字段 ====================
-    
-    /**
-     * 请求ID，用于链路追踪
-     */
-    private String requestId;
-    
-    /**
-     * 用户ID
-     */
-    private Long userId;
-    
-    /**
-     * 客户端IP
-     */
-    private String clientIp;
-    
-    /**
-     * 用户代理
-     */
-    private String userAgent;
-    
-    /**
-     * 请求时间戳
-     */
-    private Long timestamp = System.currentTimeMillis();
-    
     // ==================== 登录业务字段 ====================
     
     /**
@@ -68,5 +41,5 @@ public class LoginRequest {
     /**
      * 记住我
      */
-    private Boolean rememberMe = false;
+    private Boolean rememberMe = true;
 }

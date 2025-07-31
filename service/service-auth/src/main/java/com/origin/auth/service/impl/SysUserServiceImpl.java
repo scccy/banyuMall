@@ -24,6 +24,7 @@ import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
+
 /**
  * 系统用户服务实现类
  * 
@@ -52,37 +53,35 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 根据用户名查询用户
         SysUser user = getByUsername(loginRequest.getUsername());
         if (user == null) {
-            throw new BusinessException(ErrorCode.PARAM_ERROR, "用户名或密码错误");
+            throw new BusinessException(ErrorCode.UNAUTHORIZED, "用户名或密码错误");
         }
-        
+
         // 校验密码
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new BusinessException(ErrorCode.PARAM_ERROR, "用户名或密码错误");
+            throw new BusinessException(ErrorCode.UNAUTHORIZED, "用户名或密码错误");
         }
-        
+
         // 校验用户状态
         if (user.getStatus() != 1) {
-            throw new BusinessException(ErrorCode.FORBIDDEN, "账号已被禁用");  
+            throw new BusinessException(ErrorCode.FORBIDDEN, "账号已被禁用");
         }
-        
+
         // 更新最后登录时间
         user.setLastLoginTime(LocalDateTime.now());
         updateById(user);
-        
 
-        
-        // 生成JWT令牌
-        String token = jwtUtil.generateToken(user.getId(), user.getUsername());
-        
-        // 将 token 标记为有效并存储到 Redis
-        tokenBlacklistUtil.markAsValid(token, jwtExpiration / 1000);
-        
         // 查询用户角色
         List<String> roles = sysRoleService.getRoleCodesByUserId(user.getId());
-        
+
         // 查询用户权限
         List<String> permissions = sysPermissionService.getPermissionCodesByUserId(user.getId());
-        
+
+        // 生成JWT令牌（包含角色和权限）
+        String token = jwtUtil.generateToken(user.getId(), user.getUsername(), roles, permissions);
+
+        // 将 token 标记为有效并存储到 Redis
+        tokenBlacklistUtil.markAsValid(token, jwtExpiration / 1000);
+
         // 构建登录响应
         return new LoginResponse()
                 .setUserId(user.getId())
