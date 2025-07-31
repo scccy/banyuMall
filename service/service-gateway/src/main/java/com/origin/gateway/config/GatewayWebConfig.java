@@ -2,12 +2,17 @@ package com.origin.gateway.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 
 /**
  * Gateway WebFlux配置类
- * 确保Gateway服务使用正确的WebFlux环境
+ * 确保Gateway服务使用响应式Web环境而不是传统的Servlet环境
  * 
  * @author origin
  */
@@ -16,13 +21,27 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 public class GatewayWebConfig implements WebFluxConfigurer {
     
     /**
-     * 配置WebFlux环境
-     * 确保Gateway服务使用响应式Web环境而不是传统的Servlet环境
+     * 配置消息编解码器
+     */
+    @Override
+    public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
+        configurer.defaultCodecs().maxInMemorySize(1024 * 1024); // 1MB
+    }
+    
+    /**
+     * 配置CORS跨域
      */
     @Bean
-    public WebFluxConfigurer webFluxConfigurer() {
-        return new WebFluxConfigurer() {
-            // 可以在这里添加自定义的WebFlux配置
-        };
+    public CorsWebFilter corsWebFilter() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOriginPattern("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        config.setAllowCredentials(true);
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        
+        return new CorsWebFilter(source);
     }
 } 
