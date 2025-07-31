@@ -81,6 +81,58 @@ public class TokenBlacklistUtil {
     }
 
     /**
+     * 更新用户token（推荐方案 - 基于用户ID管理）
+     *
+     * @param userId 用户ID
+     * @param token JWT token
+     * @param expirationTime 过期时间（秒）
+     */
+    public void updateUserToken(String userId, String token, long expirationTime) {
+        if (!enableBlacklist) {
+            log.debug("Token黑名单功能已禁用");
+            return;
+        }
+        
+        String key = validTokenPrefix + "user:" + userId;
+        // 直接覆盖旧token，避免重复存储
+        redisTemplate.opsForValue().set(key, token, expirationTime, TimeUnit.SECONDS);
+        log.debug("用户 {} 的token已更新", userId);
+    }
+
+    /**
+     * 检查用户token是否有效
+     *
+     * @param userId 用户ID
+     * @param token JWT token
+     * @return true 如果有效，false 否则
+     */
+    public boolean isUserTokenValid(String userId, String token) {
+        if (!enableBlacklist) {
+            return true;
+        }
+        
+        String key = validTokenPrefix + "user:" + userId;
+        String storedToken = redisTemplate.opsForValue().get(key);
+        return token.equals(storedToken);
+    }
+
+    /**
+     * 移除用户token（用于登出时）
+     *
+     * @param userId 用户ID
+     */
+    public void removeUserToken(String userId) {
+        if (!enableBlacklist) {
+            log.debug("Token黑名单功能已禁用");
+            return;
+        }
+        
+        String key = validTokenPrefix + "user:" + userId;
+        redisTemplate.delete(key);
+        log.debug("用户 {} 的token已移除", userId);
+    }
+
+    /**
      * 检查 token 是否有效
      *
      * @param token JWT token

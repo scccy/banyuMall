@@ -97,6 +97,10 @@ jwt:
   blacklist-prefix: ${JWT_BLACKLIST_PREFIX:token:blacklist:}
   # Redis有效令牌前缀
   valid-token-prefix: ${JWT_VALID_TOKEN_PREFIX:token:valid:}
+  # 每个用户最大会话数量
+  max-sessions-per-user: ${JWT_MAX_SESSIONS_PER_USER:1}
+  # 是否启用多会话模式
+  enable-multi-session: ${JWT_ENABLE_MULTI_SESSION:false}
 
 # 安全配置
 security:

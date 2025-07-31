@@ -97,8 +97,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 生成JWT令牌（包含角色和权限）
         String token = jwtUtil.generateToken(user.getId(), user.getUsername(), roles, permissions);
 
-        // 将 token 标记为有效并存储到 Redis
-        tokenBlacklistUtil.markAsValid(token, jwtExpiration / 1000);
+        // 更新用户token到Redis（避免重复存储）
+        tokenBlacklistUtil.updateUserToken(user.getId(), token, jwtExpiration / 1000);
 
         // 构建登录响应
         return new LoginResponse()

@@ -62,28 +62,102 @@ public class AuthController {
     @Operation(summary = "用户登出", description = "处理用户登出请求，清除用户会话信息")
     @PostMapping("/logout")
     public ResultData<String> logout(HttpServletRequest request) {
+        // 从请求头中获取链路追踪信息
+        String requestId = request.getHeader("X-Request-ID");
+        String clientIp = request.getHeader("X-Client-IP");
+        String userAgent = request.getHeader("X-User-Agent");
+        
         // 从请求头中获取token
         String token = request.getHeader("Authorization");
         
-        if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
-            token = token.substring(7);
-            
-            // 将token加入黑名单
-            try {
-                // 获取token的剩余过期时间
-                long expirationTime = jwtUtil.getExpirationTime(token);
-                if (expirationTime > 0) {
-                    tokenBlacklistUtil.addToBlacklist(token, expirationTime);
-                }
-            } catch (Exception e) {
-                // 如果无法解析token，设置一个默认的过期时间（1小时）
-                tokenBlacklistUtil.addToBlacklist(token, 3600);
-            }
-            
-            // 从有效token列表中移除
-            tokenBlacklistUtil.removeFromValid(token);
+        if (!StringUtils.hasText(token) || !token.startsWith("Bearer ")) {
+            log.warn("登出失败 - 缺少有效的Authorization头");
+            return ResultData.fail("登出失败：缺少有效的token");
         }
         
-        return ResultData.ok("登出成功");
+        token = token.substring(7);
+        
+        try {
+            // 从token中提取用户信息
+            String userId = jwtUtil.getUserIdFromToken(token);
+            String username = jwtUtil.getUsernameFromToken(token);
+            
+            if (userId == null || username == null) {
+                log.warn("登出失败 - Token中缺少用户信息");
+                return ResultData.fail("登出失败：无效的token");
+            }
+            
+            // 记录登出日志
+            log.info("用户登出 - 用户ID: {}, 用户名: {}, 客户端IP: {}, 用户代理: {}, 请求ID: {}", 
+                    userId, username, clientIp, userAgent, requestId);
+            
+            // 使用新的基于用户ID的token管理
+            tokenBlacklistUtil.removeUserToken(userId);
+            
+            // 将token加入黑名单
+            long expirationTime = jwtUtil.getExpirationTime(token);
+            if (expirationTime > 0) {
+                tokenBlacklistUtil.addToBlacklist(token, expirationTime);
+            }
+            
+            return ResultData.ok("登出成功");
+            
+        } catch (Exception e) {
+            log.error("登出失败 - Token解析错误: {}", e.getMessage());
+            return ResultData.fail("登出失败：无效的token");
+        }
+    }
+
+    /**
+     * 认证服务健康检查
+     *
+     * @param request HTTP请求
+     * @return 健康检查结果
+     */
+    @Operation(summary = "认证服务健康检查", description = "用于验证认证服务是否正常运行的接口")
+    @GetMapping("/test")
+    public ResultData<String> test(HttpServletRequest request) {
+        // 从请求头中获取链路追踪信息
+        String requestId = request.getHeader("X-Request-ID");
+        String clientIp = request.getHeader("X-Client-IP");
+        String userAgent = request.getHeader("X-User-Agent");
+        
+        log.info("Auth Test - RequestId: {}, ClientIP: {}, UserAgent: {}", 
+                requestId, clientIp, userAgent);
+        
+        return ResultData.ok("Auth Service is running!");
+    }
+
+    /**
+     * 强制登出用户（管理员功能）
+     *
+     * @param userId 用户ID
+     * @param request HTTP请求
+     * @return 强制登出结果
+     */
+    @Operation(summary = "强制登出用户", description = "管理员强制登出指定用户")
+    @PostMapping("/logout/force/{userId}")
+    public ResultData<String> forceLogout(@PathVariable String userId, HttpServletRequest request) {
+        // 从请求头中获取链路追踪信息
+        String requestId = request.getHeader("X-Request-ID");
+        String clientIp = request.getHeader("X-Client-IP");
+        String userAgent = request.getHeader("X-User-Agent");
+        
+        // TODO: 添加管理员权限验证
+        // @PreAuthorize("hasRole('ADMIN')")
+        
+        try {
+            // 强制移除用户token
+            tokenBlacklistUtil.removeUserToken(userId);
+            
+            log.info("管理员强制登出用户 - 用户ID: {}, 操作者IP: {}, 请求ID: {}", 
+                    userId, clientIp, requestId);
+            
+            return ResultData.ok("强制登出成功");
+            
+        } catch (Exception e) {
+            log.error("强制登出失败 - 用户ID: {}, 错误: {}", userId, e.getMessage());
+            return ResultData.fail("强制登出失败：" + e.getMessage());
+        }
     }
 }

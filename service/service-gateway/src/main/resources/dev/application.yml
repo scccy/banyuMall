@@ -82,22 +82,7 @@ spring:
   jmx:
     enabled: false  # 开发环境关闭JMX
 
-  # Redis配置 - 用于限流器（响应式）- 暂时注释掉
-  # data:
-  #   redis:
-  #     host: localhost
-  #     port: 6379
-  #     database: 0
-  #     timeout: 3000ms
-  #     lettuce:
-  #       pool:
-  #         max-active: 8
-  #         max-idle: 8
-  #         min-idle: 0
-  #         max-wait: -1ms
-  #     # 响应式Redis配置
-  #     reactive:
-  #       timeout: 3000ms
+  # Redis配置 - 已移除，使用Nacos远程配置管理
 
 # 管理端点配置
 management:
@@ -114,6 +99,9 @@ management:
       enabled: true
     git:
       mode: full
+
+# 网关配置 - 路由配置通过Nacos远程配置管理
+# 本地不配置路由，避免与Nacos配置冲突
 
 # 日志配置（开发环境详细日志）
 logging:
