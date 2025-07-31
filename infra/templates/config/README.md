@@ -1,280 +1,188 @@
-# 微服务配置文件管理
+# 配置文件管理说明
 
 ## 概述
 
-本目录包含BanyuMall项目的微服务配置文件模板和管理工具，支持配置分层管理：
-- **公有配置**: 在Nacos中统一管理，包含数据库、Redis、JWT等敏感信息
-- **个性配置**: 各微服务在本地配置文件中管理，包含服务特定配置
-- **环境配置**: 通过Nacos命名空间和环境变量区分不同环境
+本文档说明半语积分商城项目的配置文件管理策略，包括本地配置和云端Nacos配置的分离管理。
 
-## 目录结构
+## 配置架构
 
-```
-infra/templates/config/
-├── application.yml.template              # 主配置文件模板
-├── application-dev.yml.template          # 开发环境配置模板
-├── application-test.yml.template         # 测试环境配置模板
-├── application-prod.yml.template         # 生产环境配置模板
-├── application-docker.yml.template       # Docker环境配置模板
-├── nacos-config-template.yml             # 公有配置模板（所有微服务共享）
-├── nacos-config-template-auth.yml        # 认证服务公有配置模板
-├── nacos-config-template-user.yml        # 用户服务公有配置模板
-├── nacos-config-template-gateway.yml     # 网关服务公有配置模板
-├── create-service-config.sh              # 配置文件生成脚本
-└── README.md                             # 本文件
-```
+### 1. 本地配置文件
+- **application.yml**: 主配置文件，包含基础配置和Nacos连接配置
+- **application-dev.yml**: 开发环境配置，包含本地开发所需的所有配置
+- **application-prod.yml**: 生产环境配置，包含生产环境特定的配置
 
-## 快速开始
+### 2. 云端Nacos配置
+- **service-auth.yaml**: auth服务的云端配置，包含业务配置和敏感信息
 
-### 1. 生成服务配置文件
+## 配置分离策略
 
-```bash
-# 为现有服务生成配置文件
-./infra/templates/config/create-service-config.sh service-auth
-./infra/templates/config/create-service-config.sh service-user
-./infra/templates/config/create-service-config.sh service-gateway
-
-# 为新服务生成配置文件
-./infra/templates/config/create-service-config.sh service-task
-```
-
-### 2. 配置分层结构
-
-#### 公有配置（Nacos管理）
-```
-Nacos配置中心
-├── 命名空间: dev/test/prod
-│   ├── service-auth.yaml        # 认证服务公有配置
-│   ├── service-user.yaml        # 用户服务公有配置
-│   └── service-gateway.yaml     # 网关服务公有配置
-```
-
-#### 个性配置（本地管理）
-```
-service/service-xxx/src/main/resources/
-├── application.yml              # 主配置文件
-├── application-dev.yml          # 开发环境个性配置
-├── application-test.yml         # 测试环境个性配置
-├── application-prod.yml         # 生产环境个性配置
-└── application-docker.yml       # Docker环境个性配置
-```
-
-## 环境配置说明
-
-### 开发环境 (dev)
-- **Nacos地址**: localhost:8848
-- **命名空间**: dev
-- **数据库**: 本地MySQL
-- **Redis**: 本地Redis
-- **特性**: 自动数据库初始化、调试模式、SQL日志
-
-### 测试环境 (test)
-- **Nacos地址**: test-nacos:8848
-- **命名空间**: test
-- **数据库**: 测试环境MySQL
-- **Redis**: 测试环境Redis
-- **特性**: 禁用数据库初始化、生产级别配置
-
-### 生产环境 (prod)
-- **Nacos地址**: prod-nacos:8848
-- **命名空间**: prod
-- **数据库**: 生产环境MySQL
-- **Redis**: 生产环境Redis
-- **特性**: 高可用配置、安全加固、性能优化
-
-### Docker环境 (docker)
-- **Nacos地址**: nacos:8848
-- **命名空间**: public
-- **数据库**: mysql:3306
-- **Redis**: redis:6379
-- **特性**: 容器化部署配置
-
-## 配置分层管理
-
-### 公有配置（Nacos管理）
-```
-Nacos配置中心
-├── 命名空间: dev
-│   ├── service-auth.yaml        # 认证服务公有配置
-│   ├── service-user.yaml        # 用户服务公有配置
-│   └── service-gateway.yaml     # 网关服务公有配置
-├── 命名空间: test
-│   ├── service-auth.yaml        # 认证服务公有配置
-│   ├── service-user.yaml        # 用户服务公有配置
-│   └── service-gateway.yaml     # 网关服务公有配置
-└── 命名空间: prod
-    ├── service-auth.yaml        # 认证服务公有配置
-    ├── service-user.yaml        # 用户服务公有配置
-    └── service-gateway.yaml     # 网关服务公有配置
-```
-
-### 公有配置内容
-在Nacos中配置以下公有信息：
+### 本地配置（application.yml）
 ```yaml
-# 数据库配置
-datasource:
-  url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}
-  username: ${MYSQL_USERNAME}
-  password: ${MYSQL_PASSWORD}
+# 只包含基础配置
+server:
+  port: 8081
+  servlet:
+    context-path: /auth
 
-# Redis配置
 spring:
-  redis:
-    host: ${REDIS_HOST}
-    password: ${REDIS_PASSWORD}
-
-# JWT配置
-banyumall:
-  security:
-    jwt:
-      secret: ${JWT_SECRET}
-      expiration: ${JWT_EXPIRATION:86400}
-
-# 文件上传配置
-banyumall:
-  file:
-    upload:
-      max-size: ${FILE_MAX_SIZE:10MB}
-      path: ${FILE_UPLOAD_PATH:/uploads}
+  application:
+    name: service-auth
+  config:
+    import: nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
+  cloud:
+    nacos:
+      # Nacos连接配置
 ```
 
-### 个性配置（本地管理）
-各微服务在本地配置文件中管理个性配置：
+### 云端配置（service-auth.yaml）
 ```yaml
-# 服务特定配置
-banyumall:
-  service:
-    name: ${SERVICE_NAME}
-    version: ${SERVICE_VERSION:1.0.0}
+# 包含业务配置和敏感信息
+spring:
+  datasource:
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
   
-  # 认证服务个性配置
-  auth:
-    password-encoder-strength: ${PASSWORD_ENCODER_STRENGTH:12}
-    login-attempts-limit: ${LOGIN_ATTEMPTS_LIMIT:5}
-  
-  # 用户服务个性配置
-  user:
-    profile:
-      avatar-upload-path: ${AVATAR_UPLOAD_PATH:/uploads/avatars}
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:3600000}
 ```
-
-## 配置优先级
-
-1. **最高优先级**: 环境变量
-2. **高优先级**: Nacos配置中心
-3. **中优先级**: 本地配置文件
-4. **低优先级**: 默认值
 
 ## 环境变量配置
 
+### 必需环境变量
+| 变量名 | 说明 | 示例 |
+|--------|------|------|
+| JWT_SECRET | JWT密钥 | `nG9dT@e4^M7#pKc!Wz0qF8vRtLx*A6s1YhJ2BrCm` |
+| MYSQL_URL | MySQL连接URL | `jdbc:mysql://mysql-service:3306/banyu_mall` |
+| MYSQL_USERNAME | MySQL用户名 | `banyu_user` |
+| MYSQL_PASSWORD | MySQL密码 | `banyu_password` |
+| REDIS_HOST | Redis主机 | `redis-service` |
+| REDIS_PASSWORD | Redis密码 | `redis_password` |
+
+### 可选环境变量
+| 变量名 | 说明 | 默认值 |
+|--------|------|--------|
+| JWT_EXPIRATION | JWT过期时间 | `3600000` |
+| JWT_TOKEN_PREFIX | JWT令牌前缀 | `Bearer` |
+| JWT_ENABLE_BLACKLIST | 是否启用黑名单 | `true` |
+| NACOS_SERVER_ADDR | Nacos服务器地址 | `localhost:8848` |
+| NACOS_USERNAME | Nacos用户名 | `nacos` |
+| NACOS_PASSWORD | Nacos密码 | `nacos` |
+
+## 部署配置
+
 ### 开发环境
 ```bash
-export SPRING_PROFILES_ACTIVE=dev
-export NACOS_SERVER_ADDR=localhost:8848
-export NACOS_NAMESPACE=dev
-export NACOS_USERNAME=nacos
-export NACOS_PASSWORD=nacos
-```
+# 启动命令
+mvn spring-boot:run -pl service/service-auth -Dspring.profiles.active=dev
 
-### 测试环境
-```bash
-export SPRING_PROFILES_ACTIVE=test
-export NACOS_SERVER_ADDR=test-nacos:8848
-export NACOS_NAMESPACE=test
-export NACOS_USERNAME=nacos
-export NACOS_PASSWORD=nacos123
+# 环境变量设置
+export JWT_SECRET="your-dev-secret-key"
+export MYSQL_URL="jdbc:mysql://localhost:3306/banyu_mall"
+export MYSQL_USERNAME="root"
+export MYSQL_PASSWORD="123456"
 ```
 
 ### 生产环境
 ```bash
-export SPRING_PROFILES_ACTIVE=prod
-export NACOS_SERVER_ADDR=prod-nacos:8848
-export NACOS_NAMESPACE=prod
-export NACOS_USERNAME=nacos
-export NACOS_PASSWORD=prod123456
+# 启动命令
+mvn spring-boot:run -pl service/service-auth -Dspring.profiles.active=prod
+
+# 环境变量设置
+export JWT_SECRET="your-production-secret-key"
+export MYSQL_URL="jdbc:mysql://mysql-service:3306/banyu_mall"
+export MYSQL_USERNAME="banyu_user"
+export MYSQL_PASSWORD="banyu_password"
+export REDIS_HOST="redis-service"
+export REDIS_PASSWORD="redis_password"
 ```
 
-## 配置验证
+## Nacos配置管理
 
-### 1. 本地验证
+### 1. 创建配置
+在Nacos控制台创建配置：
+- **Data ID**: `service-auth.yaml`
+- **Group**: `DEFAULT_GROUP`
+- **Namespace**: `public`
+- **配置格式**: YAML
+
+### 2. 配置内容
+使用 `service-auth-nacos.yml` 模板文件的内容，根据实际环境修改环境变量。
+
+### 3. 配置刷新
+- 支持配置热刷新
+- 修改配置后自动生效
+- 无需重启服务
+
+## 安全考虑
+
+### 1. 敏感信息保护
+- 所有敏感信息使用环境变量
+- 不在代码中硬编码密码
+- 生产环境使用强密钥
+
+### 2. 配置加密
+- 支持Nacos配置加密
+- 敏感配置项加密存储
+- 运行时解密使用
+
+### 3. 访问控制
+- Nacos访问权限控制
+- 配置修改审计日志
+- 定期轮换密钥
+
+## 监控和运维
+
+### 1. 配置监控
+- 配置变更监控
+- 配置加载状态监控
+- 配置错误告警
+
+### 2. 健康检查
+- 配置加载健康检查
+- 数据库连接健康检查
+- Redis连接健康检查
+
+### 3. 日志管理
+- 配置加载日志
+- 配置变更日志
+- 错误日志记录
+
+## 故障排查
+
+### 1. 配置加载失败
 ```bash
-# 启动服务验证配置
-./mvnw spring-boot:run -Dspring.profiles.active=dev
+# 检查Nacos连接
+curl -X GET "http://nacos-server:8848/nacos/v1/cs/configs?dataId=service-auth.yaml&group=DEFAULT_GROUP"
 
-# 验证Nacos连接
-curl -X GET "http://localhost:8848/nacos/v1/ns/operator/metrics"
+# 检查环境变量
+env | grep -E "(JWT|MYSQL|REDIS|NACOS)"
 ```
 
-### 2. 配置热更新验证
-```bash
-# 在Nacos中修改配置
-# 验证服务是否自动刷新配置
-curl -X POST "http://localhost:8080/actuator/refresh"
-```
+### 2. 配置不生效
+- 检查配置刷新是否启用
+- 检查配置优先级
+- 检查环境变量是否正确
+
+### 3. 性能问题
+- 检查配置缓存
+- 检查数据库连接池
+- 检查Redis连接池
 
 ## 最佳实践
 
-### 1. 配置分层管理
-- **公有配置**: 在Nacos中统一管理，包含数据库、Redis、JWT等敏感信息
-- **个性配置**: 各微服务在本地配置文件中管理，包含服务特定配置
-- **环境隔离**: 通过Nacos命名空间区分不同环境
-- **配置热更新**: 公有配置支持热更新，个性配置需要重启服务
+### 1. 配置管理
+- 使用版本控制管理配置模板
+- 定期备份配置
+- 配置变更前测试
 
-### 2. 环境隔离
-- 不同环境使用不同的Nacos命名空间
-- 环境特定的配置使用环境变量覆盖
-- 生产环境配置与开发环境完全隔离
+### 2. 安全实践
+- 定期轮换密钥
+- 使用强密码
+- 限制配置访问权限
 
-### 3. 配置安全
-- 敏感信息使用环境变量或Nacos配置
-- 生产环境密码定期更换
-- 配置访问权限严格控制
-
-### 4. 配置监控
-- 使用Spring Boot Actuator监控配置状态
-- 配置变更日志记录
-- 配置热更新验证
-
-## 故障排除
-
-### 1. Nacos连接失败
-```bash
-# 检查Nacos服务状态
-curl -X GET "http://localhost:8848/nacos/v1/ns/operator/metrics"
-
-# 检查网络连接
-telnet localhost 8848
-
-# 检查认证信息
-curl -X GET "http://localhost:8848/nacos/v1/auth/users/login" \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "username=nacos&password=nacos"
-```
-
-### 2. 配置加载失败
-```bash
-# 检查配置文件语法
-yamllint application.yml
-
-# 检查环境变量
-env | grep NACOS
-env | grep SPRING
-
-# 查看启动日志
-tail -f logs/application.log
-```
-
-### 3. 配置热更新失败
-```bash
-# 检查配置刷新端点
-curl -X POST "http://localhost:8080/actuator/refresh"
-
-# 检查配置变更日志
-grep "Configuration change" logs/application.log
-```
-
-## 相关文档
-
-- [微服务配置文件管理规则](../.docs/RULES/DEV-007.md)
-- [Docker容器化部署规则](../.docs/RULES/DEV-006.md)
-- [Nacos配置中心文档](https://nacos.io/zh-cn/docs/v2/guide/user/configuration.html) 
+### 3. 运维实践
+- 监控配置变更
+- 定期检查配置有效性
+- 建立配置变更流程 

@@ -1,26 +1,33 @@
 # 认证服务 - 主配置文件
 # 注意：敏感信息已移至环境变量和Nacos配置中心
+
+# 服务器配置
 server:
   port: 8081
   servlet:
     context-path: /auth
 
+# Spring基础配置
 spring:
-  # 配置导入 - 从Nacos加载配置
-  config:
-    import: nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
+  # 应用名称
   application:
     name: service-auth
   
-  # Spring Security 默认用户配置
+  # 配置导入 - 从Nacos加载配置
+  config:
+    import: nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
+  
+  # Spring Security 默认用户配置（仅用于开发环境）
   security:
     user:
       name: ${SECURITY_USER_NAME:admin}
       password: ${SECURITY_USER_PASSWORD:admin123}
       roles: ${SECURITY_USER_ROLES:ADMIN}
 
+  # Nacos服务注册与发现配置
   cloud:
     nacos:
+      # 服务发现配置
       discovery:
         server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
         username: ${NACOS_USERNAME:nacos}
@@ -35,6 +42,8 @@ spring:
         heart-beat-timeout: 15000
         # 实例删除超时时间
         ip-delete-timeout: 30000
+      
+      # 配置中心配置
       config:
         server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
         username: ${NACOS_USERNAME:nacos}
@@ -44,20 +53,39 @@ spring:
         file-extension: yaml
         # 配置刷新
         refresh-enabled: true
+        # 配置超时时间
+        timeout: 3000
+        # 配置重试次数
+        retry-time: 2000
+        # 长轮询超时时间
+        long-poll-timeout: 46000
 
-# JWT配置
-jwt:
-  # JWT密钥 - 生产环境请使用环境变量
-  secret: ${JWT_SECRET:your-secret-key-here-should-be-at-least-32-bytes-long}
-  # 过期时间（毫秒）- 1小时
-  expiration: ${JWT_EXPIRATION:3600000}
-  # 令牌前缀
-  token-prefix: ${JWT_TOKEN_PREFIX:Bearer}
-  # 刷新令牌过期时间（毫秒）- 24小时
-  refresh-expiration: ${JWT_REFRESH_EXPIRATION:86400000}
-  # 是否启用黑名单
-  enable-blacklist: ${JWT_ENABLE_BLACKLIST:true}
-  # Redis黑名单前缀
-  blacklist-prefix: ${JWT_BLACKLIST_PREFIX:token:blacklist:}
-  # Redis有效令牌前缀
-  valid-token-prefix: ${JWT_VALID_TOKEN_PREFIX:token:valid:}
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  # 应用信息配置
+  info:
+    env:
+      enabled: true
+    git:
+      mode: full
+
+# 日志配置
+logging:
+  level:
+    com.origin.auth: info
+    org.springframework.security: warn
+    root: warn
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/service-auth.log
+    max-size: 100MB
+    max-history: 30
