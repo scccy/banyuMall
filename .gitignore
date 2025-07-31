@@ -18,8 +18,8 @@ target/
 *.iws
 *.iml
 *.ipr
-!/.cursor/
-!/.trae/
+.cursor/
+.trae/
 
 ### NetBeans ###
 /nbproject/private/
@@ -33,5 +33,5 @@ build/
 
 ### VS Code ###
 .vscode/
-!/.cursor/
-!/.trae/
+.cursor/
+.trae/
