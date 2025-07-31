@@ -1,9 +1,7 @@
 package com.origin.auth.dto;
 
-import com.origin.common.dto.BaseRequest;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
@@ -14,8 +12,36 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
-public class LoginRequest extends BaseRequest {
+public class LoginRequest {
+    
+    // ==================== 请求追踪字段 ====================
+    
+    /**
+     * 请求ID，用于链路追踪
+     */
+    private String requestId;
+    
+    /**
+     * 用户ID
+     */
+    private Long userId;
+    
+    /**
+     * 客户端IP
+     */
+    private String clientIp;
+    
+    /**
+     * 用户代理
+     */
+    private String userAgent;
+    
+    /**
+     * 请求时间戳
+     */
+    private Long timestamp = System.currentTimeMillis();
+    
+    // ==================== 登录业务字段 ====================
     
     /**
      * 用户名

@@ -1,7 +1,7 @@
 package com.origin.auth.interceptor;
 
-import com.origin.common.util.JwtUtil;
-import com.origin.common.util.TokenBlacklistUtil;
+import com.origin.auth.util.JwtUtil;
+import com.origin.auth.util.TokenBlacklistUtil;
 import com.origin.common.exception.BusinessException;
 import com.origin.common.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;

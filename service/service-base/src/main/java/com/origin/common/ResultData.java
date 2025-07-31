@@ -1,106 +1,213 @@
 package com.origin.common;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import com.origin.common.exception.ErrorCode;
 
+/**
+ * 统一响应数据类，合并了BaseRequest和BaseResponse的功能
+ * 
+ * @author origin
+ * @since 2024-12-19
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
 public class ResultData<T> {
+    
+    // ==================== 响应字段 ====================
+    
+    /**
+     * 响应码
+     */
     private Integer code;
-    private String msg;
+    
+    /**
+     * 响应消息
+     */
+    private String message;
+    
+    /**
+     * 响应数据
+     */
     private T data;
-
-    public static <T> ResultData<T> ok() {
-        ResultData<T> resultData = new ResultData<>();
-        resultData.setCode(200);
-        resultData.setMsg("SUCCESS");
-        return resultData;
-    }
     
-    public static <T> ResultData<T> ok(String mes, T data) {
-        ResultData<T> resultData = new ResultData<>();
-        resultData.setCode(200);
-        resultData.setMsg(mes);
-        resultData.setData(data);
-        return resultData;
-    }
-
-    public static <T> ResultData<T> ok(String mes) {
-        ResultData<T> resultData = new ResultData<>();
-        resultData.setCode(200);
-        resultData.setMsg(mes);
-        return resultData;
-    }
-
-    public static <T> ResultData<T> fail() {
-        ResultData<T> resultData = new ResultData<>();
-        resultData.setCode(500);
-        resultData.setMsg("FAIL");
-        return resultData;
-    }
+    // ==================== 请求追踪字段 ====================
     
-    public static <T> ResultData<T> fail(String code, String msg, T data) {
-        ResultData<T> resultData = new ResultData<>();
-        resultData.setCode(Integer.valueOf(code));
-        resultData.setMsg(msg);
-        resultData.setData(data);
-        return resultData;
+    /**
+     * 请求ID，用于链路追踪
+     */
+    private String requestId;
+    
+    /**
+     * 用户ID
+     */
+    private Long userId;
+    
+    /**
+     * 客户端IP
+     */
+    private String clientIp;
+    
+    /**
+     * 用户代理
+     */
+    private String userAgent;
+    
+    /**
+     * 响应时间戳
+     */
+    private Long timestamp = System.currentTimeMillis();
+
+    // ==================== 成功响应方法 ====================
+    
+    /**
+     * 成功响应
+     */
+    public static <T> ResultData<T> success() {
+        return new ResultData<T>()
+            .setCode(200)
+            .setMessage("SUCCESS")
+            .setTimestamp(System.currentTimeMillis());
     }
     
     /**
-     * 失败响应（使用Integer错误码和消息）
+     * 成功响应（带数据）
+     */
+    public static <T> ResultData<T> success(T data) {
+        return new ResultData<T>()
+            .setCode(200)
+            .setMessage("SUCCESS")
+            .setData(data)
+            .setTimestamp(System.currentTimeMillis());
+    }
+    
+    /**
+     * 成功响应（带消息和数据）
+     */
+    public static <T> ResultData<T> success(String message, T data) {
+        return new ResultData<T>()
+            .setCode(200)
+            .setMessage(message)
+            .setData(data)
+            .setTimestamp(System.currentTimeMillis());
+    }
+    
+    /**
+     * 成功响应（带请求追踪信息）
+     */
+    public static <T> ResultData<T> success(String message, T data, String requestId, Long userId) {
+        return new ResultData<T>()
+            .setCode(200)
+            .setMessage(message)
+            .setData(data)
+            .setRequestId(requestId)
+            .setUserId(userId)
+            .setTimestamp(System.currentTimeMillis());
+    }
+
+    // ==================== 失败响应方法 ====================
+    
+    /**
+     * 失败响应
+     */
+    public static <T> ResultData<T> fail() {
+        return new ResultData<T>()
+            .setCode(500)
+            .setMessage("FAIL")
+            .setTimestamp(System.currentTimeMillis());
+    }
+    
+    /**
+     * 失败响应（带消息）
+     */
+    public static <T> ResultData<T> fail(String message) {
+        return new ResultData<T>()
+            .setCode(500)
+            .setMessage(message)
+            .setTimestamp(System.currentTimeMillis());
+    }
+    
+    /**
+     * 失败响应（带码和消息）
      */
     public static <T> ResultData<T> fail(Integer code, String message) {
-        ResultData<T> resultData = new ResultData<>();
-        resultData.setCode(code);
-        resultData.setMsg(message);
-        return resultData;
+        return new ResultData<T>()
+            .setCode(code)
+            .setMessage(message)
+            .setTimestamp(System.currentTimeMillis());
+    }
+    
+    /**
+     * 失败响应（带码、消息和数据）
+     */
+    public static <T> ResultData<T> fail(Integer code, String message, T data) {
+        return new ResultData<T>()
+            .setCode(code)
+            .setMessage(message)
+            .setData(data)
+            .setTimestamp(System.currentTimeMillis());
     }
     
     /**
      * 失败响应（使用ErrorCode）
      */
     public static <T> ResultData<T> fail(ErrorCode errorCode) {
-        ResultData<T> resultData = new ResultData<>();
-        resultData.setCode(errorCode.getCode());
-        resultData.setMsg(errorCode.getMessage());
-        return resultData;
+        return new ResultData<T>()
+            .setCode(errorCode.getCode())
+            .setMessage(errorCode.getMessage())
+            .setTimestamp(System.currentTimeMillis());
     }
     
     /**
      * 失败响应（使用ErrorCode和自定义消息）
      */
     public static <T> ResultData<T> fail(ErrorCode errorCode, String message) {
-        ResultData<T> resultData = new ResultData<>();
-        resultData.setCode(errorCode.getCode());
-        resultData.setMsg(message);
-        return resultData;
+        return new ResultData<T>()
+            .setCode(errorCode.getCode())
+            .setMessage(message)
+            .setTimestamp(System.currentTimeMillis());
     }
     
     /**
      * 失败响应（使用ErrorCode、自定义消息和数据）
      */
     public static <T> ResultData<T> fail(ErrorCode errorCode, String message, T data) {
-        ResultData<T> resultData = new ResultData<>();
-        resultData.setCode(errorCode.getCode());
-        resultData.setMsg(message);
-        resultData.setData(data);
-        return resultData;
-    }
-    
-    public static <T> ResultData<T> fail(String message) {
-        ResultData<T> resultData = new ResultData<>();
-        resultData.setCode(500);
-        resultData.setMsg(message);
-        return resultData;
+        return new ResultData<T>()
+            .setCode(errorCode.getCode())
+            .setMessage(message)
+            .setData(data)
+            .setTimestamp(System.currentTimeMillis());
     }
 
+    // ==================== 兼容性方法 ====================
+    
+    /**
+     * 兼容旧版本的ok方法
+     */
+    public static <T> ResultData<T> ok() {
+        return success();
+    }
+    
+    /**
+     * 兼容旧版本的ok方法（带消息和数据）
+     */
+    public static <T> ResultData<T> ok(String message, T data) {
+        return success(message, data);
+    }
+
+    /**
+     * 兼容旧版本的ok方法（带消息）
+     */
+    public static <T> ResultData<T> ok(String message) {
+        return success(message, null);
+    }
+
+    // ==================== 工具方法 ====================
+    
     /**
      * 判断响应是否成功
      *
@@ -150,7 +257,7 @@ public class ResultData<T> {
      * @return 响应消息或默认消息
      */
     public String getMessageOrDefault(String defaultMessage) {
-        return this.msg != null && !this.msg.trim().isEmpty() ? this.msg : defaultMessage;
+        return this.message != null && !this.message.trim().isEmpty() ? this.message : defaultMessage;
     }
 
     /**
@@ -161,5 +268,16 @@ public class ResultData<T> {
      */
     public Integer getCodeOrDefault(Integer defaultCode) {
         return this.code != null ? this.code : defaultCode;
+    }
+    
+    /**
+     * 设置请求追踪信息
+     */
+    public ResultData<T> setRequestTrace(String requestId, Long userId, String clientIp, String userAgent) {
+        this.requestId = requestId;
+        this.userId = userId;
+        this.clientIp = clientIp;
+        this.userAgent = userAgent;
+        return this;
     }
 }

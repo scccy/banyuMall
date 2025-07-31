@@ -10,6 +10,8 @@ import com.origin.auth.service.SysPermissionService;
 import com.origin.auth.service.SysRoleService;
 import com.origin.auth.service.SysUserService;
 
+import com.origin.auth.util.JwtUtil;
+import com.origin.auth.util.TokenBlacklistUtil;
 import com.origin.common.exception.BusinessException;
 import com.origin.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private final SysRoleService sysRoleService;
     private final SysPermissionService sysPermissionService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final TokenBlacklistUtil tokenBlacklistUtil;
     
     @Value("${jwt.expiration}")
     private Long jwtExpiration;
@@ -68,10 +72,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
         
         // 生成JWT令牌
-        String token = com.origin.common.util.JwtUtil.generateToken(user.getId(), user.getUsername());
+        String token = jwtUtil.generateToken(user.getId(), user.getUsername());
         
         // 将 token 标记为有效并存储到 Redis
-        com.origin.common.util.TokenBlacklistUtil.markAsValid(token, jwtExpiration / 1000);
+        tokenBlacklistUtil.markAsValid(token, jwtExpiration / 1000);
         
         // 查询用户角色
         List<String> roles = sysRoleService.getRoleCodesByUserId(user.getId());

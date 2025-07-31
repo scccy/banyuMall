@@ -3,6 +3,8 @@ package com.origin.auth.controller;
 import com.origin.auth.dto.LoginRequest;
 import com.origin.auth.dto.LoginResponse;
 import com.origin.auth.service.SysUserService;
+import com.origin.auth.util.JwtUtil;
+import com.origin.auth.util.TokenBlacklistUtil;
 import com.origin.common.ResultData;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final SysUserService sysUserService;
+    private final JwtUtil jwtUtil;
+    private final TokenBlacklistUtil tokenBlacklistUtil;
 
     /**
      * 用户登录
@@ -55,17 +59,17 @@ public class AuthController {
             // 将token加入黑名单
             try {
                 // 获取token的剩余过期时间
-                long expirationTime = com.origin.common.util.JwtUtil.getExpirationTime(token);
+                long expirationTime = jwtUtil.getExpirationTime(token);
                 if (expirationTime > 0) {
-                    com.origin.common.util.TokenBlacklistUtil.addToBlacklist(token, expirationTime);
+                    tokenBlacklistUtil.addToBlacklist(token, expirationTime);
                 }
             } catch (Exception e) {
                 // 如果无法解析token，设置一个默认的过期时间（1小时）
-                com.origin.common.util.TokenBlacklistUtil.addToBlacklist(token, 3600);
+                tokenBlacklistUtil.addToBlacklist(token, 3600);
             }
             
             // 从有效token列表中移除
-            com.origin.common.util.TokenBlacklistUtil.removeFromValid(token);
+            tokenBlacklistUtil.removeFromValid(token);
         }
         
         return ResultData.ok("登出成功");

@@ -184,6 +184,26 @@ API网关
 - **编码规范**: 遵循 `.docs/RULES/DEV-001.md`
 - **OSS使用规范**: 遵循 `.docs/RULES/OSS-001.md`
 - **项目初始化规范**: 遵循 `.docs/RULES/INIT-001.md`
+- **API文档维护规范**: 遵循 `.docs/RULES/API-DOC-001.md`
+
+## API 文档
+
+### 接口文档
+详细的API接口文档请参考：[API.md](./API.md)
+
+该文档包含：
+- 所有微服务的接口信息
+- 请求参数和响应格式
+- 服务路由配置
+- 错误码说明
+- 接口调用示例
+- 开发环境配置
+
+### 接口规范
+- **认证方式**: Bearer Token (JWT)
+- **响应格式**: 统一使用 `ResultData<T>` 格式
+- **字符编码**: UTF-8
+- **Content-Type**: application/json
 
 ## 快速开始
 
