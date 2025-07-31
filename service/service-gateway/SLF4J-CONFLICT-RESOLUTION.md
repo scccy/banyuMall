@@ -48,30 +48,25 @@ Exception in thread "main" java.lang.IllegalArgumentException: LoggerFactory is 
 </dependency>
 ```
 
-### 2. 添加Log4j2依赖
+### 2. 使用service-base中的Log4j2配置
 
-```xml
-<!-- Log4j2 -->
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-log4j2</artifactId>
-</dependency>
-```
+由于service-base模块已经包含了Log4j2的默认配置，Gateway服务不需要重复添加：
 
-### 3. 创建Log4j2配置文件
+- **Log4j2依赖**: 由service-base提供
+- **Log4j2配置文件**: 使用service-base中的默认配置
+- **日志配置**: 在application.yml中只配置日志级别
 
-创建 `src/main/resources/log4j2.xml` 文件，配置日志输出。
+### 3. 应用配置
 
-### 4. 更新应用配置
-
-在 `application.yml` 中指定使用Log4j2：
+在 `application.yml` 中只配置日志级别：
 
 ```yaml
 logging:
-  config: classpath:log4j2.xml
   level:
-    org.apache.logging.log4j.status: ERROR
-    org.apache.logging.log4j.core.config: ERROR
+    com.origin.gateway: debug
+    org.springframework.cloud.gateway: debug
+    org.springframework.web: debug
+    root: info
 ```
 
 ## 修复内容
@@ -79,20 +74,19 @@ logging:
 ### 1. 更新pom.xml
 
 - 排除所有依赖中的Logback
-- 添加Log4j2依赖
+- 移除重复的Log4j2依赖（由service-base提供）
 - 确保日志框架统一
 
-### 2. 创建log4j2.xml
+### 2. 移除重复配置
 
-- 配置控制台和文件输出
-- 设置异步日志
-- 配置日志级别
+- 删除Gateway中的log4j2.xml文件
+- 移除application.yml中的Log4j2配置引用
+- 保留必要的日志级别配置
 
-### 3. 更新application.yml
+### 3. 依赖继承
 
-- 指定Log4j2配置文件
-- 禁用Log4j2包扫描警告
-- 设置合适的日志级别
+- Gateway服务继承service-base的Log4j2配置
+- 避免重复配置，保持项目结构简洁
 
 ## 验证方法
 
@@ -103,11 +97,11 @@ logging:
 ## 注意事项
 
 1. **依赖管理**: 确保所有模块都使用统一的日志框架
-2. **版本兼容**: 确保SLF4J API版本与Log4j2版本兼容
+2. **配置继承**: 利用service-base的默认配置，避免重复
 3. **性能考虑**: Log4j2提供更好的异步日志性能
 
 ## 相关文件
 
 - `service/service-gateway/pom.xml`
-- `service/service-gateway/src/main/resources/log4j2.xml`
-- `service/service-gateway/src/main/resources/dev/application.yml` 
+- `service/service-gateway/src/main/resources/dev/application.yml`
+- `service/service-base/src/main/resources/log4j2.xml` (默认配置) 
