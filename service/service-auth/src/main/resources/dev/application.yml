@@ -85,11 +85,15 @@ management:
 
 # 日志配置（开发环境详细日志）
 logging:
+  config: classpath:log4j2.xml
   level:
     com.origin.auth: debug
     org.springframework.security: debug
     org.springframework.web: debug
     com.origin.auth.util: debug
+    # 禁用Log4j2包扫描警告
+    org.apache.logging.log4j.status: ERROR
+    org.apache.logging.log4j.core.config: ERROR
     root: info
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

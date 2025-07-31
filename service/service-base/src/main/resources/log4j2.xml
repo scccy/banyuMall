@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="WARN" monitorInterval="30">
+<Configuration status="ERROR" monitorInterval="30" strict="true">
     <Properties>
         <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Property>
         <!-- 使用Spring Boot的spring.application.name作为服务名，如果没有则使用默认值 -->
         <Property name="SERVICE_NAME">${sys:spring.application.name:-unknown-service}</Property>
         <Property name="LOG_FILE_PATH">./logs/${SERVICE_NAME}</Property>
     </Properties>
+
+    <!-- 禁用状态日志，避免包扫描警告 -->
+    <StatusLogger level="ERROR" />
 
     <Appenders>
         <!-- 控制台输出 -->
@@ -48,6 +51,15 @@
     </Appenders>
 
     <Loggers>
+        <!-- 禁用Log4j2内部日志 -->
+        <Logger name="org.apache.logging.log4j" level="ERROR" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        
+        <Logger name="org.apache.logging.log4j.core" level="ERROR" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
         <!-- 根日志级别 -->
         <Root level="info">
             <AppenderRef ref="AsyncConsole"/>

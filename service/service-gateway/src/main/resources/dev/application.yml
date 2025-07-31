@@ -2,6 +2,13 @@
 
 server:
   port: 8080
+  connection-timeout: 10000
+  read-timeout: 15000
+  write-timeout: 15000
+  max-connections: 4096
+  threads:
+    max: 100
+    min: 10
 
 spring:
   application:
@@ -110,16 +117,3 @@ gateway:
         allowCredentials: true
 
 # 性能优化配置
-server:
-  # 连接超时时间
-  connection-timeout: 10000
-  # 读取超时时间
-  read-timeout: 15000
-  # 写入超时时间
-  write-timeout: 15000
-  # 最大连接数
-  max-connections: 4096
-  # 最大线程数
-  threads:
-    max: 100
-    min: 10 
