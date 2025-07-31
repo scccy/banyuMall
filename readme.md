@@ -1,290 +1,254 @@
-# 半语积分商城
+# BanyuMall 微服务项目
 
-## 项目介绍
+## 项目简介
 
-### 项目概述
-半语积分商城是一个基于微服务架构的积分任务平台，支持B端发布任务、C端完成任务获得积分，并将积分同步到有赞商城，形成完整的商业闭环。
+BanyuMall 是一个基于 Spring Boot 3.x 和 Spring Cloud 2023.x 的微服务架构项目，采用现代化的技术栈和最佳实践。
 
-### 核心业务逻辑
-- **B端（发布者）**：发布六种任务（点赞、评论、话题讨论、社群分享、邀请好友、反馈），查看排行榜，审核社群分享任务
-- **C端（接收者）**：在企业微信小程序接收任务，完成任务获得积分，查看任务详情和排行榜
-- **积分系统**：任务完成 → 积分发放 → 有赞同步 → 商城消费 → 积分扣减
+## 技术栈
 
-### 任务类型
-| 任务类型 | 描述 | 审核要求 | 积分奖励 |
-|---------|------|----------|----------|
-| 点赞 | 对指定内容进行点赞 | 无需审核 | 根据难度设定 |
-| 评论 | 对指定内容进行评论 | 无需审核 | 根据难度设定 |
-| 话题讨论 | 参与指定话题讨论 | 无需审核 | 根据难度设定 |
-| 社群分享 | 在社群中分享指定内容 | 需要B端审核 | 根据难度设定 |
-| 邀请好友 | 邀请新用户注册 | 无需审核 | 固定奖励 |
-| 反馈 | 提供产品使用反馈 | 无需审核 | 根据质量设定 |
+- **Spring Boot**: 3.2.0
+- **Spring Cloud**: 2023.0.0
+- **Spring Cloud Alibaba**: 2022.0.0.0
+- **Java**: 21
+- **Maven**: 3.8+
+- **MySQL**: 8.0+
+- **Redis**: 6.0+
+- **Nacos**: 2.2.0+
+- **Log4j2**: 2.20.0
+- **FastJSON2**: 2.0.40
+- **MyBatis Plus**: 3.5.3.1
+- **Knife4j**: 4.3.0
 
-### 原型图
-- B端原型图：`proto/b/` 目录
-- C端原型图：`proto/c/` 目录
+## 项目架构
 
-## 技术架构
+### 模块结构
 
-### 技术栈
-- **核心框架**: Spring Boot 3.x, Spring Cloud 2023.x
-- **开发语言**: Java 21
-- **安全认证**: JWT + Redis
-- **服务注册发现**: Nacos 2.x
-- **配置中心**: Nacos 2.x
-- **对象存储**: 阿里云OSS
-- **数据库**: MySQL 8.0+, Redis 7.x
-- **API文档**: Swagger 3.x / OpenAPI 3.x
-- **消息队列**: Kafka (可选，用于任务异步处理)
-
-### 微服务架构
 ```
-半语积分商城
-├── 核心服务层 (service-*)
-│   ├── service-base      [✓ 已完成] 全局基础支撑
-│   ├── service-auth      [✓ 已完成] 认证授权服务
-│   ├── service-user      [✓ 已完成] 用户管理服务
-│   ├── service-gateway   [✓ 已完成] API网关服务
-│   ├── service-task      [ ] 任务管理服务
-│   ├── service-points    [ ] 积分管理服务
-│   ├── service-file      [ ] 文件管理服务
-│   └── service-sync      [ ] 第三方同步服务
-├── 第三方集成层 (integration-*)
-│   ├── integration-wechat [ ] 微信生态集成
-│   └── integration-youzan [ ] 有赞API集成
-├── 业务模块 (biz-*)
-│   ├── biz-task          [ ] 发布者任务管理
-│   └── biz-order         [ ] 接单人订单流程
-└── 基础设施 (infra-*)
-    ├── infra-registry    [ ] 服务注册发现
-    ├── infra-monitor     [ ] 监控服务
-    └── infra-log         [ ] 日志服务
+banyuMall/
+├── service/                          # 微服务模块
+│   ├── service-common/              # 通用组件模块
+│   │   ├── common/                  # 通用工具类和组件
+│   │   ├── config/                  # 通用配置类
+│   │   └── exception/               # 全局异常处理
+│   ├── service-base/                # Spring基础依赖模块
+│   │   └── (仅包含依赖管理)
+│   ├── service-auth/                # 认证服务
+│   ├── service-user/                # 用户服务
+│   └── service-gateway/             # API网关服务
+├── infra/                           # 基础设施模块
+│   ├── database/                    # 数据库相关
+│   ├── docker/                      # Docker配置
+│   ├── k8s/                         # Kubernetes配置
+│   └── jenkins/                     # CI/CD配置
+└── proto/                           # 协议文件
 ```
 
-## 服务模块详情
+### 模块职责
 
-### 1. 核心服务层（service-*）
+#### service-common (通用组件模块)
+- **职责**: 提供业务无关的通用工具类和组件
+- **包含**: ResultData、BusinessException、JWT工具、日志配置等
+- **依赖**: 所有业务服务都依赖此模块
 
-#### service-base [✓ 已完成]
-全局基础支撑模块
-- [x] 配置类：MyBatis-Plus分页/事务/WebMvc配置
-- [x] 工具类：日期/加密/校验/JSON转换
-- [x] 公共DTO：请求/响应模型、分页对象
-- [x] OpenFeign集成：服务间API调用封装
+#### service-base (Spring基础依赖模块)
+- **职责**: 提供Spring Boot基础配置和依赖管理
+- **包含**: 依赖版本管理、排除配置等
+- **依赖**: 作为基础依赖被其他模块继承
 
-#### service-auth [ ]
-认证授权服务
-- [ ] Web端登录（账号密码+验证码）
-- [ ] 微信小程序登录（UnionID绑定）
-- [ ] JWT令牌生成/校验（Redis黑名单管理）
+#### service-auth (认证服务)
+- **职责**: 用户认证、授权和JWT令牌管理
+- **端口**: 8081
+- **依赖**: service-common
 
-#### service-user [✓ 已完成]
-用户管理服务
-- [x] 角色权限：发布者/接单人角色定义
-- [x] 用户信息CRUD（含敏感信息加密）
-- [x] 权限控制：基于RBAC的接口鉴权
-- [x] 用户扩展信息管理
-- [x] 用户配置管理
+#### service-user (用户服务)
+- **职责**: 用户管理和用户配置功能
+- **端口**: 8082
+- **依赖**: service-common
 
-#### service-task [ ]
-任务管理服务
-- [ ] 任务发布：富文本描述+奖励设置
-- [ ] 状态管理：草稿→待审核→已发布→验收→完成
-- [ ] 任务搜索：按类型/奖励/状态筛选
-
-#### service-points [ ]
-积分管理服务
-- [ ] 积分发放：任务完成后的积分计算和发放
-- [ ] 积分消费：有赞商城消费后的积分扣减
-- [ ] 积分流水：完整的积分变动记录
-
-#### service-file [ ]
-文件管理服务
-- [ ] 阿里云OSS上传/下载（任务附件管理）
-- [ ] 文件权限：仅任务相关用户访问
-- [ ] 图片处理：压缩/格式转换
-
-#### service-sync [ ]
-第三方同步服务
-- [ ] 有赞订单同步
-- [ ] 微信用户信息同步
-- [ ] 数据一致性保证
-
-### 2. 第三方集成层（integration-*）
-
-#### integration-wechat [ ]
-微信生态集成
-- [ ] 小程序登录接口封装
-- [ ] 消息推送（模板消息/订阅消息）
-- [ ] 朋友圈API集成
-
-#### integration-youzan [ ]
-有赞API集成
-- [ ] 订单同步接口
-- [ ] 商品信息拉取
-- [ ] 积分兑换接口
-
-### 3. 业务模块（biz-*）
-
-#### biz-task [ ]
-发布者任务管理
-- [ ] 任务发布：富文本描述+奖励设置
-- [ ] 状态管理：草稿→待审核→已发布→验收→完成
-- [ ] 任务搜索：按类型/奖励/状态筛选
-
-#### biz-order [ ]
-接单人订单流程
-- [ ] 接单流程：任务申请→资格校验→生成订单
-- [ ] 成果交付：多文件上传+提交验收
-- [ ] 订单结算：验收通过后奖励发放
-
-### 4. 基础设施（infra-*）
-
-#### infra-gateway [ ]
-API网关
-- [ ] 路由转发：按服务名动态路由
-- [ ] 统一认证：JWT前置校验（白名单配置）
-- [ ] 限流熔断：基于IP/用户的流量控制
-
-#### infra-registry [ ]
-服务注册发现（Nacos）
-- [ ] 实例管理：自动注册+健康检查
-- [ ] 负载均衡：权重策略配置
-
-#### infra-monitor [ ]
-监控服务
-- [ ] 应用性能监控
-- [ ] 业务指标监控
-- [ ] 告警通知
-
-#### infra-log [ ]
-日志服务
-- [ ] 日志收集
-- [ ] 日志分析
-- [ ] 链路追踪
-
-## 开发规范
-
-### 文档驱动开发
-本项目采用文档驱动开发框架，所有开发工作都基于 `.docs` 目录下的文档进行：
-
-- **STATE/**: 事实基线文档（项目概述、技术栈、架构设计等）
-- **PROCESS/**: 过程流水文档（任务模板、提案模板等）
-- **RULES/**: 开发规则文档（编码规范、使用规范等）
-- **TEMP/**: 临时状态文件（任务执行状态跟踪）
-
-### 开发流程
-1. 查阅相关规则文档（`.docs/RULES/`）
-2. 创建任务状态文件（`.docs/TEMP/`）
-3. 按照计划执行开发任务
-4. 更新基线文档（`.docs/STATE/`）
-5. 沉淀经验规则（`.docs/RULES/`）
-
-### 技术规范
-- **编码规范**: 遵循 `.docs/RULES/DEV-001.md`
-- **OSS使用规范**: 遵循 `.docs/RULES/OSS-001.md`
-- **项目初始化规范**: 遵循 `.docs/RULES/INIT-001.md`
-- **API文档维护规范**: 遵循 `.docs/RULES/API-DOC-001.md`
-
-## API 文档
-
-### 接口文档
-详细的API接口文档请参考：[API.md](./API.md)
-
-该文档包含：
-- 所有微服务的接口信息
-- 请求参数和响应格式
-- 服务路由配置
-- 错误码说明
-- 接口调用示例
-- 开发环境配置
-
-### 接口规范
-- **认证方式**: Bearer Token (JWT)
-- **响应格式**: 统一使用 `ResultData<T>` 格式
-- **字符编码**: UTF-8
-- **Content-Type**: application/json
+#### service-gateway (API网关服务)
+- **职责**: 路由、限流、熔断等网关功能
+- **端口**: 8080
+- **依赖**: service-common (排除Servlet Web依赖)
+- **特点**: 使用WebFlux响应式编程
 
 ## 快速开始
 
 ### 环境要求
+
 - JDK 21+
 - Maven 3.8+
 - MySQL 8.0+
-- Redis 7.x
-- Nacos 2.x
+- Redis 6.0+
+- Nacos 2.2.0+
 
-### 本地开发
-```bash
-# 1. 克隆项目
-git clone [项目地址]
-cd banyuMall
+### 启动步骤
 
-# 2. 配置环境变量
-export OSS_ACCESS_KEY_ID='YOUR_ACCESS_KEY_ID'
-export OSS_ACCESS_KEY_SECRET='YOUR_ACCESS_KEY_SECRET'
+1. **启动基础设施**
+   ```bash
+   # 启动MySQL和Redis
+   docker-compose -f infra/docker/docker-compose.dev.yml up -d
+   
+   # 启动Nacos
+   # 访问 http://localhost:8848/nacos
+   # 用户名/密码: nacos/nacos
+   ```
 
-# 3. 启动依赖服务
-# MySQL, Redis, Nacos
+2. **初始化数据库**
+   ```bash
+   # 执行数据库初始化脚本
+   mysql -u root -p < infra/database/data/unified-init-data.sql
+   ```
 
-# 4. 启动服务
-mvn spring-boot:run -pl service/service-system
+3. **启动服务**
+   ```bash
+   # 启动认证服务
+   cd service/service-auth
+   ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+   
+   # 启动用户服务
+   cd service/service-user
+   ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+   
+   # 启动网关服务
+   cd service/service-gateway
+   ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+   ```
+
+### 服务访问
+
+- **网关服务**: http://localhost:8080
+- **认证服务**: http://localhost:8081
+- **用户服务**: http://localhost:8082
+- **API文档**: http://localhost:8080/swagger-ui.html
+
+## 配置管理
+
+### 配置文件结构
+
+每个服务都采用分层配置结构：
+
+```
+src/main/resources/
+├── application.yml                  # 主启动配置
+├── dev/
+│   ├── application.yml             # 开发环境启动配置
+│   └── service-xxx.yaml           # Nacos远程配置
+├── test/
+│   ├── application.yml             # 测试环境启动配置
+│   └── service-xxx.yaml           # Nacos远程配置
+└── prod/
+    ├── application.yml             # 生产环境启动配置
+    └── service-xxx.yaml           # Nacos远程配置
 ```
 
-### 配置说明
-详细配置请参考：
-- 技术栈配置：`.docs/STATE/TECH-STACK.md`
-- OSS集成配置：`.docs/STATE/OSS-INTEGRATION.md`
-- 项目概述：`.docs/STATE/PROJECT-OVERVIEW.md`
-- 基础设施文档：`infra/docs/` 目录
-- 任务完成索引：`TASK-INDEX.md`
+### 环境变量
 
-## 部署说明
+支持丰富的环境变量配置，包括：
+- Nacos连接配置
+- 数据库连接配置
+- Redis连接配置
+- JWT配置
+- 日志配置
 
-### 开发环境
-- 操作系统：macOS / Windows / Linux
-- 容器：Docker Desktop
-- 数据库：Docker容器化部署
+## API 文档
 
-### 生产环境
-- 操作系统：Linux (CentOS 7+ / Ubuntu 18+)
-- 容器：Docker + Kubernetes
-- 数据库：独立服务器部署
-- 负载均衡：Nginx / HAProxy
+详细的API接口文档请参考：[API.md](API.md)
 
-## 性能要求
-- 任务列表响应时间 < 2秒
-- 积分同步延迟 < 5秒
-- 文件上传支持并发
-- 系统可用性 > 99.9%
+## 接口规范
 
-## 安全考虑
-- JWT令牌认证
-- 敏感信息加密存储
-- 任务防刷机制
-- 积分防刷机制
-- 文件访问权限控制
-- OSS访问权限控制
+接口规范和开发规则请参考：[.docs/RULES/API-DOC-001.md](.docs/RULES/API-DOC-001.md)
+
+## 开发规范
+
+### 代码规范
+
+- 遵循阿里巴巴Java开发手册
+- 使用Lombok简化代码
+- 统一异常处理
+- 统一返回格式
+
+### 日志规范
+
+- 使用Log4j2作为日志框架
+- 统一的日志格式和级别
+- 支持异步日志输出
+- 支持日志文件轮转
+
+### 配置规范
+
+- 敏感信息通过环境变量配置
+- 业务配置通过Nacos管理
+- 启动配置本地化
+- 支持配置热刷新
+
+## 部署
+
+### Docker部署
+
+```bash
+# 构建镜像
+./infra/docker/build.sh
+
+# 启动服务
+docker-compose -f infra/docker/docker-compose.prod.yml up -d
+```
+
+### Kubernetes部署
+
+```bash
+# 部署到K8s
+kubectl apply -f infra/k8s/prod/
+```
+
+## 监控
+
+### 健康检查
+
+- 服务健康检查: `/actuator/health`
+- 应用信息: `/actuator/info`
+- 指标监控: `/actuator/metrics`
+
+### 日志监控
+
+- 日志文件位置: `logs/`
+- 支持日志聚合和分析
+- 支持日志告警
 
 ## 贡献指南
 
-### 开发流程
-1. 创建功能分支
-2. 查阅相关规则文档
-3. 创建任务状态文件
-4. 按照规范进行开发
-5. 提交代码并创建PR
-6. 代码审查通过后合并
-
-### 文档维护
-- 所有重要决策必须更新相关基线文档
-- 新的开发经验必须沉淀为规则文档
-- 任务完成后必须更新状态文件
-
-## 联系方式
-- 项目维护者：[维护者信息]
-- 技术支持：[技术支持信息]
-- 问题反馈：[问题反馈渠道]
+1. Fork 项目
+2. 创建功能分支
+3. 提交代码
+4. 创建 Pull Request
 
 ## 许可证
-[许可证信息]
+
+[MIT License](LICENSE)
+
+## 联系方式
+
+- 项目维护者: origin
+- 邮箱: [your-email@example.com]
+- 项目地址: [https://github.com/your-username/banyuMall]
+
+## 更新日志
+
+### v0.0.1-SNAPSHOT (2025-01-27)
+
+#### 新增功能
+- 完成微服务架构重构
+- 实现service-common和service-base模块分离
+- 优化Gateway服务WebFlux环境配置
+- 完善配置管理和环境变量支持
+
+#### 技术改进
+- 升级到Spring Boot 3.2.0
+- 升级到Spring Cloud 2023.0.0
+- 升级到Java 21
+- 优化依赖管理和冲突解决
+
+#### 架构优化
+- 实现清晰的模块职责分离
+- 优化服务间依赖关系
+- 完善配置分层管理
+- 提升系统可维护性

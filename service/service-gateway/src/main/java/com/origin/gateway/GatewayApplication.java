@@ -11,7 +11,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  * @author origin
  */
 @SpringBootApplication(
-    scanBasePackages = {"com.origin.gateway", "com.origin.common.util", "com.origin.config.Log4j2Config"},
+    scanBasePackages = {"com.origin"},
     exclude = {
         WebMvcAutoConfiguration.class
     }

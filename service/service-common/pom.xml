@@ -9,9 +9,9 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>service-base</artifactId>
-    <name>service-base</name>
-    <description>Spring基础依赖模块 - 包含Spring Boot基础配置和依赖管理</description>
+    <artifactId>service-common</artifactId>
+    <name>service-common</name>
+    <description>通用组件模块 - 包含业务无关的通用工具类和组件</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -250,4 +250,4 @@
         </plugins>
     </build>
 
-</project>
+</project> 

@@ -13,9 +13,10 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>service</name>
-    <description>service</description>
+    <description>微服务模块 - 包含所有业务服务和基础模块</description>
     
     <modules>
+        <module>service-common</module>
         <module>service-base</module>
         <module>service-auth</module>
         <module>service-user</module>
