@@ -5,7 +5,7 @@
 创建缺失的ErrorCode和BusinessException类，修复ResultData中的导入问题，解决编译错误。
 
 ## 问题分析
-1. 项目中缺少 `com.origin.common.exception.ErrorCode` 类
+1. 项目中缺少 `com.origin.common.entity.ErrorCode` 类
 2. 项目中缺少 `com.origin.common.exception.BusinessException` 类
 3. `ResultData.java` 中导入了错误的 `okhttp3.internal.http2.ErrorCode`
 4. 多个类中引用了不存在的ErrorCode和BusinessException

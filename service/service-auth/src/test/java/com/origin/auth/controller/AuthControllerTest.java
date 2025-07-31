@@ -3,7 +3,7 @@ package com.origin.auth.controller;
 import com.origin.auth.dto.LoginRequest;
 import com.origin.auth.dto.LoginResponse;
 import com.origin.auth.service.SysUserService;
-import com.origin.common.ResultData;
+import com.origin.common.dto.ResultData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

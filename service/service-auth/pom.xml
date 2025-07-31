@@ -14,7 +14,14 @@
     <description>认证服务 - 提供用户认证、授权和JWT令牌管理</description>
     
     <dependencies>
-        <!-- Service Common - 提供通用组件和工具类 -->
+        <!-- Service Base - 提供Spring基础配置 -->
+        <dependency>
+            <groupId>com.origin</groupId>
+            <artifactId>service-base</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        
+        <!-- Service Common - 提供通用工具类 -->
         <dependency>
             <groupId>com.origin</groupId>
             <artifactId>service-common</artifactId>

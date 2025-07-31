@@ -1,4 +1,4 @@
-package com.origin.config;
+package com.origin.base.config;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;

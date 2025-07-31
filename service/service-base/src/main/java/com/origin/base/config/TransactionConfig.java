@@ -1,4 +1,4 @@
-package com.origin.config;
+package com.origin.base.config;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.aop.Advisor;

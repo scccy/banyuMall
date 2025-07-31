@@ -1,5 +1,8 @@
 package com.origin.common.exception;
 
+
+import com.origin.common.entity.ErrorCode;
+
 /**
  * 业务异常类
  * 用于处理业务逻辑相关的异常

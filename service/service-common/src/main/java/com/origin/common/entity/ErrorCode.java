@@ -1,4 +1,4 @@
-package com.origin.common.exception;
+package com.origin.common.entity;
 
 /**
  * 错误码枚举

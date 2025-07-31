@@ -13,7 +13,7 @@ import com.origin.auth.service.SysUserService;
 import com.origin.auth.util.JwtUtil;
 import com.origin.auth.util.TokenBlacklistUtil;
 import com.origin.common.exception.BusinessException;
-import com.origin.common.exception.ErrorCode;
+import com.origin.common.entity.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;

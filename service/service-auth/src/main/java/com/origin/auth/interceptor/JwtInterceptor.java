@@ -3,7 +3,7 @@ package com.origin.auth.interceptor;
 import com.origin.auth.util.JwtUtil;
 import com.origin.auth.util.TokenBlacklistUtil;
 import com.origin.common.exception.BusinessException;
-import com.origin.common.exception.ErrorCode;
+import com.origin.common.entity.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

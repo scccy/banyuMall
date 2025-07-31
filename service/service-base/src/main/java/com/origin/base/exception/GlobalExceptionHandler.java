@@ -1,6 +1,8 @@
-package com.origin.common.exception;
+package com.origin.base.exception;
 
-import com.origin.common.ResultData;
+import com.origin.common.dto.ResultData;
+import com.origin.common.entity.ErrorCode;
+import com.origin.common.exception.BusinessException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;

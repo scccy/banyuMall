@@ -1,6 +1,6 @@
 package com.origin.user.controller;
 
-import com.origin.common.ResultData;
+import com.origin.common.dto.ResultData;
 import com.origin.user.entity.UserConfig;
 import com.origin.user.service.UserConfigService;
 import io.swagger.v3.oas.annotations.Operation;

@@ -38,7 +38,7 @@ public class Knife4jConfig {
 **位置**: `service/service-base/src/main/resources/org.springframework.boot.autoconfigure.AutoConfiguration.imports`
 
 ```
-com.origin.config.Knife4jConfig
+com.origin.base.config.Knife4jConfig
 ```
 
 ### 3. 服务模块继承

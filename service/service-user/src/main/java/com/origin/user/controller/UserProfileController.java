@@ -1,6 +1,6 @@
 package com.origin.user.controller;
 
-import com.origin.common.ResultData;
+import com.origin.common.dto.ResultData;
 import com.origin.user.dto.UserUpdateRequest;
 import com.origin.user.entity.UserProfile;
 import com.origin.user.service.UserProfileService;

@@ -22,8 +22,8 @@ The bean 'requestMappingHandlerMapping', defined in class path resource [org/spr
 ### 3. 自动配置排除错误
 ```
 context initialization - cancelling refresh attempt: java.lang.IllegalStateException: The following classes could not be excluded because they are not auto-configuration classes:
-	- com.origin.config.WebMvcConfig
-	- com.origin.common.exception.GlobalExceptionHandler
+	- com.origin.base.config.WebMvcConfig
+	- com.origin.base.exception.GlobalExceptionHandler
 ```
 
 ## 原因分析
@@ -81,7 +81,7 @@ context initialization - cancelling refresh attempt: java.lang.IllegalStateExcep
 
 ```java
 @SpringBootApplication(
-    scanBasePackages = {"com.origin.gateway", "com.origin.common.util", "com.origin.config.Log4j2Config"},
+    scanBasePackages = {"com.origin.gateway", "com.origin.common.util", "com.origin.base.config.Log4j2Config"},
     exclude = {
         WebMvcAutoConfiguration.class
     }

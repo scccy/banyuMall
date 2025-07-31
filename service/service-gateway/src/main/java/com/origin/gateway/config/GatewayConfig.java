@@ -24,14 +24,24 @@ public class GatewayConfig {
                         .path("/auth/**")
                         .filters(f -> f
                                 .stripPrefix(1)
-                                .addRequestHeader("X-Gateway-Source", "infra-gateway"))
+                                .addRequestHeader("X-Gateway-Source", "service-gateway"))
                         .uri("lb://service-auth"))
+                
+                // 用户服务路由
+                .route("user-service", r -> r
+                        .path("/user/**")
+                        .filters(f -> f
+                                .stripPrefix(1)
+                                .addRequestHeader("X-Gateway-Source", "service-gateway"))
+                        .uri("lb://service-user"))
+                
                 // 健康检查路由
-                .route("health-check", r -> r
+                .route("health-service", r -> r
                         .path("/health/**")
                         .filters(f -> f
-                                .addRequestHeader("X-Gateway-Source", "infra-gateway"))
+                                .addRequestHeader("X-Gateway-Source", "service-gateway"))
                         .uri("lb://service-auth"))
+                
                 .build();
     }
 } 

@@ -2,6 +2,8 @@ package com.origin.gateway.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.web.cors.CorsConfiguration;
@@ -26,6 +28,16 @@ public class GatewayWebConfig implements WebFluxConfigurer {
     @Override
     public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
         configurer.defaultCodecs().maxInMemorySize(1024 * 1024); // 1MB
+    }
+    
+    /**
+     * 提供mvcConversionService bean以解决依赖问题
+     * 这个bean通常由WebMvcAutoConfiguration提供，但由于我们排除了WebMvcAutoConfiguration，
+     * 需要手动提供这个bean来满足某些组件的依赖需求
+     */
+    @Bean("mvcConversionService")
+    public ConversionService mvcConversionService() {
+        return new DefaultConversionService();
     }
     
     /**

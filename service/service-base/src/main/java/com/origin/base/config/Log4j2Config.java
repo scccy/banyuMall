@@ -1,4 +1,4 @@
-package com.origin.config;
+package com.origin.base.config;
 
 import jakarta.annotation.PostConstruct;
 import org.apache.logging.log4j.LogManager;

@@ -1,8 +1,9 @@
 package com.origin.gateway.exception;
 
-import com.origin.common.ResultData;
 import com.origin.common.exception.BusinessException;
-import com.origin.common.exception.ErrorCode;
+import com.origin.common.dto.ResultData;
+
+import com.origin.common.entity.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
 import org.springframework.core.annotation.Order;

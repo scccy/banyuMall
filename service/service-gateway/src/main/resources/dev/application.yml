@@ -4,8 +4,7 @@
 # 服务器配置
 server:
   port: 8080
-  servlet:
-    context-path: /gateway
+
 
 # Spring基础配置
 spring:
@@ -16,6 +15,7 @@ spring:
   # 配置导入 - 从Nacos加载配置
   config:
     import: nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
+
   
   # Nacos服务注册与发现配置
   cloud:
@@ -52,13 +52,52 @@ spring:
         retry-time: 2000
         # 长轮询超时时间
         long-poll-timeout: 46000
+    
+    # 负载均衡器配置
+    loadbalancer:
+      # 启用负载均衡器
+      enabled: true
+      # 配置负载均衡器
+      ribbon:
+        enabled: false  # 禁用Ribbon，使用Spring Cloud LoadBalancer
 
   # 启动性能优化（开发环境）
   main:
     lazy-initialization: true  # 开发环境启用懒加载
+    allow-bean-definition-overriding: false  # 禁止Bean定义覆盖
+    web-application-type: reactive  # 明确指定为响应式Web应用
+  
+  # 自动配置排除 - 避免WebMvc与WebFlux冲突
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
+
   # JMX配置
   jmx:
     enabled: false  # 开发环境关闭JMX
+
+  # Redis配置 - 用于限流器（响应式）- 暂时注释掉
+  # data:
+  #   redis:
+  #     host: localhost
+  #     port: 6379
+  #     database: 0
+  #     timeout: 3000ms
+  #     lettuce:
+  #       pool:
+  #         max-active: 8
+  #         max-idle: 8
+  #         min-idle: 0
+  #         max-wait: -1ms
+  #     # 响应式Redis配置
+  #     reactive:
+  #       timeout: 3000ms
 
 # 管理端点配置
 management:
@@ -91,6 +130,6 @@ logging:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
-    name: logs/infra-gateway.log
+    name: logs/service-gateway.log
     max-size: 100MB
     max-history: 30

@@ -1,6 +1,6 @@
 package com.origin.auth.controller;
 
-import com.origin.common.ResultData;
+import com.origin.common.dto.ResultData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;

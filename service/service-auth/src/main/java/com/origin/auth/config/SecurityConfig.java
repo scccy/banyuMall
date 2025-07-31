@@ -70,6 +70,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(authz -> authz
                 // 允许登录、登出、验证码等接口无需认证
                 .requestMatchers("/auth/login", "/auth/logout", "/auth/captcha").permitAll()
+                // 允许测试接口无需认证
+                .requestMatchers("/auth/test", "/auth/").permitAll()
                 // 允许 Swagger 相关接口
                 .requestMatchers("/doc.html", "/webjars/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                 // 其他所有请求需要认证

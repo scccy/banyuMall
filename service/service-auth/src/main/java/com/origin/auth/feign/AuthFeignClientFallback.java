@@ -1,7 +1,7 @@
 package com.origin.auth.feign;
 
 import com.origin.auth.dto.LoginRequest;
-import com.origin.common.ResultData;
+import com.origin.common.dto.ResultData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

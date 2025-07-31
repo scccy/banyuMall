@@ -1,8 +1,7 @@
 package com.origin.user.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.origin.common.ResultData;
+import com.origin.common.dto.ResultData;
 import com.origin.user.entity.UserProfile;
 import com.origin.user.feign.AuthFeignClient;
 import com.origin.user.mapper.UserProfileMapper;

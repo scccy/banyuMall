@@ -1,13 +1,14 @@
-package com.origin.common;
+package com.origin.common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import com.origin.common.exception.ErrorCode;
+import com.origin.common.entity.ErrorCode;
 
 /**
- * 统一响应数据类，合并了BaseRequest和BaseResponse的功能
+ * 统一响应数据类 - 核心响应数据结构
+ * 遵循单一职责原则，只负责响应数据的管理
  * 
  * @author origin
  * @since 2024-12-19
@@ -17,8 +18,6 @@ import com.origin.common.exception.ErrorCode;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class ResultData<T> {
-    
-    // ==================== 响应字段 ====================
     
     /**
      * 响应码
@@ -35,28 +34,6 @@ public class ResultData<T> {
      */
     private T data;
     
-    // ==================== 请求追踪字段 ====================
-    
-    /**
-     * 请求ID，用于链路追踪
-     */
-    private String requestId;
-    
-    /**
-     * 用户ID
-     */
-    private Long userId;
-    
-    /**
-     * 客户端IP
-     */
-    private String clientIp;
-    
-    /**
-     * 用户代理
-     */
-    private String userAgent;
-    
     /**
      * 响应时间戳
      */
@@ -66,6 +43,9 @@ public class ResultData<T> {
     
     /**
      * 成功响应
+     * 
+     * @param <T> 数据类型
+     * @return 成功响应结果
      */
     public static <T> ResultData<T> success() {
         return new ResultData<T>()
@@ -76,6 +56,10 @@ public class ResultData<T> {
     
     /**
      * 成功响应（带数据）
+     * 
+     * @param <T> 数据类型
+     * @param data 响应数据
+     * @return 成功响应结果
      */
     public static <T> ResultData<T> success(T data) {
         return new ResultData<T>()
@@ -87,6 +71,11 @@ public class ResultData<T> {
     
     /**
      * 成功响应（带消息和数据）
+     * 
+     * @param <T> 数据类型
+     * @param message 响应消息
+     * @param data 响应数据
+     * @return 成功响应结果
      */
     public static <T> ResultData<T> success(String message, T data) {
         return new ResultData<T>()
@@ -95,24 +84,14 @@ public class ResultData<T> {
             .setData(data)
             .setTimestamp(System.currentTimeMillis());
     }
-    
-    /**
-     * 成功响应（带请求追踪信息）
-     */
-    public static <T> ResultData<T> success(String message, T data, String requestId, Long userId) {
-        return new ResultData<T>()
-            .setCode(200)
-            .setMessage(message)
-            .setData(data)
-            .setRequestId(requestId)
-            .setUserId(userId)
-            .setTimestamp(System.currentTimeMillis());
-    }
 
     // ==================== 失败响应方法 ====================
     
     /**
      * 失败响应
+     * 
+     * @param <T> 数据类型
+     * @return 失败响应结果
      */
     public static <T> ResultData<T> fail() {
         return new ResultData<T>()
@@ -123,6 +102,10 @@ public class ResultData<T> {
     
     /**
      * 失败响应（带消息）
+     * 
+     * @param <T> 数据类型
+     * @param message 错误消息
+     * @return 失败响应结果
      */
     public static <T> ResultData<T> fail(String message) {
         return new ResultData<T>()
@@ -133,6 +116,11 @@ public class ResultData<T> {
     
     /**
      * 失败响应（带码和消息）
+     * 
+     * @param <T> 数据类型
+     * @param code 错误码
+     * @param message 错误消息
+     * @return 失败响应结果
      */
     public static <T> ResultData<T> fail(Integer code, String message) {
         return new ResultData<T>()
@@ -143,6 +131,12 @@ public class ResultData<T> {
     
     /**
      * 失败响应（带码、消息和数据）
+     * 
+     * @param <T> 数据类型
+     * @param code 错误码
+     * @param message 错误消息
+     * @param data 错误数据
+     * @return 失败响应结果
      */
     public static <T> ResultData<T> fail(Integer code, String message, T data) {
         return new ResultData<T>()
@@ -154,6 +148,10 @@ public class ResultData<T> {
     
     /**
      * 失败响应（使用ErrorCode）
+     * 
+     * @param <T> 数据类型
+     * @param errorCode 错误码枚举
+     * @return 失败响应结果
      */
     public static <T> ResultData<T> fail(ErrorCode errorCode) {
         return new ResultData<T>()
@@ -164,6 +162,11 @@ public class ResultData<T> {
     
     /**
      * 失败响应（使用ErrorCode和自定义消息）
+     * 
+     * @param <T> 数据类型
+     * @param errorCode 错误码枚举
+     * @param message 自定义错误消息
+     * @return 失败响应结果
      */
     public static <T> ResultData<T> fail(ErrorCode errorCode, String message) {
         return new ResultData<T>()
@@ -174,6 +177,12 @@ public class ResultData<T> {
     
     /**
      * 失败响应（使用ErrorCode、自定义消息和数据）
+     * 
+     * @param <T> 数据类型
+     * @param errorCode 错误码枚举
+     * @param message 自定义错误消息
+     * @param data 错误数据
+     * @return 失败响应结果
      */
     public static <T> ResultData<T> fail(ErrorCode errorCode, String message, T data) {
         return new ResultData<T>()
@@ -187,6 +196,9 @@ public class ResultData<T> {
     
     /**
      * 兼容旧版本的ok方法
+     * 
+     * @param <T> 数据类型
+     * @return 成功响应结果
      */
     public static <T> ResultData<T> ok() {
         return success();
@@ -194,6 +206,11 @@ public class ResultData<T> {
     
     /**
      * 兼容旧版本的ok方法（带消息和数据）
+     * 
+     * @param <T> 数据类型
+     * @param message 响应消息
+     * @param data 响应数据
+     * @return 成功响应结果
      */
     public static <T> ResultData<T> ok(String message, T data) {
         return success(message, data);
@@ -201,6 +218,10 @@ public class ResultData<T> {
 
     /**
      * 兼容旧版本的ok方法（带消息）
+     * 
+     * @param <T> 数据类型
+     * @param message 响应消息
+     * @return 成功响应结果
      */
     public static <T> ResultData<T> ok(String message) {
         return success(message, null);
@@ -224,15 +245,6 @@ public class ResultData<T> {
      */
     public boolean isFail() {
         return !isSuccess();
-    }
-
-    /**
-     * 获取响应数据
-     *
-     * @return 响应数据
-     */
-    public T getData() {
-        return this.data;
     }
 
     /**
@@ -268,16 +280,5 @@ public class ResultData<T> {
      */
     public Integer getCodeOrDefault(Integer defaultCode) {
         return this.code != null ? this.code : defaultCode;
-    }
-    
-    /**
-     * 设置请求追踪信息
-     */
-    public ResultData<T> setRequestTrace(String requestId, Long userId, String clientIp, String userAgent) {
-        this.requestId = requestId;
-        this.userId = userId;
-        this.clientIp = clientIp;
-        this.userAgent = userAgent;
-        return this;
     }
 }

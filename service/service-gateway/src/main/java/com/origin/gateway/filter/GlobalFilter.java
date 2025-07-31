@@ -17,9 +17,10 @@ import java.time.LocalDateTime;
  */
 @Slf4j
 @Component
-public class GlobalFilter implements  Ordered {
+public class GlobalFilter implements org.springframework.cloud.gateway.filter.GlobalFilter, Ordered {
     
 
+    @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getPath().value();

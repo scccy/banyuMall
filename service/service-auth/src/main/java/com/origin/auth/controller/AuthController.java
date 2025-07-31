@@ -5,7 +5,7 @@ import com.origin.auth.dto.LoginResponse;
 import com.origin.auth.service.SysUserService;
 import com.origin.auth.util.JwtUtil;
 import com.origin.auth.util.TokenBlacklistUtil;
-import com.origin.common.ResultData;
+import com.origin.common.dto.ResultData;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

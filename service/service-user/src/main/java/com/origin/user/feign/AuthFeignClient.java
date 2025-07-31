@@ -1,6 +1,6 @@
 package com.origin.user.feign;
 
-import com.origin.common.ResultData;
+import com.origin.common.dto.ResultData;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

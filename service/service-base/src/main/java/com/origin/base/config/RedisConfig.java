@@ -1,4 +1,4 @@
-package com.origin.config;
+package com.origin.base.config;
 
 
 import com.alibaba.fastjson2.support.spring6.data.redis.FastJsonRedisSerializer;
