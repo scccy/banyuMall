@@ -20,6 +20,8 @@ target/
 *.ipr
 .cursor/
 .trae/
+.cursor
+.trae
 
 ### NetBeans ###
 /nbproject/private/
