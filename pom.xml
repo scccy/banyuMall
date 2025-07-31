@@ -150,9 +150,75 @@
         </dependencies>
     </dependencyManagement>
 
+    <profiles>
+        <profile>
+           <id>dev</id>
+           <properties>
+              <profiles.activation>dev</profiles.activation>
+           </properties>
+           <activation>
+              <activeByDefault>true</activeByDefault>
+           </activation>
+        </profile>
+        <profile>
+           <id>prod</id>
+           <properties>
+              <profiles.activation>prod</profiles.activation>
+           </properties>
+        </profile>
+        <profile>
+           <id>test</id>
+           <properties>
+              <profiles.activation>test</profiles.activation>
+           </properties>
+        </profile>
+    </profiles>
+
     <build>
+        <resources>
+           <resource>
+              <directory>src/main/java</directory>
+              <includes>
+                 <include>**/*.properties</include>
+                 <include>**/*.xml</include>
+              </includes>
+           </resource>
+           <resource>
+              <directory>src/main/resources</directory>
+              <excludes>
+                 <exclude>test/*</exclude>
+                 <exclude>prod/*</exclude>
+                 <exclude>dev/*</exclude>
+              </excludes>
+           </resource>
+           <resource>
+              <directory>src/main/resources/${profiles.activation}</directory>
+           </resource>
+        </resources>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <configuration>
+                        <!-- fork:如果没有该配置，这个devtools不会起作用，即应用不会restart -->
+                        <fork>true</fork>
+                        <includeSystemScope>true</includeSystemScope>
+                        <excludes>
+                            <exclude>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                            </exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -166,18 +232,6 @@
                                 <version>${lombok.version}</version>
                             </path>
                         </annotationProcessorPaths>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <configuration>
-                        <excludes>
-                            <exclude>
-                                <groupId>org.projectlombok</groupId>
-                                <artifactId>lombok</artifactId>
-                            </exclude>
-                        </excludes>
                     </configuration>
                 </plugin>
             </plugins>
