@@ -1,0 +1,381 @@
+> **文档位置**: infra/moudleDocs/{模块名称}/design.md
+
+# Service-Common 模块设计文档
+
+## 1. 模块概述
+
+### 1.1 模块职责
+**Service-Common** 是BanyuMall微服务架构的公共工具模块，负责提供静态方法、工具类和通用数据结构，为其他业务模块提供统一的基础组件支持。
+
+### 1.2 核心功能
+- **统一响应格式**: 提供标准的API响应数据结构
+- **基础实体类**: 定义所有实体类的公共字段
+- **异常处理**: 业务异常类和错误码定义
+- **请求追踪**: 链路追踪和请求上下文管理
+- **工具类**: 提供各种通用工具方法
+
+### 1.3 技术栈
+- **框架**: Spring Boot 3.x
+- **ORM**: MyBatis-Plus
+- **验证**: Jakarta Validation
+- **序列化**: FastJSON2
+- **日志**: Log4j2
+- **工具库**: Lombok
+
+## 2. 数据结构设计
+
+### 2.1 统一响应格式
+**文件**: `ResultData.java`
+**职责**: 提供标准的API响应数据结构
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Accessors(chain = true)
+public class ResultData<T> {
+    private Integer code;        // 响应码
+    private String message;      // 响应消息
+    private T data;             // 响应数据
+    private Long timestamp;      // 响应时间戳
+    
+    // 成功响应方法
+    public static <T> ResultData<T> success();
+    public static <T> ResultData<T> success(T data);
+    public static <T> ResultData<T> success(String message, T data);
+    
+    // 失败响应方法
+    public static <T> ResultData<T> fail();
+    public static <T> ResultData<T> fail(String message);
+    public static <T> ResultData<T> fail(Integer code, String message);
+    public static <T> ResultData<T> fail(ErrorCode errorCode);
+    
+    // 兼容性方法
+    public static <T> ResultData<T> ok();
+    public static <T> ResultData<T> ok(String message, T data);
+    
+    // 工具方法
+    public boolean isSuccess();
+    public boolean isFail();
+    public <R> R getData(Class<R> clazz);
+}
+```
+
+### 2.2 基础实体类
+**文件**: `BaseEntity.java`
+**职责**: 定义所有实体类的公共字段
+
+```java
+@Data
+public abstract class BaseEntity implements Serializable {
+    @TableField(value = "create_by", fill = FieldFill.INSERT)
+    private String createBy;           // 创建人ID
+    
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private LocalDateTime createTime;  // 创建时间
+    
+    @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
+    private String updateBy;           // 更新人ID
+    
+    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime updateTime;  // 更新时间
+    
+    @TableLogic
+    @TableField("is_deleted")
+    private Integer isDeleted;         // 逻辑删除标记
+}
+```
+
+### 2.3 错误码定义
+**文件**: `ErrorCode.java`
+**职责**: 定义系统中所有可能的错误码
+
+```java
+public enum ErrorCode {
+    // 成功
+    SUCCESS(200, "操作成功"),
+    
+    // 客户端错误 (4xx)
+    PARAM_ERROR(400, "参数错误"),
+    UNAUTHORIZED(401, "未授权"),
+    FORBIDDEN(403, "禁止访问"),
+    NOT_FOUND(404, "资源不存在"),
+    METHOD_NOT_ALLOWED(405, "方法不允许"),
+    CONFLICT(409, "资源冲突"),
+    
+    // 服务器错误 (5xx)
+    INTERNAL_ERROR(500, "服务器内部错误"),
+    SERVICE_UNAVAILABLE(503, "服务不可用"),
+    
+    // 业务错误 (1000-9999)
+    USER_NOT_FOUND(1001, "用户不存在"),
+    USER_ALREADY_EXISTS(1002, "用户已存在"),
+    PASSWORD_ERROR(1003, "密码错误"),
+    ACCOUNT_DISABLED(1004, "账号已被禁用"),
+    TOKEN_EXPIRED(1005, "令牌已过期"),
+    TOKEN_INVALID(1006, "令牌无效"),
+    
+    // 积分相关错误 (2000-2999)
+    INSUFFICIENT_POINTS(2001, "积分不足"),
+    POINT_TRANSACTION_FAILED(2002, "积分交易失败"),
+    
+    // 任务相关错误 (3000-3999)
+    TASK_NOT_FOUND(3001, "任务不存在"),
+    TASK_ALREADY_COMPLETED(3002, "任务已完成"),
+    TASK_EXPIRED(3003, "任务已过期"),
+    
+    // 文件相关错误 (4000-4999)
+    FILE_UPLOAD_FAILED(4001, "文件上传失败"),
+    FILE_NOT_FOUND(4002, "文件不存在"),
+    FILE_SIZE_EXCEEDED(4003, "文件大小超限");
+}
+```
+
+### 2.4 业务异常类
+**文件**: `BusinessException.java`
+**职责**: 处理业务逻辑相关的异常
+
+```java
+public class BusinessException extends RuntimeException {
+    private final ErrorCode errorCode;
+    
+    public BusinessException(ErrorCode errorCode);
+    public BusinessException(ErrorCode errorCode, String message);
+    public BusinessException(ErrorCode errorCode, String message, Throwable cause);
+    public BusinessException(ErrorCode errorCode, Throwable cause);
+    
+    public ErrorCode getErrorCode();
+    public int getCode();
+}
+```
+
+### 2.5 请求追踪类
+**文件**: `RequestTrace.java`
+**职责**: 链路追踪和请求上下文管理
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Accessors(chain = true)
+public class RequestTrace {
+    private String requestId;          // 请求ID
+    private Long userId;               // 用户ID
+    private String clientIp;           // 客户端IP
+    private String userAgent;          // 用户代理
+    private Long requestTimestamp;     // 请求时间戳
+    private Long responseTimestamp;    // 响应时间戳
+    private String serviceName;        // 服务名称
+    private String requestPath;        // 请求路径
+    private String requestMethod;      // 请求方法
+    private String requestParams;      // 请求参数
+    private Integer responseStatus;    // 响应状态码
+    private Long duration;             // 处理耗时
+    
+    // 构造方法
+    public static RequestTrace create();
+    public static RequestTrace create(String requestId);
+    public static RequestTrace create(String requestId, Long userId, String clientIp, String userAgent);
+    
+    // 工具方法
+    public RequestTrace complete(Integer responseStatus);
+    public RequestTrace setRequestInfo(String serviceName, String requestPath, String requestMethod, String requestParams);
+    public Long getDuration();
+    public boolean isCompleted();
+    public String getSummary();
+}
+```
+
+## 3. 项目结构
+
+```
+src/main/java/com/origin/common/
+├── dto/              # 数据传输对象
+│   ├── ResultData.java
+│   └── RequestTrace.java
+├── entity/           # 实体类
+│   ├── BaseEntity.java
+│   └── ErrorCode.java
+└── exception/        # 异常处理
+    └── BusinessException.java
+```
+
+## 4. 应用配置
+
+### 4.1 本地配置
+```yaml
+# application.yml
+spring:
+  profiles:
+    active: dev
+  application:
+    name: service-common
+```
+
+### 4.2 自动配置
+```java
+# org.springframework.boot.autoconfigure.AutoConfiguration.imports
+com.origin.common.config.CommonAutoConfiguration
+```
+
+## 5. 依赖管理
+
+### 5.1 核心依赖
+```xml
+<dependencies>
+    <!-- Spring Boot Starter -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter</artifactId>
+    </dependency>
+    
+    <!-- MyBatis Plus -->
+    <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-boot-starter</artifactId>
+    </dependency>
+    
+    <!-- Validation -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    
+    <!-- FastJSON2 -->
+    <dependency>
+        <groupId>com.alibaba.fastjson2</groupId>
+        <artifactId>fastjson2</artifactId>
+    </dependency>
+    
+    <!-- Lombok -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+    </dependency>
+</dependencies>
+```
+
+## 6. 使用说明
+
+### 6.1 引入依赖
+其他业务模块需要引入service-common依赖：
+```xml
+<dependency>
+    <groupId>com.origin</groupId>
+    <artifactId>service-common</artifactId>
+    <version>${project.version}</version>
+</dependency>
+```
+
+### 6.2 统一响应格式使用
+```java
+// 成功响应
+return ResultData.success(data);
+return ResultData.success("操作成功", data);
+
+// 失败响应
+return ResultData.fail("操作失败");
+return ResultData.fail(ErrorCode.USER_NOT_FOUND);
+return ResultData.fail(ErrorCode.PARAM_ERROR, "参数格式错误");
+```
+
+### 6.3 基础实体类使用
+```java
+@Data
+@TableName("user_profile")
+public class UserProfile extends BaseEntity {
+    @TableId(type = IdType.ASSIGN_ID)
+    private String id;
+    
+    @TableField("username")
+    private String username;
+    
+    // 继承的字段会自动处理：
+    // createBy, createTime, updateBy, updateTime, isDeleted
+}
+```
+
+### 6.4 业务异常使用
+```java
+// 抛出业务异常
+throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+throw new BusinessException(ErrorCode.PARAM_ERROR, "用户名不能为空");
+
+// 在Service层使用
+if (user == null) {
+    throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+}
+```
+
+### 6.5 请求追踪使用
+```java
+// 创建请求追踪
+RequestTrace trace = RequestTrace.create(requestId, userId, clientIp, userAgent);
+
+// 设置请求信息
+trace.setRequestInfo(serviceName, requestPath, requestMethod, requestParams);
+
+// 完成请求
+trace.complete(responseStatus);
+
+// 获取摘要
+String summary = trace.getSummary();
+```
+
+## 7. 最佳实践
+
+### 7.1 响应格式规范
+- **统一使用ResultData**: 所有API响应都使用ResultData格式
+- **合理使用错误码**: 使用预定义的ErrorCode，避免硬编码
+- **提供有意义的消息**: 错误消息应该对用户友好且有助于调试
+
+### 7.2 异常处理规范
+- **业务异常使用BusinessException**: 业务逻辑异常使用BusinessException
+- **系统异常使用标准异常**: 系统级异常使用RuntimeException等标准异常
+- **异常信息安全**: 生产环境不暴露敏感的错误信息
+
+### 7.3 实体类设计规范
+- **继承BaseEntity**: 所有实体类都应该继承BaseEntity
+- **使用逻辑删除**: 使用isDeleted字段进行逻辑删除
+- **审计字段自动填充**: 创建和更新字段由MyBatis-Plus自动填充
+
+### 7.4 请求追踪规范
+- **链路追踪**: 每个请求都应该有唯一的requestId
+- **性能监控**: 记录请求处理时间用于性能分析
+- **日志关联**: 使用requestId关联日志信息
+
+## 8. 扩展指南
+
+### 8.1 添加新的错误码
+```java
+// 在ErrorCode枚举中添加新的错误码
+CUSTOM_ERROR(9999, "自定义错误");
+```
+
+### 8.2 添加新的工具类
+```java
+// 在util包下添加新的工具类
+@Component
+public class CustomUtil {
+    public static String customMethod() {
+        // 工具方法实现
+    }
+}
+```
+
+### 8.3 添加新的DTO
+```java
+// 在dto包下添加新的数据传输对象
+@Data
+public class CustomDTO {
+    // DTO字段定义
+}
+```
+
+## 9. 版本历史
+
+| 版本 | 日期 | 变更内容 |
+|------|------|----------|
+| 1.0.0 | 2024-12-19 | 初始版本，包含基础数据结构 |
+| 1.1.0 | 2025-01-27 | 添加业务异常和错误码定义 |
+| 1.2.0 | 2025-07-31 | 添加请求追踪功能，优化响应格式 | 

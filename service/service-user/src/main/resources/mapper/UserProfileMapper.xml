@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.origin.user.mapper.UserProfileMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.origin.user.entity.UserProfile">
+        <id column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="real_name" property="realName"/>
+        <result column="company_name" property="companyName"/>
+        <result column="company_address" property="companyAddress"/>
+        <result column="contact_person" property="contactPerson"/>
+        <result column="contact_phone" property="contactPhone"/>
+        <result column="industry" property="industry"/>
+        <result column="description" property="description"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, real_name, company_name, company_address, contact_person, 
+        contact_phone, industry, description, create_time, update_time, is_deleted
+    </sql>
+
+    <!-- 根据用户ID查询扩展信息 -->
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM user_profile 
+        WHERE user_id = #{userId} 
+        AND is_deleted = 0
+    </select>
+
+</mapper> 
