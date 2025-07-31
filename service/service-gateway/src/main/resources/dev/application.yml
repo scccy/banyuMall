@@ -1,16 +1,15 @@
-# 网关服务 - 开发环境配置
+# 网关服务 - 开发环境主配置文件
+# 注意：业务配置和敏感信息已移至Nacos配置中心
 
+# 服务器配置
 server:
   port: 8080
-  connection-timeout: 10000
-  read-timeout: 15000
-  write-timeout: 15000
-  max-connections: 4096
-  threads:
-    max: 100
-    min: 10
+  servlet:
+    context-path: /gateway
 
+# Spring基础配置
 spring:
+  # 应用名称
   application:
     name: infra-gateway
   
@@ -18,13 +17,15 @@ spring:
   config:
     import: nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
   
+  # Nacos服务注册与发现配置
   cloud:
     nacos:
+      # 服务发现配置
       discovery:
-        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        server-addr: ${NACOS_SERVER_ADDR:117.50.197.170:8848}
         username: ${NACOS_USERNAME:nacos}
-        password: ${NACOS_PASSWORD:nacos}
-        namespace: ${NACOS_NAMESPACE:public}
+        password: ${NACOS_PASSWORD:olN2y)]VzEISLITO#_}L0J^$>Nk)1S~W}
+        namespace: ${NACOS_NAMESPACE:ba1493dc-20fa-413b-84e1-d929c9a4aeac}
         group: ${NACOS_GROUP:DEFAULT_GROUP}
         # 注册配置
         register-enabled: true
@@ -34,11 +35,13 @@ spring:
         heart-beat-timeout: 15000
         # 实例删除超时时间
         ip-delete-timeout: 30000
+      
+      # 配置中心配置
       config:
-        server-addr: ${NACOS_SERVER_ADDR:localhost:8848}
+        server-addr: ${NACOS_SERVER_ADDR:117.50.197.170:8848}
         username: ${NACOS_USERNAME:nacos}
-        password: ${NACOS_PASSWORD:nacos}
-        namespace: ${NACOS_NAMESPACE:public}
+        password: ${NACOS_PASSWORD:olN2y)]VzEISLITO#_}L0J^$>Nk)1S~W}
+        namespace: ${NACOS_NAMESPACE:ba1493dc-20fa-413b-84e1-d929c9a4aeac}
         group: ${NACOS_GROUP:DEFAULT_GROUP}
         file-extension: yaml
         # 配置刷新
@@ -50,20 +53,12 @@ spring:
         # 长轮询超时时间
         long-poll-timeout: 46000
 
-  # 日志配置（开发环境详细日志）
-  logging:
-    level:
-      com.origin.gateway: debug
-      org.springframework.cloud.gateway: debug
-      org.springframework.web: debug
-      root: info
-    pattern:
-      console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-      file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-    file:
-      name: logs/infra-gateway.log
-      max-size: 100MB
-      max-history: 30
+  # 启动性能优化（开发环境）
+  main:
+    lazy-initialization: true  # 开发环境启用懒加载
+  # JMX配置
+  jmx:
+    enabled: false  # 开发环境关闭JMX
 
 # 管理端点配置
 management:
@@ -81,39 +76,17 @@ management:
     git:
       mode: full
 
-# 网关配置
-gateway:
-  # 路由配置
-  routes:
-    - id: auth-service
-      uri: lb://service-auth
-      predicates:
-        - Path=/auth/**
-      filters:
-        - StripPrefix=0
-        - name: RequestRateLimiter
-          args:
-            redis-rate-limiter.replenishRate: 10
-            redis-rate-limiter.burstCapacity: 20
-    
-    - id: user-service
-      uri: lb://service-user
-      predicates:
-        - Path=/user/**
-      filters:
-        - StripPrefix=0
-        - name: RequestRateLimiter
-          args:
-            redis-rate-limiter.replenishRate: 10
-            redis-rate-limiter.burstCapacity: 20
-
-  # 全局过滤器配置
-  globalcors:
-    cors-configurations:
-      '[/**]':
-        allowedOrigins: "*"
-        allowedMethods: "*"
-        allowedHeaders: "*"
-        allowCredentials: true
-
-# 性能优化配置
+# 日志配置（开发环境详细日志）
+logging:
+  level:
+    com.origin.gateway: debug
+    org.springframework.cloud.gateway: debug
+    org.springframework.web: debug
+    root: info
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/infra-gateway.log
+    max-size: 100MB
+    max-history: 30
