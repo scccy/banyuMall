@@ -1,0 +1,125 @@
+# 网关服务 - 生产环境配置
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: infra-gateway
+  
+  # 配置导入 - 从Nacos加载配置
+  config:
+    import: nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
+  
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER_ADDR:prod-nacos:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
+        namespace: ${NACOS_NAMESPACE:prod}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        # 注册配置
+        register-enabled: true
+        # 心跳间隔
+        heart-beat-interval: 5000
+        # 心跳超时时间
+        heart-beat-timeout: 15000
+        # 实例删除超时时间
+        ip-delete-timeout: 30000
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:prod-nacos:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:nacos}
+        namespace: ${NACOS_NAMESPACE:prod}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        file-extension: yaml
+        # 配置刷新
+        refresh-enabled: true
+        # 配置超时时间
+        timeout: 3000
+        # 配置重试次数
+        retry-time: 2000
+        # 长轮询超时时间
+        long-poll-timeout: 46000
+
+  # 日志配置（生产环境精简日志）
+  logging:
+    level:
+      com.origin.gateway: warn
+      org.springframework.cloud.gateway: warn
+      org.springframework.web: warn
+      root: warn
+    pattern:
+      console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+      file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file:
+      name: logs/infra-gateway.log
+      max-size: 100MB
+      max-history: 30
+
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,gateway
+  endpoint:
+    health:
+      show-details: when-authorized
+  # 应用信息配置
+  info:
+    env:
+      enabled: true
+    git:
+      mode: full
+
+# 网关配置
+gateway:
+  # 路由配置
+  routes:
+    - id: auth-service
+      uri: lb://service-auth
+      predicates:
+        - Path=/auth/**
+      filters:
+        - StripPrefix=0
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 50
+            redis-rate-limiter.burstCapacity: 100
+    
+    - id: user-service
+      uri: lb://service-user
+      predicates:
+        - Path=/user/**
+      filters:
+        - StripPrefix=0
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 50
+            redis-rate-limiter.burstCapacity: 100
+
+  # 全局过滤器配置
+  globalcors:
+    cors-configurations:
+      '[/**]':
+        allowedOrigins: "${ALLOWED_ORIGINS:*}"
+        allowedMethods: "GET,POST,PUT,DELETE,OPTIONS"
+        allowedHeaders: "*"
+        allowCredentials: true
+
+# 性能优化配置
+server:
+  # 连接超时时间
+  connection-timeout: 20000
+  # 读取超时时间
+  read-timeout: 30000
+  # 写入超时时间
+  write-timeout: 30000
+  # 最大连接数
+  max-connections: 16384
+  # 最大线程数
+  threads:
+    max: 400
+    min: 50 

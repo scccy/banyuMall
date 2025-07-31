@@ -1,0 +1,154 @@
+# 认证服务 - 测试环境配置（连接测试环境Nacos）
+
+spring:
+  # 数据源配置（测试环境使用环境变量）
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${MYSQL_URL:jdbc:mysql://test-mysql:3306/banyu_mall?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8}
+    username: ${MYSQL_USERNAME:test_user}
+    password: ${MYSQL_PASSWORD:test_password}
+    hikari:
+      minimum-idle: 8
+      maximum-pool-size: 30
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: HikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+  # 数据库初始化配置（测试环境不自动初始化）
+  sql:
+    init:
+      mode: never
+
+  # Redis配置（测试环境使用环境变量）
+  data:
+    redis:
+      host: ${REDIS_HOST:test-redis}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:test_redis_password}
+      database: ${REDIS_DATABASE:1}
+      timeout: 10000ms
+      lettuce:
+        pool:
+          max-active: 15
+          max-wait: -1ms
+          max-idle: 8
+          min-idle: 3
+
+  # MyBatis-Plus配置（测试环境优化）
+  mybatis-plus:
+    configuration:
+      map-underscore-to-camel-case: true
+      cache-enabled: true
+      call-setters-on-nulls: false
+      jdbc-type-for-null: 'null'
+      # 测试环境关闭SQL日志
+      log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+    global-config:
+      db-config:
+        id-type: assign_id
+        logic-delete-field: isDeleted
+        logic-delete-value: 1
+        logic-not-delete-value: 0
+    mapper-locations: classpath*:/mapper/**/*.xml
+    type-aliases-package: com.origin.auth.entity
+
+  # 日志配置（测试环境中等日志）
+  logging:
+    level:
+      com.origin.auth: info
+      org.springframework.security: warn
+      org.springframework.web: warn
+      root: warn
+    pattern:
+      console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+      file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file:
+      name: logs/service-auth.log
+      max-size: 100MB
+      max-history: 30
+
+  # 启动性能优化
+  main:
+    lazy-initialization: false
+  jmx:
+    enabled: false
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000  # 1小时
+      cache-null-values: false
+
+# JWT配置（测试环境使用环境变量）
+jwt:
+  # JWT密钥 - 测试环境使用测试密钥
+  secret: ${JWT_SECRET:test-jwt-secret-key-for-testing-environment}
+  # 过期时间（毫秒）- 1小时
+  expiration: ${JWT_EXPIRATION:3600000}
+  # 令牌前缀
+  token-prefix: ${JWT_TOKEN_PREFIX:Bearer}
+  # 刷新令牌过期时间（毫秒）- 24小时
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:86400000}
+  # 是否启用黑名单
+  enable-blacklist: ${JWT_ENABLE_BLACKLIST:true}
+  # Redis黑名单前缀
+  blacklist-prefix: ${JWT_BLACKLIST_PREFIX:token:blacklist:}
+  # Redis有效令牌前缀
+  valid-token-prefix: ${JWT_VALID_TOKEN_PREFIX:token:valid:}
+
+# 安全配置
+security:
+  # 不需要认证的路径
+  permit-all:
+    - /auth/login
+    - /auth/register
+    - /auth/test/**
+    - /actuator/health
+    - /actuator/info
+    - /actuator/metrics
+
+# Swagger配置（测试环境启用）
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  packages-to-scan: com.origin.auth.controller
+
+# 登录配置
+login:
+  max-attempts: 5  # 最大登录尝试次数
+  lock-duration: 300  # 锁定时间（秒）
+  captcha-enabled: false  # 测试环境关闭验证码
+
+# 令牌配置
+token:
+  refresh-threshold: 300  # 刷新阈值（秒）
+  blacklist-cleanup-interval: 3600  # 黑名单清理间隔（秒）
+
+# 线程池配置（测试环境优化）
+thread:
+  pool:
+    core-size: 15
+    max-size: 30
+    queue-capacity: 800
+    keep-alive-seconds: 60
+
+# 性能优化配置
+server:
+  # 连接超时时间
+  connection-timeout: 15000
+  # 读取超时时间
+  read-timeout: 20000
+  # 写入超时时间
+  write-timeout: 20000
+  # 最大连接数
+  max-connections: 4096
+  # 最大线程数
+  threads:
+    max: 100
+    min: 10 
