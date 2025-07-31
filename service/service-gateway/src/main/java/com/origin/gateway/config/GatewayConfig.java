@@ -24,7 +24,7 @@ public class GatewayConfig {
                         .path("/auth/**")
                         .filters(f -> f
                                 .addRequestHeader("X-Gateway-Source", "service-gateway")
-                                .addRequestHeader("X-Route-Name", "auth-service"))
+                                .addRequestHeader("X-Service-Name", "service-auth"))
                         .uri("lb://service-auth"))
                 
                 // 用户服务路由
@@ -32,16 +32,8 @@ public class GatewayConfig {
                         .path("/user/**")
                         .filters(f -> f
                                 .addRequestHeader("X-Gateway-Source", "service-gateway")
-                                .addRequestHeader("X-Route-Name", "user-service"))
+                                .addRequestHeader("X-Service-Name", "service-user"))
                         .uri("lb://service-user"))
-                
-                // 健康检查路由
-                .route("health-service", r -> r
-                        .path("/health/**")
-                        .filters(f -> f
-                                .addRequestHeader("X-Gateway-Source", "service-gateway")
-                                .addRequestHeader("X-Route-Name", "health-service"))
-                        .uri("lb://service-auth"))
                 
                 .build();
     }

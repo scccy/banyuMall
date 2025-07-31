@@ -104,7 +104,6 @@ security:
   permit-all:
     - /auth/login
     - /auth/register
-    - /auth/test/**
     - /actuator/health
     - /actuator/info
     - /actuator/metrics

@@ -28,7 +28,7 @@ public class SecurityConfig {
     @Value("${spring.security.user.name:admin}")
     private String username;
 
-    @Value("${spring.security.user.password:admin123}")
+    @Value("${spring.security.user.password:123456}")
     private String password;
 
     @Value("${spring.security.user.roles:ADMIN}")
@@ -39,7 +39,7 @@ public class SecurityConfig {
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10); // 使用 BCrypt，强度为10，与数据库中的密码保持一致
+        return new BCryptPasswordEncoder(12); // 使用 BCrypt，强度为12，与数据库中的密码保持一致
     }
 
     /**

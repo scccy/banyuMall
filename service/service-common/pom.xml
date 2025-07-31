@@ -49,6 +49,10 @@
             <artifactId>jjwt-impl</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+        </dependency>
 
         <!-- Jakarta XML Binding API -->
         <dependency>

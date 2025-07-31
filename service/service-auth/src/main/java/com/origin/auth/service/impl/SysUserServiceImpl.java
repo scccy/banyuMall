@@ -12,6 +12,7 @@ import com.origin.auth.service.SysUserService;
 
 import com.origin.auth.util.JwtUtil;
 import com.origin.auth.util.TokenBlacklistUtil;
+import com.origin.auth.util.PasswordUtil;
 import com.origin.common.exception.BusinessException;
 import com.origin.common.entity.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -56,8 +57,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "用户名或密码错误");
         }
 
-        // 校验密码
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+        // 添加调试日志
+        log.info("登录验证 - 用户名: {}, 输入密码: {}, 数据库密码: {}", 
+                loginRequest.getUsername(), 
+                maskPassword(loginRequest.getPassword()), 
+                user.getPassword());
+        
+        // 使用注入的PasswordEncoder进行密码验证
+        boolean passwordMatches = passwordEncoder.matches(loginRequest.getPassword(), user.getPassword());
+        log.info("PasswordEncoder验证结果: {}", passwordMatches);
+        
+        // 同时使用PasswordUtil进行验证（用于对比）
+        boolean passwordUtilMatches = PasswordUtil.matches(loginRequest.getPassword(), user.getPassword());
+        log.info("PasswordUtil验证结果: {}", passwordUtilMatches);
+        
+        if (!passwordMatches) {
+            log.error("密码验证失败 - 用户名: {}, 输入密码: {}, 数据库密码: {}", 
+                    loginRequest.getUsername(), 
+                    maskPassword(loginRequest.getPassword()), 
+                    user.getPassword());
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "用户名或密码错误");
         }
 
@@ -98,5 +116,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public SysUser getByUsername(String username) {
         return baseMapper.selectByUsername(username);
+    }
+    
+    /**
+     * 掩码密码（用于日志安全）
+     */
+    private String maskPassword(String password) {
+        if (password == null || password.length() <= 2) {
+            return "***";
+        }
+        return password.substring(0, 1) + "***" + password.substring(password.length() - 1);
     }
 }

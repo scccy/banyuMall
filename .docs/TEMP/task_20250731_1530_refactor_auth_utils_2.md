@@ -203,4 +203,4 @@ boolean isBlacklisted = tokenBlacklistUtil.isBlacklisted(token);
 - **安全性**: 显著提升
 - **可维护性**: 显著提升
 - **功能完整性**: 100%
-- **配置灵活性**: 优秀 
+- **配置灵活性**: 优秀
