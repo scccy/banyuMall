@@ -9,7 +9,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
  * 
  * @author origin
  */
-@SpringBootApplication
+//@SpringBootApplication(scanBasePackages = {"com.origin"})
 @EnableDiscoveryClient
 public class GatewayApplication {
     
