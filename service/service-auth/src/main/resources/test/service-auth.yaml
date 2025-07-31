@@ -1,0 +1,163 @@
+# Nacos配置模板 - service-auth.yml
+# 配置ID: service-auth.yml
+# 配置组: DEFAULT_GROUP
+# 命名空间: prod
+
+# 数据源配置
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://117.50.197.170:3306/banyu?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+    username: root
+    password: qUhquc-dagpup-5rubvu
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 50
+      auto-commit: true
+      idle-timeout: 60000
+      pool-name: HikariCP
+      max-lifetime: 3600000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+  # Redis配置
+  data:
+    redis:
+      host: 117.50.197.170
+      port: 16379
+      password: qUhquc-dagpup-5rubvu
+      database: 0
+      timeout: 10000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-wait: -1ms
+          max-idle: 10
+          min-idle: 5
+
+  # MyBatis-Plus配置
+  mybatis-plus:
+    configuration:
+      map-underscore-to-camel-case: true
+      cache-enabled: true
+      call-setters-on-nulls: true
+      jdbc-type-for-null: 'null'
+    global-config:
+      db-config:
+        id-type: assign_id
+        logic-delete-field: isDeleted
+        logic-delete-value: 1
+        logic-not-delete-value: 0
+    mapper-locations: classpath*:/mapper/**/*.xml
+    type-aliases-package: com.origin.auth.entity
+  main:
+    lazy-initialization: false  # 生产环境关闭懒加载
+  jmx:
+    enabled: false  # 生产环境关闭JMX
+  cache:
+    type:
+      redis:
+        time-to-live: 3600000  # 1小时
+        cache-null-values: false
+
+# JWT配置
+jwt:
+  # JWT密钥 - 开发环境使用默认密钥
+  secret: ${JWT_SECRET:nG9dT@e4^M7#pKc!Wz0qF8vRtLx*A6s1YhJ2BrCm}
+  # 过期时间（毫秒）- 1小时
+  expiration: ${JWT_EXPIRATION:3600000}
+  # 令牌前缀
+  token-prefix: ${JWT_TOKEN_PREFIX:Bearer}
+  # 刷新令牌过期时间（毫秒）- 24小时
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:86400000}
+  # 是否启用黑名单
+  enable-blacklist: ${JWT_ENABLE_BLACKLIST:true}
+  # Redis黑名单前缀
+  blacklist-prefix: ${JWT_BLACKLIST_PREFIX:token:blacklist:}
+  # Redis有效令牌前缀
+  valid-token-prefix: ${JWT_VALID_TOKEN_PREFIX:token:valid:}
+
+# 安全配置
+security:
+  # 不需要认证的路径
+  permit-all:
+    - /auth/login
+    - /auth/register
+    - /actuator/health
+    - /actuator/info
+
+# 自定义配置
+auth:
+  # 密码加密配置
+  password:
+    encoder:
+      strength: 12
+  # 登录配置
+  login:
+    lock-duration: 600
+    max-attempts: 5
+  # 令牌配置
+  token:
+    refresh-threshold: 300  # 刷新阈值（秒）
+    blacklist-cleanup-interval: 3600  # 黑名单清理间隔（秒）
+
+
+
+# 线程池配置
+thread:
+  pool:
+    core-size: 20
+    max-size: 50
+    queue-capacity: 1000
+    keep-alive-seconds: 60
+
+# 日志配置
+logging:
+  level:
+    com.origin: info
+    org.springframework.security: warn
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n"
+  file:
+    name: logs/service-auth.log
+    max-size: 100MB
+    max-history: 30
+
+# OpenFeign配置
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 10000
+        read-timeout: 10000
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+  hystrix:
+    enabled: true
+
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Swagger配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  packages-to-scan: com.origin.auth.controller

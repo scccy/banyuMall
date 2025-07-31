@@ -1,12 +1,15 @@
-# 认证服务 - 开发环境配置（本地直接连接）
+# 认证服务 - Nacos远程配置文件
+# 配置ID: service-auth.yaml
+# 配置组: DEFAULT_GROUP
+# 命名空间: ba1493dc-20fa-413b-84e1-d929c9a4aeac
 
+# 数据源配置
 spring:
-  # 数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/banyu_mall?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-    username: root
-    password: 123456
+    url: ${MYSQL_URL:jdbc:mysql://117.50.197.170:3306/banyu?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:qUhquc-dagpup-5rubvu}
     hikari:
       minimum-idle: 5
       maximum-pool-size: 20
@@ -17,21 +20,13 @@ spring:
       connection-timeout: 30000
       connection-test-query: SELECT 1
 
-  # 数据库初始化配置（开发环境）
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:db/unified-user-schema.sql
-      data-locations: classpath:db/unified-init-data.sql
-      continue-on-error: true
-
   # Redis配置
   data:
     redis:
-      host: localhost
-      port: 6379
-      password: 
-      database: 0
+      host: ${REDIS_HOST:117.50.197.170}
+      port: ${REDIS_PORT:16379}
+      password: ${REDIS_PASSWORD:qUhquc-dagpup-5rubvu}
+      database: ${REDIS_DATABASE:0}
       timeout: 10000ms
       lettuce:
         pool:
@@ -40,7 +35,7 @@ spring:
           max-idle: 8
           min-idle: 0
 
-  # MyBatis-Plus配置
+  # MyBatis-Plus配置（开发环境）
   mybatis-plus:
     configuration:
       map-underscore-to-camel-case: true
@@ -57,21 +52,12 @@ spring:
     mapper-locations: classpath*:/mapper/**/*.xml
     type-aliases-package: com.origin.auth.entity
 
-  # 日志配置（开发环境详细日志）
-  logging:
-    level:
-      com.origin.auth: debug
-      org.springframework.security: debug
-      org.springframework.web: debug
-      com.origin.auth.util: debug
-      root: info
-
-  # 启动性能优化
-  main:
-    lazy-initialization: true  # 开发环境启用懒加载
-  # JMX配置
-  jmx:
-    enabled: false  # 开发环境关闭JMX
+  # 缓存配置
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000  # 1小时
+      cache-null-values: false
 
 # JWT配置
 jwt:
@@ -103,7 +89,7 @@ security:
     - /actuator/info
     - /actuator/metrics
 
-# Swagger配置
+# Swagger配置（开发环境启用）
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
@@ -124,10 +110,83 @@ token:
   refresh-threshold: 300  # 刷新阈值（秒）
   blacklist-cleanup-interval: 3600  # 黑名单清理间隔（秒）
 
-# 线程池配置
+# 线程池配置（开发环境）
 thread:
   pool:
     core-size: 10
     max-size: 20
     queue-capacity: 500
-    keep-alive-seconds: 60 
+    keep-alive-seconds: 60
+
+# OpenFeign配置
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 5000
+        read-timeout: 5000
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+  hystrix:
+    enabled: true
+
+# 自定义配置
+auth:
+  # 密码加密配置
+  password:
+    encoder:
+      strength: 10  # 开发环境使用较低强度
+  # 登录配置
+  login:
+    lock-duration: 300
+    max-attempts: 5
+  # 令牌配置
+  token:
+    refresh-threshold: 300  # 刷新阈值（秒）
+    blacklist-cleanup-interval: 3600  # 黑名单清理间隔（秒）
+
+# 监控配置
+monitoring:
+  # 健康检查配置
+  health:
+    check-interval: 30  # 健康检查间隔（秒）
+    timeout: 5000  # 健康检查超时时间（毫秒）
+  
+  # 指标配置
+  metrics:
+    enabled: true
+    export:
+      prometheus:
+        enabled: true
+        descriptions: true
+        step: 60s
+
+# 限流配置（开发环境宽松）
+rate-limit:
+  enabled: true
+  # 登录接口限流
+  login:
+    max-requests: 20  # 最大请求数
+    time-window: 60  # 时间窗口（秒）
+  # 通用接口限流
+  general:
+    max-requests: 200  # 最大请求数
+    time-window: 60  # 时间窗口（秒）
+
+# 审计日志配置（开发环境）
+audit:
+  enabled: true
+  # 审计事件
+  events:
+    - LOGIN_SUCCESS
+    - LOGIN_FAILURE
+    - LOGOUT
+    - PASSWORD_CHANGE
+    - ACCOUNT_LOCK
+  # 审计日志存储
+  storage:
+    type: database  # database, file, elasticsearch
+    table: sys_audit_log

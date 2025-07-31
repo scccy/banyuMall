@@ -1,5 +1,5 @@
 # 认证服务 - 主配置文件
-# 注意：环境特定配置已移至对应的环境目录中
+# 注意：业务配置和敏感信息已移至Nacos配置中心
 
 # 服务器配置
 server:
@@ -88,4 +88,4 @@ logging:
   file:
     name: logs/service-auth.log
     max-size: 100MB
-    max-history: 30
+    max-history: 30 

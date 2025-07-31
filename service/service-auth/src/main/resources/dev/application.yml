@@ -1,133 +1,100 @@
-# 认证服务 - 开发环境配置（本地直接连接）
+# 认证服务 - 开发环境主配置文件
+# 注意：业务配置和敏感信息已移至Nacos配置中心
 
+# 服务器配置
+server:
+  port: 8081
+  servlet:
+    context-path: /auth
+
+# Spring基础配置
 spring:
-  # 数据源配置
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/banyu_mall?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-    username: root
-    password: 123456
-    hikari:
-      minimum-idle: 5
-      maximum-pool-size: 20
-      auto-commit: true
-      idle-timeout: 30000
-      pool-name: HikariCP
-      max-lifetime: 1800000
-      connection-timeout: 30000
-      connection-test-query: SELECT 1
+  # 应用名称
+  application:
+    name: service-auth
+  
+  # 配置导入 - 从Nacos加载配置
+  config:
+    import: nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
+  
+  # Spring Security 默认用户配置（开发环境）
+  security:
+    user:
+      name: ${SECURITY_USER_NAME:admin}
+      password: ${SECURITY_USER_PASSWORD:admin123}
+      roles: ${SECURITY_USER_ROLES:ADMIN}
 
-  # 数据库初始化配置（开发环境）
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:db/unified-user-schema.sql
-      data-locations: classpath:db/unified-init-data.sql
-      continue-on-error: true
+  # Nacos服务注册与发现配置
+  cloud:
+    nacos:
+      # 服务发现配置
+      discovery:
+        server-addr: ${NACOS_SERVER_ADDR:117.50.197.170:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:olN2y)]VzEISLITO#_}L0J^$>Nk)1S~W}
+        namespace: ${NACOS_NAMESPACE:ba1493dc-20fa-413b-84e1-d929c9a4aeac}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        # 注册配置
+        register-enabled: true
+        # 心跳间隔
+        heart-beat-interval: 5000
+        # 心跳超时时间
+        heart-beat-timeout: 15000
+        # 实例删除超时时间
+        ip-delete-timeout: 30000
+      
+      # 配置中心配置
+      config:
+        server-addr: ${NACOS_SERVER_ADDR:117.50.197.170:8848}
+        username: ${NACOS_USERNAME:nacos}
+        password: ${NACOS_PASSWORD:olN2y)]VzEISLITO#_}L0J^$>Nk)1S~W}
+        namespace: ${NACOS_NAMESPACE:ba1493dc-20fa-413b-84e1-d929c9a4aeac}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        file-extension: yaml
+        # 配置刷新
+        refresh-enabled: true
+        # 配置超时时间
+        timeout: 3000
+        # 配置重试次数
+        retry-time: 2000
+        # 长轮询超时时间
+        long-poll-timeout: 46000
 
-  # Redis配置
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      password: 
-      database: 0
-      timeout: 10000ms
-      lettuce:
-        pool:
-          max-active: 8
-          max-wait: -1ms
-          max-idle: 8
-          min-idle: 0
-
-  # MyBatis-Plus配置
-  mybatis-plus:
-    configuration:
-      map-underscore-to-camel-case: true
-      cache-enabled: false
-      call-setters-on-nulls: true
-      jdbc-type-for-null: 'null'
-      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    global-config:
-      db-config:
-        id-type: assign_id
-        logic-delete-field: isDeleted
-        logic-delete-value: 1
-        logic-not-delete-value: 0
-    mapper-locations: classpath*:/mapper/**/*.xml
-    type-aliases-package: com.origin.auth.entity
-
-  # 日志配置（开发环境详细日志）
-  logging:
-    level:
-      com.origin.auth: debug
-      org.springframework.security: debug
-      org.springframework.web: debug
-      com.origin.auth.util: debug
-      root: info
-
-  # 启动性能优化
+  # 启动性能优化（开发环境）
   main:
     lazy-initialization: true  # 开发环境启用懒加载
   # JMX配置
   jmx:
     enabled: false  # 开发环境关闭JMX
 
-# JWT配置
-jwt:
-  # JWT密钥 - 开发环境使用默认密钥
-  secret: ${JWT_SECRET:nG9dT@e4^M7#pKc!Wz0qF8vRtLx*A6s1YhJ2BrCm}
-  # 过期时间（毫秒）- 1小时
-  expiration: ${JWT_EXPIRATION:3600000}
-  # 令牌前缀
-  token-prefix: ${JWT_TOKEN_PREFIX:Bearer}
-  # 刷新令牌过期时间（毫秒）- 24小时
-  refresh-expiration: ${JWT_REFRESH_EXPIRATION:86400000}
-  # 是否启用黑名单
-  enable-blacklist: ${JWT_ENABLE_BLACKLIST:true}
-  # Redis黑名单前缀
-  blacklist-prefix: ${JWT_BLACKLIST_PREFIX:token:blacklist:}
-  # Redis有效令牌前缀
-  valid-token-prefix: ${JWT_VALID_TOKEN_PREFIX:token:valid:}
+# 管理端点配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+  # 应用信息配置
+  info:
+    env:
+      enabled: true
+    git:
+      mode: full
 
-# 安全配置
-security:
-  # 不需要认证的路径
-  permit-all:
-    - /auth/login
-    - /auth/register
-    - /auth/test/**
-    - /swagger-ui/**
-    - /v3/api-docs/**
-    - /actuator/health
-    - /actuator/info
-    - /actuator/metrics
-
-# Swagger配置
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-    enabled: true
-  api-docs:
-    path: /v3/api-docs
-    enabled: true
-  packages-to-scan: com.origin.auth.controller
-
-# 登录配置
-login:
-  max-attempts: 5  # 最大登录尝试次数
-  lock-duration: 300  # 锁定时间（秒）
-  captcha-enabled: false  # 开发环境关闭验证码
-
-# 令牌配置
-token:
-  refresh-threshold: 300  # 刷新阈值（秒）
-  blacklist-cleanup-interval: 3600  # 黑名单清理间隔（秒）
-
-# 线程池配置
-thread:
-  pool:
-    core-size: 10
-    max-size: 20
-    queue-capacity: 500
-    keep-alive-seconds: 60 
+# 日志配置（开发环境详细日志）
+logging:
+  level:
+    com.origin.auth: debug
+    org.springframework.security: debug
+    org.springframework.web: debug
+    com.origin.auth.util: debug
+    root: info
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/service-auth.log
+    max-size: 100MB
+    max-history: 30 
