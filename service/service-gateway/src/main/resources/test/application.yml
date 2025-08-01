@@ -139,11 +139,24 @@ gateway:
       predicates:
         - Path=/service/user/**
       filters:
-        - StripPrefix=0
+        - StripPrefix=1
         - name: RequestRateLimiter
           args:
             redis-rate-limiter.replenishRate: 20
             redis-rate-limiter.burstCapacity: 40
+    
+    - id: core-publisher-service
+      uri: lb://core-publisher
+      predicates:
+        - Path=/core/publisher/**
+      filters:
+        - StripPrefix=1
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 20
+            redis-rate-limiter.burstCapacity: 40
+    
+
 
   # 全局过滤器配置
   globalcors:
