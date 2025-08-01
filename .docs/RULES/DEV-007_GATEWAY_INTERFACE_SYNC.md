@@ -35,10 +35,6 @@ spring:
             - Path=/api/{module-name}/**
           filters:
             - StripPrefix=0
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 10
-                redis-rate-limiter.burstCapacity: 20
             - name: Retry
               args:
                 retries: 3
@@ -68,22 +64,22 @@ spring:
 **重要提醒**: 新微服务创建完成后，**必须立即**执行以下步骤，确保服务能够通过网关正常访问。
 
 #### 步骤1: 更新路由配置
-- 在`infra/infra-gateway/src/main/resources/application.yml`中添加新模块路由
+- 在`service/service-gateway/src/main/resources/application.yml`中添加新模块路由
 - 配置正确的服务名称和路径前缀
 - 设置适当的限流和重试策略
 
 #### 步骤2: 更新过滤器配置
-- 在`infra/infra-gateway/src/main/java/com/origin/gateway/filter/GlobalFilter.java`中添加新模块的处理逻辑
+- 在`service/service-gateway/src/main/java/com/origin/gateway/filter/GlobalFilter.java`中添加新模块的处理逻辑
 - 配置新模块的认证验证规则
 - 设置新模块的权限检查逻辑
 
 #### 步骤3: 更新网关配置类
-- 在`infra/infra-gateway/src/main/java/com/origin/gateway/config/GatewayConfig.java`中添加新模块的配置
+- 在`service/service-gateway/src/main/java/com/origin/gateway/config/GatewayConfig.java`中添加新模块的配置
 - 配置新模块的跨域设置
 - 设置新模块的负载均衡策略
 
 #### 步骤4: 更新Nacos配置
-- 在`infra/infra-gateway/nacos-config-template.yml`中添加新模块的配置模板
+- 在`service/service-gateway/nacos-config-template.yml`中添加新模块的配置模板
 - 确保新模块的配置能够通过Nacos动态更新
 
 ### 5. 接口文档同步
@@ -112,11 +108,8 @@ spring:
   predicates:
     - Path=/api/{module-name}/**
   filters:
-    - StripPrefix=1
+    - StripPrefix=0
     - name: RequestRateLimiter
-      args:
-        redis-rate-limiter.replenishRate: 10
-        redis-rate-limiter.burstCapacity: 20
     - name: Retry
       args:
         retries: 3
@@ -180,7 +173,7 @@ if (path.startsWith("/api/{module-name}/")) {
 
 1. **立即添加网关路由配置**
    ```yaml
-   # 在 infra/infra-gateway/src/main/resources/application.yml 中添加
+   # 在 service/service-gateway/src/main/resources/application.yml 中添加
    spring:
      cloud:
        gateway:
@@ -190,7 +183,7 @@ if (path.startsWith("/api/{module-name}/")) {
              predicates:
                - Path=/api/{new-service-name}/**
              filters:
-               - StripPrefix=1
+               - StripPrefix=0
    ```
 
 2. **立即验证路由配置**
@@ -212,7 +205,7 @@ if (path.startsWith("/api/{module-name}/")) {
   - **解决**: 确保predicates中的Path与服务的实际路径一致
 
 ## 相关文件
-- `infra/infra-gateway/src/main/resources/application.yml`
-- `infra/infra-gateway/src/main/java/com/origin/gateway/filter/GlobalFilter.java`
-- `infra/infra-gateway/src/main/java/com/origin/gateway/config/GatewayConfig.java`
-- `infra/infra-gateway/nacos-config-template.yml` 
+- `service/service-gateway/src/main/resources/application.yml`
+- `service/service-gateway/src/main/java/com/origin/gateway/filter/GlobalFilter.java`
+- `service/service-gateway/src/main/java/com/origin/gateway/config/GatewayConfig.java`
+- `service/service-gateway/nacos-config-template.yml` 
