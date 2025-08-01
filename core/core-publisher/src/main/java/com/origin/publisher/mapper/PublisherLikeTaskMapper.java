@@ -1,5 +1,6 @@
 package com.origin.publisher.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.origin.publisher.entity.PublisherLikeTask;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

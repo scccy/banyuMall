@@ -31,22 +31,7 @@ spring:
       - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
       - org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
   
-  # Redis配置 - 用于限流器（响应式）
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      database: 0
-      timeout: 3000ms
-      lettuce:
-        pool:
-          max-active: 8
-          max-idle: 8
-          min-idle: 0
-          max-wait: -1ms
-      # 响应式Redis配置
-      reactive:
-        timeout: 3000ms
+
   
   # Nacos服务注册与发现配置
   cloud:
@@ -129,10 +114,6 @@ gateway:
         - Path=/auth/**
       filters:
         - StripPrefix=0
-        - name: RequestRateLimiter
-          args:
-            redis-rate-limiter.replenishRate: 20
-            redis-rate-limiter.burstCapacity: 40
     
     - id: user-service
       uri: lb://service-user
@@ -140,10 +121,6 @@ gateway:
         - Path=/service/user/**
       filters:
         - StripPrefix=1
-        - name: RequestRateLimiter
-          args:
-            redis-rate-limiter.replenishRate: 20
-            redis-rate-limiter.burstCapacity: 40
     
     - id: core-publisher-service
       uri: lb://core-publisher
@@ -151,10 +128,6 @@ gateway:
         - Path=/core/publisher/**
       filters:
         - StripPrefix=1
-        - name: RequestRateLimiter
-          args:
-            redis-rate-limiter.replenishRate: 20
-            redis-rate-limiter.burstCapacity: 40
     
 
 

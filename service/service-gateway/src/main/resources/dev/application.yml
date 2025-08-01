@@ -74,15 +74,13 @@ spring:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
       - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
       - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
-      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
       - org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 
   # JMX配置
   jmx:
     enabled: false  # 开发环境关闭JMX
 
-  # Redis配置 - 已移除，使用Nacos远程配置管理
+  # 配置管理 - 使用Nacos远程配置管理
 
 # 管理端点配置
 management:
