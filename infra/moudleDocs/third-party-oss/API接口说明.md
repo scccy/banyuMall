@@ -9,7 +9,7 @@
 ### 基础信息
 - **服务名称**: third-party-oss
 - **服务端口**: 8085
-- **基础路径**: `/third-party/oss`
+- **基础路径**: `/tp/oss`
 - **API文档地址**: http://localhost:8085/doc.html
 
 ### 通用响应格式
@@ -25,7 +25,7 @@
 
 ### 1.1 单文件上传
 
-**接口地址**: `POST /third-party/oss/upload`
+**接口地址**: `POST /tp/oss/upload`
 
 **接口描述**: 上传单个文件到阿里云OSS
 
@@ -59,7 +59,7 @@
 
 **测试示例**:
 ```bash
-curl -X POST "http://localhost:8085/third-party/oss/upload" \
+curl -X POST "http://localhost:8085/tp/oss/upload" \
   -H "Content-Type: multipart/form-data" \
   -F "file=@/path/to/test.jpg" \
   -F "sourceService=core-publisher" \
@@ -71,7 +71,7 @@ curl -X POST "http://localhost:8085/third-party/oss/upload" \
 
 ### 1.2 批量文件上传
 
-**接口地址**: `POST /third-party/oss/upload/batch`
+**接口地址**: `POST /tp/oss/upload/batch`
 
 **接口描述**: 批量上传多个文件到阿里云OSS
 
@@ -115,7 +115,7 @@ curl -X POST "http://localhost:8085/third-party/oss/upload" \
 
 **测试示例**:
 ```bash
-curl -X POST "http://localhost:8085/third-party/oss/upload/batch" \
+curl -X POST "http://localhost:8085/tp/oss/upload/batch" \
   -H "Content-Type: multipart/form-data" \
   -F "files=@/path/to/file1.jpg" \
   -F "files=@/path/to/file2.png" \
@@ -128,7 +128,7 @@ curl -X POST "http://localhost:8085/third-party/oss/upload/batch" \
 
 ### 2.1 文件下载
 
-**接口地址**: `GET /third-party/oss/download/{fileId}`
+**接口地址**: `GET /tp/oss/download/{fileId}`
 
 **接口描述**: 下载指定文件
 
@@ -141,13 +141,13 @@ curl -X POST "http://localhost:8085/third-party/oss/upload/batch" \
 
 **测试示例**:
 ```bash
-curl -X GET "http://localhost:8085/third-party/oss/download/1" \
+curl -X GET "http://localhost:8085/tp/oss/download/1" \
   -o downloaded_file.jpg
 ```
 
 ### 2.2 文件预览
 
-**接口地址**: `GET /third-party/oss/preview/{fileId}`
+**接口地址**: `GET /tp/oss/preview/{fileId}`
 
 **接口描述**: 获取文件预览URL
 
@@ -167,14 +167,14 @@ curl -X GET "http://localhost:8085/third-party/oss/download/1" \
 
 **测试示例**:
 ```bash
-curl -X GET "http://localhost:8085/third-party/oss/preview/1"
+curl -X GET "http://localhost:8085/tp/oss/preview/1"
 ```
 
 ## 3. 文件管理接口
 
 ### 3.1 获取文件信息
 
-**接口地址**: `GET /third-party/oss/file/{fileId}`
+**接口地址**: `GET /tp/oss/file/{fileId}`
 
 **接口描述**: 获取指定文件的详细信息
 
@@ -211,12 +211,12 @@ curl -X GET "http://localhost:8085/third-party/oss/preview/1"
 
 **测试示例**:
 ```bash
-curl -X GET "http://localhost:8085/third-party/oss/file/1"
+curl -X GET "http://localhost:8085/tp/oss/file/1"
 ```
 
 ### 3.2 文件列表查询
 
-**接口地址**: `GET /third-party/oss/file/list`
+**接口地址**: `GET /tp/oss/file/list`
 
 **接口描述**: 分页查询文件列表
 
@@ -262,12 +262,12 @@ curl -X GET "http://localhost:8085/third-party/oss/file/1"
 
 **测试示例**:
 ```bash
-curl -X GET "http://localhost:8085/third-party/oss/file/list?pageNum=1&pageSize=10&sourceService=core-publisher"
+curl -X GET "http://localhost:8085/tp/oss/file/list?pageNum=1&pageSize=10&sourceService=core-publisher"
 ```
 
 ### 3.3 删除文件
 
-**接口地址**: `DELETE /third-party/oss/file/{fileId}`
+**接口地址**: `DELETE /tp/oss/file/{fileId}`
 
 **接口描述**: 删除指定文件
 
@@ -292,14 +292,14 @@ curl -X GET "http://localhost:8085/third-party/oss/file/list?pageNum=1&pageSize=
 
 **测试示例**:
 ```bash
-curl -X DELETE "http://localhost:8085/third-party/oss/file/1?userId=1"
+curl -X DELETE "http://localhost:8085/tp/oss/file/1?userId=1"
 ```
 
 ## 4. 统计接口
 
 ### 4.1 上传统计
 
-**接口地址**: `GET /third-party/oss/stats/upload`
+**接口地址**: `GET /tp/oss/stats/upload`
 
 **接口描述**: 获取文件上传统计信息
 
@@ -348,12 +348,12 @@ curl -X DELETE "http://localhost:8085/third-party/oss/file/1?userId=1"
 
 **测试示例**:
 ```bash
-curl -X GET "http://localhost:8085/third-party/oss/stats/upload?sourceService=core-publisher&startTime=2025-01-01&endTime=2025-01-31"
+curl -X GET "http://localhost:8085/tp/oss/stats/upload?sourceService=core-publisher&startTime=2025-01-01&endTime=2025-01-31"
 ```
 
 ### 4.2 访问统计
 
-**接口地址**: `GET /third-party/oss/stats/access`
+**接口地址**: `GET /tp/oss/stats/access`
 
 **接口描述**: 获取文件访问统计信息
 
@@ -408,7 +408,7 @@ curl -X GET "http://localhost:8085/third-party/oss/stats/upload?sourceService=co
 
 **测试示例**:
 ```bash
-curl -X GET "http://localhost:8085/third-party/oss/stats/access?startTime=2025-01-01&endTime=2025-01-31"
+curl -X GET "http://localhost:8085/tp/oss/stats/access?startTime=2025-01-01&endTime=2025-01-31"
 ```
 
 ## 5. 错误码说明

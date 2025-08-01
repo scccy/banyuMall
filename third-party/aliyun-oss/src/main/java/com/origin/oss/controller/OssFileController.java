@@ -26,7 +26,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/third-party/oss")
+@RequestMapping("/tp/oss")
 @Tag(name = "OSS文件上传", description = "阿里云OSS文件上传接口")
 @Validated
 public class OssFileController {

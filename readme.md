@@ -211,7 +211,7 @@ src/main/resources/
   - [模块迭代设计](infra/moudleDocs/service-base/模块迭代设计.md)
 
 ### 第三方模块 (third-party/)
-- **[third-party-oss](infra/moudleDocs/third-party-oss/)** - 第三方OSS服务模块
+- **[tp-oss](infra/moudleDocs/third-party-oss/)** - 第三方OSS服务模块
   - [模块主体讨论](infra/moudleDocs/third-party-oss/模块主体讨论.md)
   - [模块设计](infra/moudleDocs/third-party-oss/模块设计.md)
   - [API接口说明](infra/moudleDocs/third-party-oss/API接口说明.md)
