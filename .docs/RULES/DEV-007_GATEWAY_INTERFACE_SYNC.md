@@ -34,7 +34,7 @@ spring:
           predicates:
             - Path=/api/{module-name}/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=0
             - name: RequestRateLimiter
               args:
                 redis-rate-limiter.replenishRate: 10
