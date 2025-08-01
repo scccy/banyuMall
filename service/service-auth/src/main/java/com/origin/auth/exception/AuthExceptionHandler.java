@@ -14,6 +14,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
  * 认证异常处理器
+ * 处理认证服务相关的业务异常
+ * 
+ * 职责范围：
+ * 1. 处理认证相关异常（AuthenticationException、BadCredentialsException）
+ * 2. 处理授权相关异常（AccessDeniedException）
+ * 3. 处理业务异常（BusinessException）
+ * 4. 确保所有异常都返回统一的ResultData格式
  * 
  * @author origin
  * @since 2024-12-19
@@ -42,25 +49,9 @@ public class AuthExceptionHandler {
      * @return 错误响应
      */
     @ExceptionHandler(BusinessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResultData<Object> handleBusinessException(BusinessException e) {
         log.error("业务异常: {}", e.getMessage());
-        
-        // 根据错误码设置合适的HTTP状态码
-        HttpStatus status;
-        switch (e.getErrorCode()) {
-            case UNAUTHORIZED:
-                status = HttpStatus.UNAUTHORIZED;
-                break;
-            case FORBIDDEN:
-                status = HttpStatus.FORBIDDEN;
-                break;
-            case PARAM_ERROR:
-                status = HttpStatus.BAD_REQUEST;
-                break;
-            default:
-                status = HttpStatus.BAD_REQUEST;
-        }
-        
         return ResultData.fail(e.getErrorCode(), e.getMessage());
     }
 

@@ -3,7 +3,7 @@
     <Properties>
         <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Property>
         <!-- 使用系统属性作为服务名，如果没有则使用默认值 -->
-        <Property name="SERVICE_NAME">${sys:service.name:-unknown-service}</Property>
+        <Property name="SERVICE_NAME">${sys:logging.file.name}</Property>
         <Property name="LOG_FILE_PATH">./logs/${SERVICE_NAME}</Property>
     </Properties>
 

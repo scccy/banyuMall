@@ -37,6 +37,9 @@ public enum ErrorCode {
     TASK_NOT_FOUND(3001, "任务不存在"),
     TASK_ALREADY_COMPLETED(3002, "任务已完成"),
     TASK_EXPIRED(3003, "任务已过期"),
+    TASK_STATUS_INVALID(3004, "任务状态无效"),
+    TASK_REVIEW_NOT_FOUND(3005, "任务审核记录不存在"),
+    TASK_REVIEW_STATUS_INVALID(3006, "任务审核状态无效"),
     
     // 文件相关错误 (4000-4999)
     FILE_UPLOAD_FAILED(4001, "文件上传失败"),

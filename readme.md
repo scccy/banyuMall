@@ -35,6 +35,8 @@ banyuMall/
 │   ├── service-auth/                # 认证服务
 │   ├── service-user/                # 用户服务
 │   └── service-gateway/             # API网关服务
+├── core/                            # 核心业务模块
+│   └── core-publisher/              # 核心发布者服务
 ├── infra/                           # 基础设施模块
 │   ├── database/                    # 数据库相关
 │   ├── docker/                      # Docker配置
@@ -64,6 +66,12 @@ banyuMall/
 - **职责**: 用户管理和用户配置功能
 - **端口**: 8082
 - **依赖**: service-common
+
+#### core-publisher (核心发布者服务)
+- **职责**: 任务发布、审核、参与等核心业务流程管理
+- **端口**: 8084
+- **依赖**: service-common, service-base
+- **功能**: 任务管理、审核流程、社群分享审核
 
 #### service-gateway (API网关服务)
 - **职责**: 路由、限流、熔断等网关功能

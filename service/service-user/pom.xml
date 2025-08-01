@@ -92,6 +92,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        
+        <!-- OSS Feign Client - 用于头像上传 -->
+        <dependency>
+            <groupId>com.origin</groupId>
+            <artifactId>aliyun-oss</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
     
     <build>

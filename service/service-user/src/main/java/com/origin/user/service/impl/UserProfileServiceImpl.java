@@ -101,8 +101,8 @@ public class UserProfileServiceImpl extends ServiceImpl<UserProfileMapper, UserP
         
         UserProfile profile = new UserProfile();
         profile.setUserId(userId);
-        profile.setCreateTime(LocalDateTime.now());
-        profile.setUpdateTime(LocalDateTime.now());
+        profile.setCreatedTime(LocalDateTime.now());
+        profile.setUpdatedTime(LocalDateTime.now());
         
         // 复制扩展信息字段
         copyProfileFields(profile, request);
@@ -126,7 +126,7 @@ public class UserProfileServiceImpl extends ServiceImpl<UserProfileMapper, UserP
         
         // 复制扩展信息字段
         copyProfileFields(profile, request);
-        profile.setUpdateTime(LocalDateTime.now());
+        profile.setUpdatedTime(LocalDateTime.now());
         
         // 更新扩展信息
         updateById(profile);

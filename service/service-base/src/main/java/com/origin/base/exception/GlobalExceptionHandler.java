@@ -20,6 +20,11 @@ import java.util.stream.Collectors;
 /**
  * 全局异常处理器
  * 排除Gateway服务，因为Gateway使用WebFlux异常处理
+ * 
+ * 职责范围：
+ * 1. 处理通用基础异常（参数校验、运行时异常等）
+ * 2. 为各微服务模块提供兜底异常处理
+ * 3. 各微服务模块应该有自己的业务异常处理器
  *
  * @author origin
  * @since 2025-01-27
@@ -31,11 +36,12 @@ public class GlobalExceptionHandler {
 
     /**
      * 处理业务异常
+     * 注意：此方法仅作为兜底处理，各微服务模块应该有自己的业务异常处理器
      */
     @ExceptionHandler(BusinessException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResultData<Object> handleBusinessException(BusinessException e) {
-        log.warn("业务异常: {}", e.getMessage());
+        log.warn("业务异常（base模块兜底处理）: {}", e.getMessage());
         return ResultData.fail(e.getErrorCode(), e.getMessage());
     }
 

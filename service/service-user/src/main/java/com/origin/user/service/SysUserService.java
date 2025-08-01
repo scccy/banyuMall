@@ -2,6 +2,7 @@ package com.origin.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.origin.user.dto.AvatarResponse;
 import com.origin.user.dto.UserCreateRequest;
 import com.origin.user.dto.UserQueryRequest;
 import com.origin.user.dto.UserUpdateRequest;
@@ -26,6 +27,15 @@ public interface SysUserService extends IService<SysUser> {
     SysUser createUser(UserCreateRequest request);
     
     /**
+     * 创建用户（支持头像上传）
+     *
+     * @param request 创建请求
+     * @param avatarFile 头像文件（可选）
+     * @return 创建的用户信息
+     */
+    SysUser createUserWithAvatar(UserCreateRequest request, org.springframework.web.multipart.MultipartFile avatarFile);
+    
+    /**
      * 根据用户ID获取用户信息
      *
      * @param userId 用户ID
@@ -41,6 +51,16 @@ public interface SysUserService extends IService<SysUser> {
      * @return 更新后的用户信息
      */
     SysUser updateUser(String userId, UserUpdateRequest request);
+    
+    /**
+     * 更新用户信息（支持头像上传）
+     *
+     * @param userId 用户ID
+     * @param request 更新请求
+     * @param avatarFile 头像文件（可选）
+     * @return 更新后的用户信息
+     */
+    SysUser updateUserWithAvatar(String userId, UserUpdateRequest request, org.springframework.web.multipart.MultipartFile avatarFile);
     
     /**
      * 删除用户（软删除）
@@ -81,4 +101,21 @@ public interface SysUserService extends IService<SysUser> {
      * @return 用户信息
      */
     SysUser getUserByPhone(String phone);
+    
+    /**
+     * 上传用户头像
+     *
+     * @param userId 用户ID
+     * @param file 头像文件
+     * @return 头像上传结果
+     */
+    AvatarResponse uploadAvatar(String userId, org.springframework.web.multipart.MultipartFile file);
+    
+    /**
+     * 获取用户头像信息
+     *
+     * @param userId 用户ID
+     * @return 头像信息
+     */
+    AvatarResponse getAvatarInfo(String userId);
 } 

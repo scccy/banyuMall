@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>com.origin</groupId>
+        <artifactId>banyuMall</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    
+    <artifactId>third-party</artifactId>
+    <packaging>pom</packaging>
+    <name>third-party</name>
+    <description>第三方业务模块</description>
+    
+    <modules>
+        <module>aliyun-oss</module>
+    </modules>
+    
+    <dependencyManagement>
+        <dependencies>
+            <!-- 阿里云OSS SDK -->
+            <dependency>
+                <groupId>com.aliyun.oss</groupId>
+                <artifactId>aliyun-sdk-oss</artifactId>
+                <version>3.17.4</version>
+            </dependency>
+            
+            <!-- 服务基础依赖 -->
+            <dependency>
+                <groupId>com.origin</groupId>
+                <artifactId>service-base</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            
+            <!-- 服务通用依赖 -->
+            <dependency>
+                <groupId>com.origin</groupId>
+                <artifactId>service-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project> 

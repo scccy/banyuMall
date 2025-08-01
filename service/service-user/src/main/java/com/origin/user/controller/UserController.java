@@ -3,6 +3,7 @@ package com.origin.user.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.origin.common.dto.ResultData;
 import com.origin.common.exception.BusinessException;
+import com.origin.user.dto.AvatarResponse;
 import com.origin.user.dto.UserCreateRequest;
 import com.origin.user.dto.UserQueryRequest;
 import com.origin.user.dto.UserUpdateRequest;
@@ -40,23 +41,26 @@ public class UserController {
      * 创建用户
      *
      * @param request 创建请求
+     * @param avatarFile 头像文件（可选）
      * @param httpRequest HTTP请求
      * @return 创建结果
      */
-    @Operation(summary = "创建用户", description = "创建新用户，支持管理员和发布者两种用户类型")
+    @Operation(summary = "创建用户", description = "创建新用户，支持管理员和发布者两种用户类型，可选择上传头像")
     @PostMapping
-    public ResultData<SysUser> createUser(@RequestBody @Valid UserCreateRequest request,
-                                         HttpServletRequest httpRequest) {
+    public ResultData<SysUser> createUser(
+            @RequestPart("userInfo") @Valid UserCreateRequest request,
+            @RequestPart(value = "avatarFile", required = false) org.springframework.web.multipart.MultipartFile avatarFile,
+            HttpServletRequest httpRequest) {
         // 从请求头中获取链路追踪信息
         String requestId = httpRequest.getHeader("X-Request-ID");
         String clientIp = httpRequest.getHeader("X-Client-IP");
         String userAgent = httpRequest.getHeader("X-User-Agent");
         
-        log.info("创建用户 - RequestId: {}, ClientIP: {}, UserAgent: {}, Username: {}", 
-                requestId, clientIp, userAgent, request.getUsername());
+        log.info("创建用户 - RequestId: {}, ClientIP: {}, UserAgent: {}, Username: {}, 是否有头像: {}", 
+                requestId, clientIp, userAgent, request.getUsername(), avatarFile != null);
         
         try {
-            SysUser user = sysUserService.createUser(request);
+            SysUser user = sysUserService.createUserWithAvatar(request, avatarFile);
             return ResultData.ok("用户创建成功", user);
         } catch (BusinessException e) {
             log.warn("创建用户业务异常: {}", e.getMessage());
@@ -102,24 +106,38 @@ public class UserController {
      *
      * @param userId 用户ID
      * @param request 更新请求
+     * @param avatarFile 头像文件（可选）
      * @param httpRequest HTTP请求
      * @return 更新结果
      */
-    @Operation(summary = "更新用户信息", description = "更新用户的基础信息（昵称、头像、邮箱等）")
+    @Operation(summary = "更新用户信息", description = "更新用户的基础信息（昵称、头像、邮箱等），可选择上传头像")
     @PutMapping("/{userId}")
-    public ResultData<SysUser> updateUser(@Parameter(description = "用户ID") @PathVariable String userId,
-                                         @RequestBody @Valid UserUpdateRequest request,
-                                         HttpServletRequest httpRequest) {
+    public ResultData<SysUser> updateUser(
+            @Parameter(description = "用户ID") @PathVariable String userId,
+            @RequestPart("userInfo") @Valid UserUpdateRequest request,
+            @RequestPart(value = "avatarFile", required = false) org.springframework.web.multipart.MultipartFile avatarFile,
+            HttpServletRequest httpRequest) {
         // 从请求头中获取链路追踪信息
         String requestId = httpRequest.getHeader("X-Request-ID");
         String clientIp = httpRequest.getHeader("X-Client-IP");
         String userAgent = httpRequest.getHeader("X-User-Agent");
         
-        log.info("更新用户信息 - RequestId: {}, ClientIP: {}, UserAgent: {}, UserId: {}", 
-                requestId, clientIp, userAgent, userId);
+        log.info("更新用户信息 - RequestId: {}, ClientIP: {}, UserAgent: {}, UserId: {}, 是否有头像: {}", 
+                requestId, clientIp, userAgent, userId, avatarFile != null);
         
-        SysUser user = sysUserService.updateUser(userId, request);
-        return ResultData.ok("用户信息更新成功", user);
+        try {
+            SysUser user = sysUserService.updateUserWithAvatar(userId, request, avatarFile);
+            return ResultData.ok("用户信息更新成功", user);
+        } catch (BusinessException e) {
+            log.warn("更新用户信息业务异常: {}", e.getMessage());
+            return ResultData.fail(e.getErrorCode(), e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("更新用户信息运行时异常: ", e);
+            return ResultData.fail("业务处理异常: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("更新用户信息系统异常: ", e);
+            return ResultData.fail("系统异常，请联系管理员");
+        }
     }
 
     /**
@@ -213,5 +231,42 @@ public class UserController {
                 requestId, clientIp, userAgent);
         
         return ResultData.ok("User Service is running!");
+    }
+    
+
+    
+    /**
+     * 获取用户头像信息
+     *
+     * @param userId 用户ID
+     * @param httpRequest HTTP请求
+     * @return 头像信息
+     */
+    @Operation(summary = "获取用户头像信息", description = "获取用户的头像URL和相关信息")
+    @GetMapping("/{userId}/avatar")
+    public ResultData<AvatarResponse> getAvatarInfo(
+            @Parameter(description = "用户ID") @PathVariable String userId,
+            HttpServletRequest httpRequest) {
+        // 从请求头中获取链路追踪信息
+        String requestId = httpRequest.getHeader("X-Request-ID");
+        String clientIp = httpRequest.getHeader("X-Client-IP");
+        String userAgent = httpRequest.getHeader("X-User-Agent");
+        
+        log.info("获取用户头像信息 - RequestId: {}, ClientIP: {}, UserAgent: {}, UserId: {}", 
+                requestId, clientIp, userAgent, userId);
+        
+        try {
+            AvatarResponse response = sysUserService.getAvatarInfo(userId);
+            return ResultData.ok("获取头像信息成功", response);
+        } catch (BusinessException e) {
+            log.warn("获取头像信息业务异常: {}", e.getMessage());
+            return ResultData.fail(e.getErrorCode(), e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("获取头像信息运行时异常: ", e);
+            return ResultData.fail("业务处理异常: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("获取头像信息系统异常: ", e);
+            return ResultData.fail("系统异常，请联系管理员");
+        }
     }
 } 

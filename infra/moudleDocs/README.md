@@ -6,11 +6,23 @@
 infra/moudleDocs/
 ├── README.md                           # 本文件
 ├── xxxxxx-design_templates.md          # 模块设计文档模板
+├── xxxxxx-模块主体讨论模板.md          # 模块主体讨论模板
+├── xxxxxx-模块迭代说明模板.md          # 模块迭代说明模板
 ├── xxxxxx-api-test-template.md         # 模块API测试文档模板
+├── xxxxxx-development-template.md      # 模块开发文档模板
+├── xxxxxx-interface-test-validation-template.md # 接口测试验证模板
+├── 微服务总体设计框架.md               # 微服务架构总体设计指导
+├── 数据库建表语句和表说明.md           # 数据库设计汇总文档
+├── 标准化模块文档结构模板.md           # 模块文档标准化模板
+├── 新建模块工作流程.md                 # 模块开发工作流程指导
 ├── auth-design.md                      # Auth模块设计文档（旧格式）
 └── {模块名称}/                         # 按模块名称组织的文件夹
-    ├── design.md                       # 模块设计文档
-    └── api-test.md                     # 模块API测试文档
+    ├── 模块主体讨论.md                 # 模块需求讨论和功能规划
+    ├── 模块设计.md                     # 模块详细设计文档
+    ├── API接口说明.md                  # API接口详细说明
+    ├── API接口测试.md                  # API接口测试文档
+    ├── 模块迭代说明.md                 # 模块迭代需求说明
+    └── 模块迭代设计.md                 # 模块迭代设计文档
 ```
 
 ## 🎯 目录组织原则
@@ -36,6 +48,9 @@ infra/moudleDocs/
 - **service-user**: 
   - `service-user/design.md` - 用户模块设计文档
   - `service-user/api-test.md` - 用户模块API测试文档
+- **core-publisher**: 
+  - `core-publisher/design.md` - 发布者模块设计文档
+  - `core-publisher/api-test.md` - 发布者模块API测试文档
 
 ### 🔄 待迁移
 - **auth**: 
@@ -81,4 +96,6 @@ infra/moudleDocs/
 
 - **2025-01-27**: 创建新的目录结构，按模块名称组织文档
 - **2025-01-27**: 迁移service-user模块文档到新结构
-- **2025-01-27**: 更新文档模板，增加Feign调用标识 
+- **2025-01-27**: 更新文档模板，增加Feign调用标识
+- **2025-01-27**: 创建core-publisher模块设计文档和API测试文档，接口路径统一使用/core-publisher/前缀
+- **2025-08-01**: 优化core-publisher模块，删除任务参与相关接口（接口12-14），专注于发布者核心业务逻辑 

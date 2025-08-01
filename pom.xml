@@ -17,6 +17,8 @@
     
     <modules>
         <module>service</module>
+        <module>core</module>
+        <module>third-party</module>
     </modules>
 
     <properties>

@@ -4,12 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.origin.common.dto.ResultData;
 import com.origin.common.exception.BusinessException;
 import com.origin.common.entity.ErrorCode;
+import com.origin.oss.dto.FileUploadRequest;
+import com.origin.oss.dto.FileUploadResponse;
+import com.origin.user.dto.AvatarResponse;
 import com.origin.user.dto.UserCreateRequest;
 import com.origin.user.dto.UserQueryRequest;
 import com.origin.user.dto.UserUpdateRequest;
 import com.origin.user.entity.SysUser;
+import com.origin.user.feign.OssFileFeignClient;
 import com.origin.user.mapper.SysUserMapper;
 import com.origin.user.service.SysUserService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +40,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
     
+    private final OssFileFeignClient ossFileFeignClient;
+    
     @Override
     @Transactional(rollbackFor = Exception.class)
     public SysUser createUser(UserCreateRequest request) {
@@ -58,13 +65,65 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         
         // 设置默认值
         user.setStatus(1); // 正常状态
-        user.setCreateTime(LocalDateTime.now());
-        user.setUpdateTime(LocalDateTime.now());
+        user.setCreatedTime(LocalDateTime.now());
+        user.setUpdatedTime(LocalDateTime.now());
         
         // 保存用户
         save(user);
         
         log.info("用户创建成功 - 用户ID: {}", user.getId());
+        return user;
+    }
+    
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public SysUser createUserWithAvatar(UserCreateRequest request, org.springframework.web.multipart.MultipartFile avatarFile) {
+        log.info("创建用户（支持头像上传） - 请求参数: {}, 是否有头像: {}", request, avatarFile != null);
+        
+        // 检查用户名是否已存在
+        SysUser existingUser = getUserByUsername(request.getUsername());
+        if (existingUser != null) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "用户名已存在");
+        }
+        
+        // 检查手机号是否已存在
+        SysUser existingPhone = getUserByPhone(request.getPhone());
+        if (existingPhone != null) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "手机号已存在");
+        }
+        
+        // 创建用户实体
+        SysUser user = new SysUser();
+        BeanUtils.copyProperties(request, user);
+        
+        // 设置默认值
+        user.setStatus(1); // 正常状态
+        user.setCreatedTime(LocalDateTime.now());
+        user.setUpdatedTime(LocalDateTime.now());
+        
+        // 如果有头像文件，先保存用户获取用户ID，然后上传头像
+        if (avatarFile != null && !avatarFile.isEmpty()) {
+            // 先保存用户（不包含头像）
+            save(user);
+            
+            try {
+                // 上传头像
+                AvatarResponse avatarResponse = uploadAvatar(user.getId(), avatarFile);
+                // 更新用户头像信息
+                user.setAvatar(avatarResponse.getAvatarUrl());
+                updateById(user);
+                
+                log.info("用户创建成功（包含头像） - 用户ID: {}, 头像URL: {}", user.getId(), avatarResponse.getAvatarUrl());
+            } catch (Exception e) {
+                log.error("头像上传失败，但用户创建成功 - 用户ID: {}, 错误: {}", user.getId(), e.getMessage());
+                // 头像上传失败不影响用户创建，只记录日志
+            }
+        } else {
+            // 没有头像文件，直接保存用户
+            save(user);
+            log.info("用户创建成功（无头像） - 用户ID: {}", user.getId());
+        }
+        
         return user;
     }
     
@@ -98,9 +157,51 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser user = new SysUser();
         BeanUtils.copyProperties(request, user);
         user.setId(userId);
-        user.setUpdateTime(LocalDateTime.now());
+        user.setUpdatedTime(LocalDateTime.now());
         
         // 只更新非空字段
+        updateById(user);
+        
+        // 清除缓存
+        clearUserCache(userId);
+        
+        log.info("用户信息更新成功 - 用户ID: {}", userId);
+        return getUserById(userId);
+    }
+    
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = "user:info", key = "#userId")
+    public SysUser updateUserWithAvatar(String userId, UserUpdateRequest request, org.springframework.web.multipart.MultipartFile avatarFile) {
+        log.info("更新用户信息（支持头像上传） - 用户ID: {}, 请求参数: {}, 是否有头像: {}", userId, request, avatarFile != null);
+        
+        // 检查用户是否存在
+        SysUser existingUser = getUserById(userId);
+        if (existingUser == null) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "用户不存在");
+        }
+        
+        // 更新用户信息
+        SysUser user = new SysUser();
+        BeanUtils.copyProperties(request, user);
+        user.setId(userId);
+        user.setUpdatedTime(LocalDateTime.now());
+        
+        // 如果有头像文件，先上传头像
+        if (avatarFile != null && !avatarFile.isEmpty()) {
+            try {
+                // 上传头像
+                AvatarResponse avatarResponse = uploadAvatar(userId, avatarFile);
+                // 更新头像URL
+                user.setAvatar(avatarResponse.getAvatarUrl());
+                log.info("头像上传成功 - 用户ID: {}, 头像URL: {}", userId, avatarResponse.getAvatarUrl());
+            } catch (Exception e) {
+                log.error("头像上传失败，但用户信息更新继续 - 用户ID: {}, 错误: {}", userId, e.getMessage());
+                // 头像上传失败不影响用户信息更新，只记录日志
+            }
+        }
+        
+        // 更新用户信息
         updateById(user);
         
         // 清除缓存
@@ -124,7 +225,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         
         // 软删除
         user.setStatus(3); // 已删除状态
-        user.setUpdateTime(LocalDateTime.now());
+        user.setUpdatedTime(LocalDateTime.now());
         boolean result = updateById(user);
         
         if (result) {
@@ -208,14 +309,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         
         // 时间范围查询
         if (StringUtils.hasText(request.getStartTime())) {
-            queryWrapper.ge(SysUser::getCreateTime, request.getStartTime());
+            queryWrapper.ge(SysUser::getCreatedTime, request.getStartTime());
         }
         if (StringUtils.hasText(request.getEndTime())) {
-            queryWrapper.le(SysUser::getCreateTime, request.getEndTime());
+            queryWrapper.le(SysUser::getCreatedTime, request.getEndTime());
         }
         
         // 排序
-        queryWrapper.orderByDesc(SysUser::getCreateTime);
+        queryWrapper.orderByDesc(SysUser::getCreatedTime);
         
         // 执行查询
         return page(page, queryWrapper);
@@ -260,5 +361,117 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 清除用户信息缓存
         // 清除用户列表缓存（这里简化处理，实际可能需要更复杂的缓存策略）
         log.debug("清除用户缓存 - 用户ID: {}", userId);
+    }
+    
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = "user:info", key = "#userId")
+    public AvatarResponse uploadAvatar(String userId, org.springframework.web.multipart.MultipartFile file) {
+        log.info("上传用户头像 - 用户ID: {}, 文件名: {}", userId, file.getOriginalFilename());
+        
+        // 检查用户是否存在
+        SysUser user = getUserById(userId);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "用户不存在");
+        }
+        
+        // 检查文件格式
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null || !isValidImageFile(originalFilename)) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "不支持的文件格式，仅支持JPG、PNG、GIF格式");
+        }
+        
+        // 检查文件大小（5MB限制）
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "文件大小不能超过5MB");
+        }
+        
+        try {
+            // 构建OSS上传请求
+            FileUploadRequest uploadRequest = new FileUploadRequest();
+            uploadRequest.setFile(file);
+            uploadRequest.setSourceService("service-user");
+            uploadRequest.setBusinessType("avatar");
+            uploadRequest.setFilePath("avatar/" + java.time.LocalDate.now());
+            uploadRequest.setUploadUserId(Long.valueOf(userId));
+            uploadRequest.setUploadUserName(user.getUsername());
+            
+            // 调用OSS服务上传文件
+            ResultData<FileUploadResponse> uploadResult = ossFileFeignClient.uploadFile(uploadRequest);
+            
+            if (!uploadResult.isSuccess()) {
+                throw new BusinessException(ErrorCode.FILE_UPLOAD_FAILED, "头像上传失败: " + uploadResult.getMessage());
+            }
+            
+            FileUploadResponse uploadResponse = uploadResult.getData();
+            
+            // 更新用户头像信息
+            SysUser updateUser = new SysUser();
+            updateUser.setId(userId);
+            updateUser.setAvatar(uploadResponse.getAccessUrl());
+            updateUser.setUpdatedTime(LocalDateTime.now());
+            updateById(updateUser);
+            
+            // 清除缓存
+            clearUserCache(userId);
+            
+            // 构建响应
+            AvatarResponse response = new AvatarResponse();
+            response.setUserId(userId);
+            response.setAvatarUrl(uploadResponse.getAccessUrl());
+            response.setFileSize(file.getSize());
+            response.setMimeType(file.getContentType());
+            response.setOriginalFileName(originalFilename);
+            
+            log.info("用户头像上传成功 - 用户ID: {}, 头像URL: {}", userId, uploadResponse.getAccessUrl());
+            return response;
+            
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("头像上传异常 - 用户ID: {}, 错误: {}", userId, e.getMessage(), e);
+            throw new BusinessException(ErrorCode.INTERNAL_ERROR, "头像上传失败，请稍后重试");
+        }
+    }
+    
+    @Override
+    public AvatarResponse getAvatarInfo(String userId) {
+        log.debug("获取用户头像信息 - 用户ID: {}", userId);
+        
+        // 检查用户是否存在
+        SysUser user = getUserById(userId);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "用户不存在");
+        }
+        
+        // 构建响应
+        AvatarResponse response = new AvatarResponse();
+        response.setUserId(userId);
+        response.setAvatarUrl(user.getAvatar());
+        
+        // 如果没有头像，返回默认头像
+        if (user.getAvatar() == null || user.getAvatar().isEmpty()) {
+            response.setAvatarUrl("/default-avatar.png"); // 默认头像URL
+        }
+        
+        return response;
+    }
+    
+    /**
+     * 检查是否为有效的图片文件
+     *
+     * @param filename 文件名
+     * @return 是否为有效图片
+     */
+    private boolean isValidImageFile(String filename) {
+        if (filename == null) {
+            return false;
+        }
+        
+        String lowerFilename = filename.toLowerCase();
+        return lowerFilename.endsWith(".jpg") || 
+               lowerFilename.endsWith(".jpeg") || 
+               lowerFilename.endsWith(".png") || 
+               lowerFilename.endsWith(".gif");
     }
 } 
