@@ -23,7 +23,7 @@ public interface UserConfigMapper extends BaseMapper<UserConfig> {
      * @param userId 用户ID
      * @return 配置列表
      */
-    @Select("SELECT * FROM user_config WHERE user_id = #{userId} AND is_deleted = 0")
+    @Select("SELECT * FROM user_config WHERE user_id = #{userId} AND deleted = 0")
     List<UserConfig> selectByUserId(@Param("userId") String userId);
 
     /**
@@ -33,6 +33,6 @@ public interface UserConfigMapper extends BaseMapper<UserConfig> {
      * @param configKey 配置键
      * @return 配置信息
      */
-    @Select("SELECT * FROM user_config WHERE user_id = #{userId} AND config_key = #{configKey} AND is_deleted = 0")
+    @Select("SELECT * FROM user_config WHERE user_id = #{userId} AND config_key = #{configKey} AND deleted = 0")
     UserConfig selectByUserIdAndKey(@Param("userId") String userId, @Param("configKey") String configKey);
 } 

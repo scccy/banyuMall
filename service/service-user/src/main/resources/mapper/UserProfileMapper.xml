@@ -13,15 +13,18 @@
         <result column="contact_phone" property="contactPhone"/>
         <result column="industry" property="industry"/>
         <result column="description" property="description"/>
-        <result column="create_time" property="createTime"/>
-        <result column="update_time" property="updateTime"/>
-        <result column="is_deleted" property="isDeleted"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="deleted" property="deleted"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, user_id, real_name, company_name, company_address, contact_person, 
-        contact_phone, industry, description, create_time, update_time, is_deleted
+        contact_phone, industry, description, created_time, updated_time, 
+        created_by, updated_by, deleted
     </sql>
 
     <!-- 根据用户ID查询扩展信息 -->
@@ -30,7 +33,7 @@
         <include refid="Base_Column_List"/>
         FROM user_profile 
         WHERE user_id = #{userId} 
-        AND is_deleted = 0
+        AND deleted = 0
     </select>
 
 </mapper> 

@@ -21,6 +21,6 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @param username 用户名
      * @return 用户信息
      */
-    @Select("SELECT * FROM sys_user WHERE username = #{username} AND is_deleted = 0")
+    @Select("SELECT * FROM sys_user WHERE username = #{username} AND deleted = 0")
     SysUser selectByUsername(@Param("username") String username);
 }

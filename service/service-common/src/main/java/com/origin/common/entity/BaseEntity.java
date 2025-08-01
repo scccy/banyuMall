@@ -45,6 +45,6 @@ public abstract class BaseEntity implements Serializable {
      * 是否删除：0-未删除，1-已删除
      */
     @TableLogic
-    @TableField("is_deleted")
-    private Integer isDeleted;
+    @TableField("deleted")
+    private Integer deleted;
 } 

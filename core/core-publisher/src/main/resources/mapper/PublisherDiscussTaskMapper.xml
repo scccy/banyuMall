@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.origin.publisher.mapper.PublisherDiscussTaskMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.origin.publisher.entity.PublisherDiscussTask">
+        <id column="id" property="id"/>
+        <result column="task_id" property="taskId"/>
+        <result column="discuss_topic" property="discussTopic"/>
+        <result column="discuss_content" property="discussContent"/>
+        <result column="discuss_platform" property="discussPlatform"/>
+        <result column="discuss_url" property="discussUrl"/>
+        <result column="min_discuss_length" property="minDiscussLength"/>
+        <result column="discuss_count" property="discussCount"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, task_id, discuss_topic, discuss_content, discuss_platform, discuss_url, 
+        min_discuss_length, discuss_count, created_time, updated_time, created_by, updated_by, deleted
+    </sql>
+
+    <!-- 根据任务ID查询讨论任务详情 -->
+    <select id="selectByTaskId" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM publisher_discuss_task 
+        WHERE task_id = #{taskId} 
+        AND deleted = 0
+    </select>
+
+    <!-- 根据讨论主题查询讨论任务列表 -->
+    <select id="selectByDiscussTopic" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM publisher_discuss_task 
+        WHERE discuss_topic LIKE CONCAT('%', #{discussTopic}, '%')
+        AND deleted = 0
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 根据讨论平台查询讨论任务列表 -->
+    <select id="selectByDiscussPlatform" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM publisher_discuss_task 
+        WHERE discuss_platform = #{discussPlatform}
+        AND deleted = 0
+        ORDER BY created_time DESC
+    </select>
+
+</mapper> 

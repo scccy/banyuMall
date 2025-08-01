@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.origin.oss.mapper.OssFileStorageMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.origin.oss.entity.OssFileStorage">
+        <id column="id" property="id"/>
+        <result column="original_name" property="originalName"/>
+        <result column="file_size" property="fileSize"/>
+        <result column="mime_type" property="mimeType"/>
+        <result column="object_key" property="objectKey"/>
+        <result column="access_url" property="accessUrl"/>
+        <result column="bucket_name" property="bucketName"/>
+        <result column="file_path" property="filePath"/>
+        <result column="source_service" property="sourceService"/>
+        <result column="business_type" property="businessType"/>
+        <result column="upload_user_id" property="uploadUserId"/>
+        <result column="upload_user_name" property="uploadUserName"/>
+        <result column="upload_time" property="uploadTime"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, original_name, file_size, mime_type, object_key, access_url, bucket_name, file_path,
+        source_service, business_type, upload_user_id, upload_user_name, upload_time,
+        created_time, updated_time, created_by, updated_by, deleted
+    </sql>
+
+    <!-- 根据来源服务和业务类型查询文件列表 -->
+    <select id="selectBySourceAndBusiness" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM oss_file_storage 
+        WHERE deleted = 0
+        <if test="sourceService != null and sourceService != ''">
+            AND source_service = #{sourceService}
+        </if>
+        <if test="businessType != null and businessType != ''">
+            AND business_type = #{businessType}
+        </if>
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 根据上传用户ID查询文件列表 -->
+    <select id="selectByUploadUserId" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM oss_file_storage 
+        WHERE upload_user_id = #{uploadUserId}
+        AND deleted = 0
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 根据文件路径查询文件列表 -->
+    <select id="selectByFilePath" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM oss_file_storage 
+        WHERE file_path = #{filePath}
+        AND deleted = 0
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 分页查询文件存储记录 -->
+    <select id="selectFileStoragePage" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM oss_file_storage 
+        WHERE deleted = 0
+        <if test="sourceService != null and sourceService != ''">
+            AND source_service = #{sourceService}
+        </if>
+        <if test="businessType != null and businessType != ''">
+            AND business_type = #{businessType}
+        </if>
+        <if test="uploadUserId != null and uploadUserId != ''">
+            AND upload_user_id = #{uploadUserId}
+        </if>
+        <if test="startTime != null">
+            AND created_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND created_time &lt;= #{endTime}
+        </if>
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 根据对象键查询文件 -->
+    <select id="selectByObjectKey" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM oss_file_storage 
+        WHERE object_key = #{objectKey}
+        AND deleted = 0
+    </select>
+
+</mapper> 

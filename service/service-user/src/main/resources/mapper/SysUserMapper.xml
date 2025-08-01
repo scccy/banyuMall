@@ -18,15 +18,18 @@
         <result column="status" property="status"/>
         <result column="user_type" property="userType"/>
         <result column="last_login_time" property="lastLoginTime"/>
-        <result column="create_time" property="createTime"/>
-        <result column="update_time" property="updateTime"/>
-        <result column="is_deleted" property="isDeleted"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="deleted" property="deleted"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id, phone, wechat_id, youzan_id, username, password, nickname, avatar, email, 
-        gender, birthday, status, user_type, last_login_time, create_time, update_time, is_deleted
+        gender, birthday, status, user_type, last_login_time, created_time, updated_time, 
+        created_by, updated_by, deleted
     </sql>
 
     <!-- 根据用户名查询用户 -->
@@ -35,7 +38,7 @@
         <include refid="Base_Column_List"/>
         FROM sys_user 
         WHERE username = #{username} 
-        AND is_deleted = 0
+        AND deleted = 0
     </select>
 
     <!-- 根据手机号查询用户 -->
@@ -44,7 +47,7 @@
         <include refid="Base_Column_List"/>
         FROM sys_user 
         WHERE phone = #{phone} 
-        AND is_deleted = 0
+        AND deleted = 0
     </select>
 
     <!-- 分页查询用户列表 -->
@@ -52,7 +55,7 @@
         SELECT 
         <include refid="Base_Column_List"/>
         FROM sys_user 
-        WHERE is_deleted = 0
+        WHERE deleted = 0
         <if test="username != null and username != ''">
             AND username LIKE CONCAT('%', #{username}, '%')
         </if>
@@ -75,12 +78,12 @@
             AND gender = #{gender}
         </if>
         <if test="startTime != null and startTime != ''">
-            AND create_time >= #{startTime}
+            AND created_time >= #{startTime}
         </if>
         <if test="endTime != null and endTime != ''">
-            AND create_time &lt;= #{endTime}
+            AND created_time &lt;= #{endTime}
         </if>
-        ORDER BY create_time DESC
+        ORDER BY created_time DESC
     </select>
 
 </mapper> 

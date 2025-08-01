@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.origin.publisher.mapper.PublisherCommentTaskMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.origin.publisher.entity.PublisherCommentTask">
+        <id column="id" property="id"/>
+        <result column="task_id" property="taskId"/>
+        <result column="target_url" property="targetUrl"/>
+        <result column="comment_template" property="commentTemplate"/>
+        <result column="min_comment_length" property="minCommentLength"/>
+        <result column="max_comment_length" property="maxCommentLength"/>
+        <result column="comment_count" property="commentCount"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, task_id, target_url, comment_template, min_comment_length, max_comment_length, 
+        comment_count, created_time, updated_time, created_by, updated_by, deleted
+    </sql>
+
+    <!-- 根据任务ID查询评论任务详情 -->
+    <select id="selectByTaskId" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM publisher_comment_task 
+        WHERE task_id = #{taskId} 
+        AND deleted = 0
+    </select>
+
+    <!-- 根据目标URL查询评论任务列表 -->
+    <select id="selectByTargetUrl" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM publisher_comment_task 
+        WHERE target_url = #{targetUrl} 
+        AND deleted = 0
+        ORDER BY created_time DESC
+    </select>
+
+</mapper> 

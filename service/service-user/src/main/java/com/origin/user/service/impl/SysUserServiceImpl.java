@@ -15,6 +15,10 @@ import com.origin.user.dto.UserQueryRequest;
 import com.origin.user.dto.UserUpdateRequest;
 import com.origin.user.entity.SysUser;
 import com.origin.user.feign.OssFileFeignClient;
+import com.origin.user.feign.AuthPasswordFeignClient;
+import com.origin.common.dto.PasswordEncryptRequest;
+import com.origin.common.dto.PasswordEncryptResponse;
+import com.origin.common.dto.ResultData;
 import com.origin.user.mapper.SysUserMapper;
 import com.origin.user.service.SysUserService;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +45,7 @@ import java.util.List;
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
     
     private final OssFileFeignClient ossFileFeignClient;
+    private final AuthPasswordFeignClient authPasswordFeignClient;
     
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -62,6 +67,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 创建用户实体
         SysUser user = new SysUser();
         BeanUtils.copyProperties(request, user);
+        
+        // 通过认证模块加密密码
+        try {
+            PasswordEncryptRequest encryptRequest = new PasswordEncryptRequest()
+                    .setUsername(request.getUsername())
+                    .setPassword(request.getPassword());
+            
+            ResultData<PasswordEncryptResponse> encryptResult = authPasswordFeignClient.encryptPassword(encryptRequest);
+            if (encryptResult.isSuccess() && encryptResult.getData() != null) {
+                user.setPassword(encryptResult.getData().getEncryptedPassword());
+                log.info("密码加密成功 - 用户名: {}", request.getUsername());
+            } else {
+                log.error("密码加密失败 - 用户名: {}, 错误: {}", request.getUsername(), encryptResult.getMessage());
+                throw new BusinessException(ErrorCode.INTERNAL_ERROR, "密码加密失败");
+            }
+        } catch (Exception e) {
+            log.error("调用密码加密服务失败 - 用户名: {}, 错误: {}", request.getUsername(), e.getMessage());
+            throw new BusinessException(ErrorCode.SERVICE_UNAVAILABLE, "密码加密服务不可用");
+        }
         
         // 设置默认值
         user.setStatus(1); // 正常状态
@@ -95,6 +119,25 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 创建用户实体
         SysUser user = new SysUser();
         BeanUtils.copyProperties(request, user);
+        
+        // 通过认证模块加密密码
+        try {
+            PasswordEncryptRequest encryptRequest = new PasswordEncryptRequest()
+                    .setUsername(request.getUsername())
+                    .setPassword(request.getPassword());
+            
+            ResultData<PasswordEncryptResponse> encryptResult = authPasswordFeignClient.encryptPassword(encryptRequest);
+            if (encryptResult.isSuccess() && encryptResult.getData() != null) {
+                user.setPassword(encryptResult.getData().getEncryptedPassword());
+                log.info("密码加密成功 - 用户名: {}", request.getUsername());
+            } else {
+                log.error("密码加密失败 - 用户名: {}, 错误: {}", request.getUsername(), encryptResult.getMessage());
+                throw new BusinessException(ErrorCode.INTERNAL_ERROR, "密码加密失败");
+            }
+        } catch (Exception e) {
+            log.error("调用密码加密服务失败 - 用户名: {}, 错误: {}", request.getUsername(), e.getMessage());
+            throw new BusinessException(ErrorCode.SERVICE_UNAVAILABLE, "密码加密服务不可用");
+        }
         
         // 设置默认值
         user.setStatus(1); // 正常状态
