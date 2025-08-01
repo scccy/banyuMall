@@ -158,6 +158,73 @@ src/main/resources/
 - JWT配置
 - 日志配置
 
+## 模块文档
+
+### 核心模块 (core/)
+- **[core-publisher](infra/moudleDocs/core-publisher/)** - 发布者服务模块
+  - [模块主体讨论](infra/moudleDocs/core-publisher/模块主体讨论.md)
+  - [模块设计](infra/moudleDocs/core-publisher/模块设计.md)
+  - [API接口说明](infra/moudleDocs/core-publisher/API接口说明.md)
+  - [API接口测试](infra/moudleDocs/core-publisher/api-test.md)
+  - [模块迭代说明](infra/moudleDocs/core-publisher/模块迭代说明.md)
+  - [模块迭代设计](infra/moudleDocs/core-publisher/模块迭代设计.md)
+
+### 服务模块 (service/)
+- **[service-user](infra/moudleDocs/service-user/)** - 用户服务模块
+  - [模块主体讨论](infra/moudleDocs/service-user/模块主体讨论.md)
+  - [模块设计](infra/moudleDocs/service-user/模块设计.md)
+  - [API接口说明](infra/moudleDocs/service-user/API接口说明.md)
+  - [API接口测试](infra/moudleDocs/service-user/api-test.md)
+  - [模块迭代说明](infra/moudleDocs/service-user/模块迭代说明.md)
+  - [模块迭代设计](infra/moudleDocs/service-user/模块迭代设计.md)
+
+- **[service-auth](infra/moudleDocs/service-auth/)** - 认证服务模块
+  - [模块主体讨论](infra/moudleDocs/service-auth/模块主体讨论.md)
+  - [模块设计](infra/moudleDocs/service-auth/模块设计.md)
+  - [API接口说明](infra/moudleDocs/service-auth/API接口说明.md)
+  - [API接口测试](infra/moudleDocs/service-auth/api-test.md)
+  - [模块迭代说明](infra/moudleDocs/service-auth/模块迭代说明.md)
+  - [模块迭代设计](infra/moudleDocs/service-auth/模块迭代设计.md)
+
+- **[service-gateway](infra/moudleDocs/service-gateway/)** - 网关服务模块
+  - [模块主体讨论](infra/moudleDocs/service-gateway/模块主体讨论.md)
+  - [模块设计](infra/moudleDocs/service-gateway/模块设计.md)
+  - [API接口说明](infra/moudleDocs/service-gateway/API接口说明.md)
+  - [API接口测试](infra/moudleDocs/service-gateway/api-test.md)
+  - [模块迭代说明](infra/moudleDocs/service-gateway/模块迭代说明.md)
+  - [模块迭代设计](infra/moudleDocs/service-gateway/模块迭代设计.md)
+
+- **[service-common](infra/moudleDocs/service-common/)** - 通用服务模块
+  - [模块主体讨论](infra/moudleDocs/service-common/模块主体讨论.md)
+  - [模块设计](infra/moudleDocs/service-common/模块设计.md)
+  - [API接口说明](infra/moudleDocs/service-common/API接口说明.md)
+  - [API接口测试](infra/moudleDocs/service-common/api-test.md)
+  - [模块迭代说明](infra/moudleDocs/service-common/模块迭代说明.md)
+  - [模块迭代设计](infra/moudleDocs/service-common/模块迭代设计.md)
+
+- **[service-base](infra/moudleDocs/service-base/)** - 基础服务模块
+  - [模块主体讨论](infra/moudleDocs/service-base/模块主体讨论.md)
+  - [模块设计](infra/moudleDocs/service-base/模块设计.md)
+  - [API接口说明](infra/moudleDocs/service-base/API接口说明.md)
+  - [API接口测试](infra/moudleDocs/service-base/api-test.md)
+  - [模块迭代说明](infra/moudleDocs/service-base/模块迭代说明.md)
+  - [模块迭代设计](infra/moudleDocs/service-base/模块迭代设计.md)
+
+### 第三方模块 (third-party/)
+- **[third-party-oss](infra/moudleDocs/third-party-oss/)** - 第三方OSS服务模块
+  - [模块主体讨论](infra/moudleDocs/third-party-oss/模块主体讨论.md)
+  - [模块设计](infra/moudleDocs/third-party-oss/模块设计.md)
+  - [API接口说明](infra/moudleDocs/third-party-oss/API接口说明.md)
+  - [API接口测试](infra/moudleDocs/third-party-oss/api-test.md)
+  - [模块迭代说明](infra/moudleDocs/third-party-oss/模块迭代说明.md)
+  - [模块迭代设计](infra/moudleDocs/third-party-oss/模块迭代设计.md)
+
+### 项目文档
+- [微服务总体设计框架](infra/moudleDocs/微服务总体设计框架.md)
+- [标准化模块文档结构模板](infra/moudleDocs/标准化模块文档结构模板.md)
+- [数据库建表语句和表说明](infra/moudleDocs/数据库建表语句和表说明.md)
+- [新建模块工作流程](infra/moudleDocs/新建模块工作流程.md)
+
 ## API 文档
 
 详细的API接口文档请参考：[API.md](API.md)
@@ -241,7 +308,16 @@ kubectl apply -f infra/k8s/prod/
 
 ## 更新日志
 
-### v0.0.1-SNAPSHOT (2025-01-27)
+### v0.0.1-SNAPSHOT (2025-08-01)
+
+#### 文档标准化
+- 按照LR-003规则更新所有模块文档
+- 统一接口路径规范（/service/user, /core/publisher, /third-party/oss等）
+- 完善接口功能列表，添加Feign客户端标识
+- 更新数据模型设计指向infra/database/data/目录
+- 创建缺失的API接口说明文档
+- 标准化文档命名和结构
+- 修改相关控制器代码以符合新的接口路径规范
 
 #### 新增功能
 - 完成微服务架构重构
