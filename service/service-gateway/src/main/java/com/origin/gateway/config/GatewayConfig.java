@@ -29,7 +29,7 @@ public class GatewayConfig {
                 
                 // 用户服务路由
                 .route("user-service", r -> r
-                        .path("/user/**")
+                        .path("/service/user/**")
                         .filters(f -> f
                                 .addRequestHeader("X-Gateway-Source", "service-gateway")
                                 .addRequestHeader("X-Service-Name", "service-user"))

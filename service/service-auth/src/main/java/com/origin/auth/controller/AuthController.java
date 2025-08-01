@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Tag(name = "认证管理", description = "处理用户登录、登出等认证相关操作")
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/service/auth")
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/core-publisher/share-reviews")
+@RequestMapping("/core/publisher/share-reviews")
 @RequiredArgsConstructor
 @Tag(name = "社群分享审核", description = "社群分享审核相关接口")
 @Validated

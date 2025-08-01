@@ -29,7 +29,7 @@ import java.util.List;
  */
 @Tag(name = "用户管理", description = "用户基础信息管理接口")
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/service/user")
 @RequiredArgsConstructor
 @Slf4j
 @Validated

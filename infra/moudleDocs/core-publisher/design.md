@@ -6,16 +6,21 @@
 
 ## 1. 模块概述
 
-### 1.1 模块定位
+### 1.1 微服务模块级别信息
+- **当前微服务模块级别**: core-publisher（发布者服务）
+- **父模块**: core（核心层）
+- **模块类型**: 任务发布管理服务
+
+### 1.2 模块定位
 core-publisher 模块是 banyuMall 系统的核心发布者模块，负责管理任务发布、审核、参与等核心业务流程。
 
-### 1.2 主要功能
+### 1.3 主要功能
 - **任务发布管理**: 创建、更新、删除、查询任务
 - **任务审核流程**: 任务审核、审核历史管理
 - **社群分享审核**: 社群分享内容的审核管理
 - **任务参与管理**: 用户参与任务、完成任务、参与记录查询
 
-### 1.3 技术栈
+### 1.4 技术栈
 - **框架**: Spring Boot 3.x
 - **数据库**: MySQL 8.0
 - **ORM**: MyBatis-Plus
@@ -28,19 +33,19 @@ core-publisher 模块是 banyuMall 系统的核心发布者模块，负责管理
 
 ### 2.1 接口概览
 
-| 序号 | 接口名称 | 请求方法 | 接口路径 | 功能描述 | 业务分类 | 使用Feign | 详情链接 |
-|------|----------|----------|----------|----------|----------|-----------|----------|
-| 1 | 创建任务 | POST | `/core-publisher/tasks` | 创建新的任务 | 任务发布管理 | ❌ | [查看详情](#51-任务管理接口) |
-| 2 | 更新任务 | PUT | `/core-publisher/tasks/{id}` | 更新任务信息 | 任务发布管理 | ❌ | [查看详情](#51-任务管理接口) |
-| 3 | 删除任务 | DELETE | `/core-publisher/tasks/{id}` | 删除任务 | 任务发布管理 | ❌ | [查看详情](#51-任务管理接口) |
-| 4 | 获取任务详情 | GET | `/core-publisher/tasks/{id}` | 获取任务详细信息 | 任务发布管理 | ❌ | [查看详情](#51-任务管理接口) |
-| 5 | 分页查询任务列表 | GET | `/core-publisher/tasks` | 分页查询任务列表 | 任务发布管理 | ❌ | [查看详情](#51-任务管理接口) |
-| 6 | 提交任务审核 | POST | `/core-publisher/tasks/{id}/submit` | 提交任务进行审核 | 任务审核流程 | ❌ | [查看详情](#52-任务审核接口) |
-| 7 | 审核任务 | POST | `/core-publisher/tasks/{id}/review` | 审核任务 | 任务审核流程 | ❌ | [查看详情](#52-任务审核接口) |
-| 8 | 获取审核历史 | GET | `/core-publisher/tasks/{id}/review-history` | 获取任务审核历史 | 任务审核流程 | ❌ | [查看详情](#52-任务审核接口) |
-| 9 | 提交社群分享审核 | POST | `/core-publisher/share-reviews` | 提交社群分享审核申请 | 任务审核流程 | ❌ | [查看详情](#53-社群分享审核接口) |
-| 10 | 审核社群分享 | PUT | `/core-publisher/share-reviews/{id}/review` | 审核社群分享申请 | 任务审核流程 | ❌ | [查看详情](#53-社群分享审核接口) |
-| 11 | 查询社群分享审核列表 | GET | `/core-publisher/share-reviews` | 查询社群分享审核列表 | 任务审核流程 | ❌ | [查看详情](#53-社群分享审核接口) |
+| 序号 | 接口名称 | 请求方法 | 接口路径 | 功能描述 | 职责对应 | 是否需要Feign客户端 | 详细说明 |
+|------|----------|----------|----------|----------|----------|-------------------|----------|
+| 1 | 创建任务 | POST | `/core/publisher/tasks` | 创建新的任务 | 任务发布管理 | 否 | [查看详情](#51-任务管理接口) |
+| 2 | 更新任务 | PUT | `/core/publisher/tasks/{id}` | 更新任务信息 | 任务发布管理 | 否 | [查看详情](#51-任务管理接口) |
+| 3 | 删除任务 | DELETE | `/core/publisher/tasks/{id}` | 删除任务 | 任务发布管理 | 否 | [查看详情](#51-任务管理接口) |
+| 4 | 获取任务详情 | GET | `/core/publisher/tasks/{id}` | 获取任务详细信息 | 任务发布管理 | 否 | [查看详情](#51-任务管理接口) |
+| 5 | 分页查询任务列表 | GET | `/core/publisher/tasks` | 分页查询任务列表 | 任务发布管理 | 否 | [查看详情](#51-任务管理接口) |
+| 6 | 提交任务审核 | POST | `/core/publisher/tasks/{id}/submit` | 提交任务进行审核 | 任务审核流程 | 否 | [查看详情](#52-任务审核接口) |
+| 7 | 审核任务 | POST | `/core/publisher/tasks/{id}/review` | 审核任务 | 任务审核流程 | 否 | [查看详情](#52-任务审核接口) |
+| 8 | 获取审核历史 | GET | `/core/publisher/tasks/{id}/review-history` | 获取任务审核历史 | 任务审核流程 | 否 | [查看详情](#52-任务审核接口) |
+| 9 | 提交社群分享审核 | POST | `/core/publisher/share-reviews` | 提交社群分享审核申请 | 任务审核流程 | 否 | [查看详情](#53-社群分享审核接口) |
+| 10 | 审核社群分享 | PUT | `/core/publisher/share-reviews/{id}/review` | 审核社群分享申请 | 任务审核流程 | 否 | [查看详情](#53-社群分享审核接口) |
+| 11 | 查询社群分享审核列表 | GET | `/core/publisher/share-reviews` | 查询社群分享审核列表 | 任务审核流程 | 否 | [查看详情](#53-社群分享审核接口) |
 
 
 ### 2.2 接口分类
@@ -56,10 +61,12 @@ core-publisher 模块是 banyuMall 系统的核心发布者模块，负责管理
 
 
 
-## 3. 数据库设计
+## 3. 数据模型设计
 
-### 3.1 数据库脚本
-参考: [`../database/data/publisher/publisher-schema.sql`](../database/data/publisher/publisher-schema.sql)
+### 3.1 数据库表结构
+参考: [publisher-schema-optimized.sql](../../database/data/publisher/publisher-schema-optimized.sql)
+
+> **注意**: 数据模型设计直接指向 `infra/database/data/` 目录下的SQL文件，不重复定义表结构。
 
 ### 3.2 核心表结构
 

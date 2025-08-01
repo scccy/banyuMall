@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Tag(name = "用户扩展信息", description = "用户扩展信息管理接口")
 @RestController
-@RequestMapping("/user/profile")
+@RequestMapping("/service/user/profile")
 @RequiredArgsConstructor
 @Slf4j
 @Validated

@@ -28,7 +28,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/core-publisher/tasks")
+@RequestMapping("/core/publisher/tasks")
 @RequiredArgsConstructor
 @Tag(name = "任务管理", description = "任务发布、审核、查询等接口")
 @Validated

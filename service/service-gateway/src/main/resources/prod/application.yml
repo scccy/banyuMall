@@ -137,7 +137,7 @@ gateway:
     - id: user-service
       uri: lb://service-user
       predicates:
-        - Path=/user/**
+        - Path=/service/user/**
       filters:
         - StripPrefix=0
         - name: RequestRateLimiter
