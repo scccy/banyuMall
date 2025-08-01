@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 public class UserProfileServiceImpl extends ServiceImpl<UserProfileMapper, UserProfile> implements UserProfileService {
     
     @Override
-    @Cacheable(value = "user:profile", key = "#userId", unless = "#result == null")
     public UserProfile getProfileByUserId(String userId) {
         log.debug("根据用户ID获取扩展信息 - 用户ID: {}", userId);
         
@@ -47,7 +46,6 @@ public class UserProfileServiceImpl extends ServiceImpl<UserProfileMapper, UserP
     
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(value = "user:profile", key = "#userId")
     public UserProfile createOrUpdateProfile(String userId, UserUpdateRequest request) {
         log.info("创建或更新用户扩展信息 - 用户ID: {}, 请求参数: {}", userId, request);
         
@@ -69,7 +67,6 @@ public class UserProfileServiceImpl extends ServiceImpl<UserProfileMapper, UserP
     
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(value = "user:profile", key = "#userId")
     public boolean deleteProfileByUserId(String userId) {
         log.info("删除用户扩展信息 - 用户ID: {}", userId);
         

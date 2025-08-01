@@ -83,7 +83,7 @@ VALUES
 ### 3.1 创建任务测试
 
 #### 3.1.1 创建点赞任务
-**接口**: `POST /core-publisher/tasks`
+**接口**: `POST /core/publisher/tasks`
 
 **请求头**:
 ```
@@ -178,7 +178,7 @@ Authorization: Bearer {token}
 ```
 
 ### 3.2 更新任务测试
-**接口**: `PUT /core-publisher/tasks/{id}`
+**接口**: `PUT /core/publisher/tasks/{id}`
 
 **请求参数**:
 ```json
@@ -214,7 +214,7 @@ Authorization: Bearer {token}
 ```
 
 ### 3.3 删除任务测试
-**接口**: `DELETE /core-publisher/tasks/{id}`
+**接口**: `DELETE /core/publisher/tasks/{id}`
 
 **预期响应**:
 ```json
@@ -231,7 +231,7 @@ Authorization: Bearer {token}
 3. 检查数据库中任务是否被标记为删除
 
 ### 3.4 获取任务详情测试
-**接口**: `GET /core-publisher/tasks/{id}`
+**接口**: `GET /core/publisher/tasks/{id}`
 
 **预期响应**:
 ```json
@@ -257,7 +257,7 @@ Authorization: Bearer {token}
 ```
 
 ### 3.5 分页查询任务列表测试
-**接口**: `GET /core-publisher/tasks`
+**接口**: `GET /core/publisher/tasks`
 
 **查询参数**:
 ```
@@ -293,7 +293,7 @@ pageNum=1&pageSize=10&taskType=LIKE&status=DRAFT
 ## 4. 任务审核接口测试
 
 ### 4.1 提交任务审核测试
-**接口**: `POST /core-publisher/tasks/{id}/submit`
+**接口**: `POST /core/publisher/tasks/{id}/submit`
 
 **预期响应**:
 ```json
@@ -310,7 +310,7 @@ pageNum=1&pageSize=10&taskType=LIKE&status=DRAFT
 3. 检查审核记录
 
 ### 4.2 审核任务测试
-**接口**: `POST /core-publisher/tasks/{id}/review`
+**接口**: `POST /core/publisher/tasks/{id}/review`
 
 **请求参数**:
 ```json
@@ -337,7 +337,7 @@ pageNum=1&pageSize=10&taskType=LIKE&status=DRAFT
 4. 检查审核历史记录
 
 ### 4.3 获取审核历史测试
-**接口**: `GET /core-publisher/tasks/{id}/review-history`
+**接口**: `GET /core/publisher/tasks/{id}/review-history`
 
 **预期响应**:
 ```json
@@ -360,7 +360,7 @@ pageNum=1&pageSize=10&taskType=LIKE&status=DRAFT
 ## 5. 社群分享审核接口测试
 
 ### 5.1 提交社群分享审核测试
-**接口**: `POST /core-publisher/share-reviews`
+**接口**: `POST /core/publisher/share-reviews`
 
 **请求参数**:
 ```json
@@ -392,7 +392,7 @@ pageNum=1&pageSize=10&taskType=LIKE&status=DRAFT
 ```
 
 ### 5.2 审核社群分享测试
-**接口**: `PUT /core-publisher/share-reviews/{id}/review`
+**接口**: `PUT /core/publisher/share-reviews/{id}/review`
 
 **请求参数**:
 ```json
@@ -404,7 +404,7 @@ pageNum=1&pageSize=10&taskType=LIKE&status=DRAFT
 ```
 
 ### 5.3 查询社群分享审核列表测试
-**接口**: `GET /core-publisher/share-reviews`
+**接口**: `GET /core/publisher/share-reviews`
 
 **查询参数**:
 ```
@@ -453,7 +453,7 @@ pageNum=1&pageSize=10&reviewStatus=PENDING
 ### 7.3 资源不存在测试
 **测试场景**: 访问不存在的任务
 
-**接口**: `GET /core-publisher/tasks/non-existent-id`
+**接口**: `GET /core/publisher/tasks/non-existent-id`
 
 **预期响应**:
 ```json
@@ -661,7 +661,7 @@ echo "API测试完成"
 ### 14.1 上传任务二维码测试
 
 #### 14.1.1 正常上传二维码
-**接口**: `POST /core-publisher/tasks/{taskId}/upload-file`
+**接口**: `POST /core/publisher/tasks/{taskId}/upload-file`
 
 **请求头**:
 ```
@@ -785,13 +785,13 @@ file: [选择图片文件]
 ### 14.4 使用curl命令测试
 ```bash
 # 上传任务二维码
-curl -X POST http://localhost:8080/core-publisher/tasks/task_id_123/upload-file \
+curl -X POST http://localhost:8080/core/publisher/tasks/task_id_123/upload-file \
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \
   -F "fileType=qr_code" \
   -F "file=@/path/to/qrcode.jpg"
 
 # 上传任务头像
-curl -X POST http://localhost:8080/core-publisher/tasks/task_id_123/upload-file \
+curl -X POST http://localhost:8080/core/publisher/tasks/task_id_123/upload-file \
   -H "Authorization: Bearer YOUR_TOKEN_HERE" \
   -F "fileType=task_avatar" \
   -F "file=@/path/to/avatar.jpg"
@@ -799,7 +799,7 @@ curl -X POST http://localhost:8080/core-publisher/tasks/task_id_123/upload-file 
 
 ### 14.5 使用Postman测试
 1. **Method**: POST
-2. **URL**: `http://localhost:8080/core-publisher/tasks/{taskId}/upload-file`
+2. **URL**: `http://localhost:8080/core/publisher/tasks/{taskId}/upload-file`
 3. **Headers**: 
    - Authorization: Bearer {token}
 4. **Body**: form-data

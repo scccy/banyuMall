@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
  */
 @FeignClient(
     name = "service-auth",
-    path = "/auth",
+    path = "/service/auth",
     fallback = AuthFeignClientFallback.class
 )
 public interface AuthFeignClient {

@@ -18,7 +18,7 @@ import java.util.Map;
  * @author scccy
  * @since 2024-07-30
  */
-@FeignClient(name = "service-user", fallback = UserFeignClientFallback.class)
+@FeignClient(name = "service-user", path = "/service/user", fallback = UserFeignClientFallback.class)
 public interface UserFeignClient {
     
     /**
@@ -27,7 +27,7 @@ public interface UserFeignClient {
      * @param userId 用户ID
      * @return 用户信息
      */
-    @GetMapping("/user/{userId}")
+    @GetMapping("/{userId}")
     ResultData<SysUser> getUserInfo(@PathVariable("userId") String userId);
     
     /**
@@ -36,7 +36,7 @@ public interface UserFeignClient {
      * @param params 查询参数
      * @return 分页用户列表
      */
-    @GetMapping("/user/list")
+    @GetMapping("/list")
     ResultData<IPage<SysUser>> getUserList(@RequestParam Map<String, Object> params);
     
     /**
@@ -45,6 +45,6 @@ public interface UserFeignClient {
      * @param userId 用户ID
      * @return 用户扩展信息
      */
-    @GetMapping("/user/profile/{userId}")
+    @GetMapping("/profile/{userId}")
     ResultData<UserProfile> getUserProfile(@PathVariable("userId") String userId);
 } 

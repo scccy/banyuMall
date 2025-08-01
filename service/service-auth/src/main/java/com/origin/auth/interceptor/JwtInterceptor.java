@@ -1,7 +1,7 @@
 package com.origin.auth.interceptor;
 
 import com.origin.auth.util.JwtUtil;
-import com.origin.auth.util.TokenBlacklistUtil;
+import com.origin.auth.util.JwtTokenManager;
 import com.origin.common.exception.BusinessException;
 import com.origin.common.entity.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +22,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class JwtInterceptor implements HandlerInterceptor {
 
     private final JwtUtil jwtUtil;
-    private final TokenBlacklistUtil tokenBlacklistUtil;
+    private final JwtTokenManager jwtTokenManager;
 
     @Value("${jwt.header:Authorization}")
     private String tokenHeader;
@@ -43,7 +43,7 @@ public class JwtInterceptor implements HandlerInterceptor {
         }
         
         // 检查token是否在黑名单中
-        if (tokenBlacklistUtil.isBlacklisted(token)) {
+        if (jwtTokenManager.isBlacklisted(token)) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED, "认证令牌已失效");
         }
 

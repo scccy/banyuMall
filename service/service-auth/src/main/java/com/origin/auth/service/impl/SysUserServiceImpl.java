@@ -11,7 +11,7 @@ import com.origin.auth.service.SysRoleService;
 import com.origin.auth.service.SysUserService;
 
 import com.origin.auth.util.JwtUtil;
-import com.origin.auth.util.TokenBlacklistUtil;
+import com.origin.auth.util.JwtTokenManager;
 import com.origin.auth.util.PasswordUtil;
 import com.origin.common.exception.BusinessException;
 import com.origin.common.entity.ErrorCode;
@@ -41,7 +41,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private final SysPermissionService sysPermissionService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final TokenBlacklistUtil tokenBlacklistUtil;
+    private final JwtTokenManager jwtTokenManager;
     
     @Value("${jwt.expiration}")
     private Long jwtExpiration;
@@ -98,7 +98,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         String token = jwtUtil.generateToken(user.getId(), user.getUsername(), roles, permissions);
 
         // 更新用户token到Redis（避免重复存储）
-        tokenBlacklistUtil.updateUserToken(user.getId(), token, jwtExpiration / 1000);
+        jwtTokenManager.updateUserToken(user.getId(), token, jwtExpiration / 1000);
 
         // 构建登录响应
         return new LoginResponse()

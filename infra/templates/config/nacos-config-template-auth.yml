@@ -54,11 +54,14 @@ spring:
     lazy-initialization: false  # 生产环境关闭懒加载
   jmx:
     enabled: false  # 生产环境关闭JMX
+  
+  # JWT令牌缓存配置（认证服务必需）
   cache:
-    type:
-        redis:
-          time-to-live: 3600000  # 1小时
-          cache-null-values: false
+    type: redis
+    redis:
+      time-to-live: 3600000  # 1小时，与JWT过期时间一致
+      cache-null-values: false
+      key-prefix: "auth:jwt:"
 
 # JWT配置
 jwt:

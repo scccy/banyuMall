@@ -58,10 +58,7 @@ banyumall:
       max-size: ${FILE_MAX_SIZE:10MB}
       allowed-types: ${FILE_ALLOWED_TYPES:jpg,jpeg,png,gif,pdf,doc,docx}
       path: ${FILE_UPLOAD_PATH:/uploads}
-  cache:
-    redis:
-      default-ttl: ${CACHE_DEFAULT_TTL:3600}
-      key-prefix: ${CACHE_KEY_PREFIX:banyumall:}
+
   task:
     pool:
       core-size: ${TASK_CORE_SIZE:10}

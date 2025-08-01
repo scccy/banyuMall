@@ -4,11 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
+import com.origin.common.dto.FileUploadRequest;
+import com.origin.common.dto.FileUploadResponse;
 import com.origin.common.dto.ResultData;
 import com.origin.common.entity.ErrorCode;
 import com.origin.common.exception.BusinessException;
-import com.origin.oss.dto.FileUploadRequest;
-import com.origin.oss.dto.FileUploadResponse;
+
 import com.origin.publisher.dto.TaskCreateRequest;
 import com.origin.publisher.dto.TaskFileUploadResponse;
 import com.origin.publisher.dto.TaskQueryRequest;

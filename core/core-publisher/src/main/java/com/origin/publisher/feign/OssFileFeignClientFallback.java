@@ -1,8 +1,8 @@
 package com.origin.publisher.feign;
 
 import com.origin.common.dto.ResultData;
-import com.origin.oss.dto.FileUploadRequest;
-import com.origin.oss.dto.FileUploadResponse;
+import com.origin.common.dto.FileUploadRequest;
+import com.origin.common.dto.FileUploadResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

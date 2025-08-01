@@ -2,9 +2,8 @@ package com.origin.auth.controller;
 
 import com.origin.auth.dto.LoginRequest;
 import com.origin.auth.dto.LoginResponse;
-import com.origin.auth.service.SysUserService;
+import com.origin.auth.service.AuthService;
 import com.origin.auth.util.JwtUtil;
-import com.origin.auth.util.TokenBlacklistUtil;
 import com.origin.common.dto.ResultData;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,9 +25,8 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class AuthController {
 
-    private final SysUserService sysUserService;
+    private final AuthService authService;
     private final JwtUtil jwtUtil;
-    private final TokenBlacklistUtil tokenBlacklistUtil;
 
     /**
      * 用户登录
@@ -49,7 +47,7 @@ public class AuthController {
         log.info("Auth Login - RequestId: {}, ClientIP: {}, UserAgent: {}, Username: {}", 
                 requestId, clientIp, userAgent, loginRequest.getUsername());
         
-        LoginResponse loginResponse = sysUserService.login(loginRequest);
+        LoginResponse loginResponse = authService.login(loginRequest);
         return ResultData.ok("登录成功", loginResponse);
     }
 
@@ -78,33 +76,22 @@ public class AuthController {
         token = token.substring(7);
         
         try {
-            // 从token中提取用户信息
+            // 从token中提取用户信息用于日志记录
             String userId = jwtUtil.getUserIdFromToken(token);
             String username = jwtUtil.getUsernameFromToken(token);
-            
-            if (userId == null || username == null) {
-                log.warn("登出失败 - Token中缺少用户信息");
-                return ResultData.fail("登出失败：无效的token");
-            }
             
             // 记录登出日志
             log.info("用户登出 - 用户ID: {}, 用户名: {}, 客户端IP: {}, 用户代理: {}, 请求ID: {}", 
                     userId, username, clientIp, userAgent, requestId);
             
-            // 使用新的基于用户ID的token管理
-            tokenBlacklistUtil.removeUserToken(userId);
-            
-            // 将token加入黑名单
-            long expirationTime = jwtUtil.getExpirationTime(token);
-            if (expirationTime > 0) {
-                tokenBlacklistUtil.addToBlacklist(token, expirationTime);
-            }
+            // 调用业务层处理登出逻辑
+            authService.logout(token);
             
             return ResultData.ok("登出成功");
             
         } catch (Exception e) {
-            log.error("登出失败 - Token解析错误: {}", e.getMessage());
-            return ResultData.fail("登出失败：无效的token");
+            log.error("登出失败: {}", e.getMessage());
+            return ResultData.fail("登出失败：" + e.getMessage());
         }
     }
 
@@ -147,8 +134,8 @@ public class AuthController {
         // @PreAuthorize("hasRole('ADMIN')")
         
         try {
-            // 强制移除用户token
-            tokenBlacklistUtil.removeUserToken(userId);
+            // 调用业务层处理强制登出逻辑
+            authService.forceLogout(userId);
             
             log.info("管理员强制登出用户 - 用户ID: {}, 操作者IP: {}, 请求ID: {}", 
                     userId, clientIp, requestId);

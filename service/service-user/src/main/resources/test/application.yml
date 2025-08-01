@@ -74,11 +74,7 @@ spring:
     lazy-initialization: false
   jmx:
     enabled: false
-  cache:
-    type: redis
-    redis:
-      time-to-live: 3600000  # 1小时
-      cache-null-values: false
+
 
 # 安全配置
 security:

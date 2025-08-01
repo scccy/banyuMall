@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Token 黑名单管理工具类
+ * JWT令牌管理器
+ * 负责JWT令牌的存储、验证、黑名单管理等完整生命周期
  * 
  * @author origin
  * @since 2025-01-27
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class TokenBlacklistUtil {
+public class JwtTokenManager {
 
     private final StringRedisTemplate redisTemplate;
 

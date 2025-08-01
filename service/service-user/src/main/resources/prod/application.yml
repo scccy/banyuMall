@@ -82,7 +82,7 @@ user:
     max-config-count: 50
   # 性能配置
   performance:
-    cache-enabled: true
+          cache-enabled: true
     cache-ttl: 3600
   # 监控配置
   monitoring:

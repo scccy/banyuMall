@@ -15,7 +15,7 @@ import com.origin.user.dto.UserQueryRequest;
 import com.origin.user.dto.UserUpdateRequest;
 import com.origin.user.entity.SysUser;
 import com.origin.user.feign.OssFileFeignClient;
-import com.origin.user.feign.AuthPasswordFeignClient;
+import com.origin.user.feign.AuthFeignClient;
 import com.origin.common.dto.PasswordEncryptRequest;
 import com.origin.common.dto.PasswordEncryptResponse;
 import com.origin.common.dto.ResultData;
@@ -45,7 +45,7 @@ import java.util.List;
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
     
     private final OssFileFeignClient ossFileFeignClient;
-    private final AuthPasswordFeignClient authPasswordFeignClient;
+    private final AuthFeignClient authFeignClient;
     
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -74,7 +74,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     .setUsername(request.getUsername())
                     .setPassword(request.getPassword());
             
-            ResultData<PasswordEncryptResponse> encryptResult = authPasswordFeignClient.encryptPassword(encryptRequest);
+            ResultData<PasswordEncryptResponse> encryptResult = authFeignClient.encryptPassword(encryptRequest);
             if (encryptResult.isSuccess() && encryptResult.getData() != null) {
                 user.setPassword(encryptResult.getData().getEncryptedPassword());
                 log.info("密码加密成功 - 用户名: {}", request.getUsername());
@@ -126,7 +126,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                     .setUsername(request.getUsername())
                     .setPassword(request.getPassword());
             
-            ResultData<PasswordEncryptResponse> encryptResult = authPasswordFeignClient.encryptPassword(encryptRequest);
+            ResultData<PasswordEncryptResponse> encryptResult = authFeignClient.encryptPassword(encryptRequest);
             if (encryptResult.isSuccess() && encryptResult.getData() != null) {
                 user.setPassword(encryptResult.getData().getEncryptedPassword());
                 log.info("密码加密成功 - 用户名: {}", request.getUsername());
@@ -171,7 +171,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
     
     @Override
-    @Cacheable(value = "user:info", key = "#userId", unless = "#result == null")
     public SysUser getUserById(String userId) {
         log.debug("根据用户ID获取用户信息 - 用户ID: {}", userId);
         
@@ -186,7 +185,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(value = "user:info", key = "#userId")
     public SysUser updateUser(String userId, UserUpdateRequest request) {
         log.info("更新用户信息 - 用户ID: {}, 请求参数: {}", userId, request);
         
@@ -214,7 +212,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(value = "user:info", key = "#userId")
     public SysUser updateUserWithAvatar(String userId, UserUpdateRequest request, org.springframework.web.multipart.MultipartFile avatarFile) {
         log.info("更新用户信息（支持头像上传） - 用户ID: {}, 请求参数: {}, 是否有头像: {}", userId, request, avatarFile != null);
         
@@ -256,7 +253,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(value = "user:info", key = "#userId")
     public boolean deleteUser(String userId) {
         log.info("删除用户 - 用户ID: {}", userId);
         
@@ -305,7 +301,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     }
     
     @Override
-    @Cacheable(value = "user:list", key = "#request.hashCode()", unless = "#result == null")
     public IPage<SysUser> getUserPage(UserQueryRequest request) {
         log.debug("分页查询用户列表 - 请求参数: {}", request);
         
@@ -408,7 +403,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(value = "user:info", key = "#userId")
     public AvatarResponse uploadAvatar(String userId, org.springframework.web.multipart.MultipartFile file) {
         log.info("上传用户头像 - 用户ID: {}, 文件名: {}", userId, file.getOriginalFilename());
         

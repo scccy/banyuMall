@@ -520,7 +520,7 @@ public interface PublisherShareReviewService {
 ### 7.1 任务控制器
 ```java
 @RestController
-@RequestMapping("/core-publisher/tasks")
+@RequestMapping("/core/publisher/tasks")
 @Api(tags = "任务管理")
 public class PublisherTaskController {
     
@@ -581,7 +581,7 @@ public class PublisherTaskController {
 ### 7.2 社群分享审核控制器
 ```java
 @RestController
-@RequestMapping("/core-publisher/share-reviews")
+@RequestMapping("/core/publisher/share-reviews")
 @Api(tags = "社群分享审核")
 public class PublisherShareReviewController {
     

@@ -14,7 +14,7 @@ import java.util.List;
  * @author scccy
  * @since 2025-01-27
  */
-@FeignClient(name = "aliyun-oss", fallback = OssFileFeignClientFallback.class)
+@FeignClient(name = "aliyun-oss", path = "/tp/oss", fallback = OssFileFeignClientFallback.class)
 public interface OssFileFeignClient {
 
     /**
@@ -28,7 +28,7 @@ public interface OssFileFeignClient {
      * @param uploadUserName 上传用户名
      * @return 文件上传响应
      */
-    @PostMapping("/api/v1/oss/upload")
+    @PostMapping("/upload")
     ResultData<FileUploadResponse> uploadFile(@RequestPart("file") MultipartFile file,
                                             @RequestParam("sourceService") String sourceService,
                                             @RequestParam("businessType") String businessType,
@@ -42,7 +42,7 @@ public interface OssFileFeignClient {
      * @param fileId 文件ID
      * @return 文件访问URL
      */
-    @GetMapping("/api/v1/oss/url/{fileId}")
+    @GetMapping("/url/{fileId}")
     ResultData<String> getFileAccessUrl(@PathVariable("fileId") Long fileId);
 
     /**
@@ -52,7 +52,7 @@ public interface OssFileFeignClient {
      * @param userId 用户ID
      * @return 删除结果
      */
-    @DeleteMapping("/api/v1/oss/file/{fileId}")
+    @DeleteMapping("/file/{fileId}")
     ResultData<Boolean> deleteFile(@PathVariable("fileId") Long fileId,
                                  @RequestParam("userId") Long userId);
 
@@ -65,7 +65,7 @@ public interface OssFileFeignClient {
      * @param userId 用户ID
      * @return 批量上传结果
      */
-    @PostMapping("/api/v1/oss/batch-upload")
+    @PostMapping("/batch-upload")
     ResultData<List<FileUploadResponse>> batchUploadFiles(@RequestPart("files") List<MultipartFile> files,
                                                         @RequestParam("sourceService") String sourceService,
                                                         @RequestParam("businessType") String businessType,
@@ -78,7 +78,7 @@ public interface OssFileFeignClient {
      * @param businessType 业务类型
      * @return 文件路径
      */
-    @GetMapping("/api/v1/oss/generate-path")
+    @GetMapping("/generate-path")
     ResultData<String> generateFilePath(@RequestParam("sourceService") String sourceService,
                                       @RequestParam("businessType") String businessType);
 } 

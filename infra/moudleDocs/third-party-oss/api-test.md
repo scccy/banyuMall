@@ -11,7 +11,7 @@
 ### 1. 文件上传接口
 
 #### 1.1 单文件上传
-**接口地址**: `POST /api/v1/oss/upload`
+**接口地址**: `POST /tp/oss/upload`
 
 **请求参数**:
 - `file`: 上传的文件 (MultipartFile)
@@ -23,7 +23,7 @@
 
 **测试示例**:
 ```bash
-curl -X POST "http://localhost:8085/api/v1/oss/test-upload" -H "Content-Type: multipart/form-data" -F "file=@/Volumes/project/test/oss_test.JPG" -F "sourceService=core-publisher" -F "businessType=task-image" -F "filePath=core-publisher/task-image/2025/01/27/" -F "uploadUserId=1" -F "uploadUserName=testuser"
+curl -X POST "http://localhost:8085/tp/oss/test-upload" -H "Content-Type: multipart/form-data" -F "file=@/Volumes/project/test/oss_test.JPG" -F "sourceService=core-publisher" -F "businessType=task-image" -F "filePath=core-publisher/task-image/2025/01/27/" -F "uploadUserId=1" -F "uploadUserName=testuser"
 ```
 
 **预期响应**:
@@ -45,7 +45,7 @@ curl -X POST "http://localhost:8085/api/v1/oss/test-upload" -H "Content-Type: mu
 ```
 
 #### 1.2 批量文件上传
-**接口地址**: `POST /api/v1/oss/batch-upload`
+**接口地址**: `POST /tp/oss/batch-upload`
 
 **请求参数**:
 - `files`: 文件列表 (List<MultipartFile>)
@@ -55,7 +55,7 @@ curl -X POST "http://localhost:8085/api/v1/oss/test-upload" -H "Content-Type: mu
 
 **测试示例**:
 ```bash
-curl -X POST "http://localhost:8085/api/v1/oss/batch-upload" \
+curl -X POST "http://localhost:8085/tp/oss/batch-upload" \
   -H "Content-Type: multipart/form-data" \
   -F "files=@/path/to/file1.jpg" \
   -F "files=@/path/to/file2.png" \
@@ -67,14 +67,14 @@ curl -X POST "http://localhost:8085/api/v1/oss/batch-upload" \
 ### 2. 文件访问接口
 
 #### 2.1 获取文件访问URL
-**接口地址**: `GET /api/v1/oss/url/{fileId}`
+**接口地址**: `GET /tp/oss/url/{fileId}`
 
 **路径参数**:
 - `fileId`: 文件ID (Long)
 
 **测试示例**:
 ```bash
-curl -X GET "http://localhost:8085/api/v1/oss/url/1"
+curl -X GET "http://localhost:8085/tp/oss/url/1"
 ```
 
 **预期响应**:
@@ -89,7 +89,7 @@ curl -X GET "http://localhost:8085/api/v1/oss/url/1"
 ### 3. 文件管理接口
 
 #### 3.1 删除文件
-**接口地址**: `DELETE /api/v1/oss/file/{fileId}`
+**接口地址**: `DELETE /tp/oss/file/{fileId}`
 
 **路径参数**:
 - `fileId`: 文件ID (Long)

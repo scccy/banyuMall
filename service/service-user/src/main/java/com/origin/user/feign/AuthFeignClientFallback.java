@@ -1,7 +1,8 @@
 package com.origin.user.feign;
 
+import com.origin.common.dto.PasswordEncryptRequest;
+import com.origin.common.dto.PasswordEncryptResponse;
 import com.origin.common.dto.ResultData;
-
 import com.origin.user.entity.SysUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -34,5 +35,17 @@ public class AuthFeignClientFallback implements AuthFeignClient {
     public ResultData<Map<String, Object>> getUserPermissions(String userId) {
         log.error("认证服务调用失败 - getUserPermissions, userId: {}", userId);
         return ResultData.fail("认证服务暂时不可用");
+    }
+    
+    @Override
+    public ResultData<PasswordEncryptResponse> encryptPassword(PasswordEncryptRequest request) {
+        log.error("认证服务调用失败 - encryptPassword, username: {}", request.getUsername());
+        return ResultData.fail("密码加密服务暂时不可用");
+    }
+    
+    @Override
+    public ResultData<Boolean> verifyPassword(PasswordEncryptRequest request) {
+        log.error("认证服务调用失败 - verifyPassword, username: {}", request.getUsername());
+        return ResultData.fail("密码验证服务暂时不可用");
     }
 } 

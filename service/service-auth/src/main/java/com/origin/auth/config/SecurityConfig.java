@@ -14,6 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.cache.annotation.EnableCaching;
 
 /**
  * Spring Security 配置类
@@ -23,6 +25,7 @@ import org.springframework.security.web.SecurityFilterChain;
  */
 @Configuration
 @EnableWebSecurity
+@EnableCaching
 public class SecurityConfig {
 
     @Value("${spring.security.user.name:admin}")

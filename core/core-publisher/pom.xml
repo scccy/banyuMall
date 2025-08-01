@@ -53,13 +53,28 @@
         <!-- MyBatis Plus -->
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
         </dependency>
         
         <!-- Redis -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
+            <exclusions>
+                <!-- 排除Jackson，使用FastJSON2 -->
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-annotations</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         
         <!-- Validation -->
@@ -113,12 +128,7 @@
             <artifactId>lombok</artifactId>
         </dependency>
         
-        <!-- OSS Feign Client - 用于文件上传 -->
-        <dependency>
-            <groupId>com.origin</groupId>
-            <artifactId>aliyun-oss</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+        <!-- OSS Feign Client - 通过服务发现调用，不直接依赖模块 -->
     </dependencies>
     
     <build>

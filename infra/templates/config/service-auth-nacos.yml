@@ -52,12 +52,13 @@ spring:
     mapper-locations: classpath*:/mapper/**/*.xml
     type-aliases-package: com.origin.auth.entity
 
-  # 缓存配置
+  # JWT令牌缓存配置（认证服务必需）
   cache:
     type: redis
     redis:
-      time-to-live: 3600000  # 1小时
+      time-to-live: 3600000  # 1小时，与JWT过期时间一致
       cache-null-values: false
+      key-prefix: "auth:jwt:"
 
   # 启动性能优化
   main:

@@ -72,18 +72,24 @@
         </Logger>
 
         <!-- 应用日志 -->
-        <Logger name="com.origin" level="debug" additivity="false">
+        <Logger name="com.origin" level="info" additivity="false">
             <AppenderRef ref="AsyncConsole"/>
             <AppenderRef ref="AsyncFile"/>
         </Logger>
 
         <!-- 微服务特定日志 -->
-        <Logger name="com.origin.auth" level="debug" additivity="false">
+        <Logger name="com.origin.auth" level="info" additivity="false">
             <AppenderRef ref="AsyncConsole"/>
             <AppenderRef ref="AsyncFile"/>
         </Logger>
 
-        <Logger name="com.origin.user" level="debug" additivity="false">
+        <Logger name="com.origin.user" level="info" additivity="false">
+            <AppenderRef ref="AsyncConsole"/>
+            <AppenderRef ref="AsyncFile"/>
+        </Logger>
+
+        <!-- 发布者服务日志 -->
+        <Logger name="com.origin.publisher" level="info" additivity="false">
             <AppenderRef ref="AsyncConsole"/>
             <AppenderRef ref="AsyncFile"/>
         </Logger>
@@ -95,7 +101,7 @@
         </Logger>
 
         <!-- MyBatis日志 -->
-        <Logger name="com.baomidou.mybatisplus" level="debug" additivity="false">
+        <Logger name="com.baomidou.mybatisplus" level="warn" additivity="false">
             <AppenderRef ref="AsyncConsole"/>
             <AppenderRef ref="AsyncFile"/>
         </Logger>
