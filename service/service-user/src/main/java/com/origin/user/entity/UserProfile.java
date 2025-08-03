@@ -8,9 +8,10 @@ import lombok.experimental.Accessors;
 
 /**
  * 用户扩展信息实体
+ * 基于简化的权限控制，与sys_user通过profile_id关联
  * 
  * @author scccy
- * @since 2024-07-30
+ * @since 2025-01-27
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -19,16 +20,10 @@ import lombok.experimental.Accessors;
 public class UserProfile extends BaseEntity {
     
     /**
-     * 主键ID
+     * 扩展信息ID
      */
-    @TableId(value = "id", type = IdType.ASSIGN_ID)
-    private String id;
-    
-    /**
-     * 用户ID
-     */
-    @TableField("user_id")
-    private String userId;
+    @TableId(value = "profile_id", type = IdType.ASSIGN_ID)
+    private String profileId;
     
     /**
      * 真实姓名
@@ -61,13 +56,13 @@ public class UserProfile extends BaseEntity {
     private String contactPhone;
     
     /**
-     * 行业
+     * 所属行业
      */
     @TableField("industry")
     private String industry;
     
     /**
-     * 描述
+     * 个人简介
      */
     @TableField("description")
     private String description;

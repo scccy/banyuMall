@@ -21,9 +21,10 @@ import java.time.LocalDateTime;
 
 /**
  * 用户扩展信息服务实现类
+ * 基于简化的权限控制，通过profile_id进行关联
  * 
  * @author scccy
- * @since 2024-07-30
+ * @since 2025-01-27
  */
 @Slf4j
 @Service
@@ -31,105 +32,77 @@ import java.time.LocalDateTime;
 public class UserProfileServiceImpl extends ServiceImpl<UserProfileMapper, UserProfile> implements UserProfileService {
     
     @Override
-    public UserProfile getProfileByUserId(String userId) {
-        log.debug("根据用户ID获取扩展信息 - 用户ID: {}", userId);
+    public UserProfile getProfileByProfileId(String profileId) {
+        log.debug("根据扩展信息ID获取用户扩展信息 - 扩展信息ID: {}", profileId);
         
-        if (!StringUtils.hasText(userId)) {
+        if (!StringUtils.hasText(profileId)) {
             return null;
         }
         
-        LambdaQueryWrapper<UserProfile> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(UserProfile::getUserId, userId);
-        
-        return getOne(queryWrapper);
+        return getById(profileId);
     }
     
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UserProfile createOrUpdateProfile(String userId, UserUpdateRequest request) {
-        log.info("创建或更新用户扩展信息 - 用户ID: {}, 请求参数: {}", userId, request);
-        
-        if (!StringUtils.hasText(userId)) {
-            throw new BusinessException(ErrorCode.PARAM_ERROR, "用户ID不能为空");
-        }
-        
-        // 检查是否已存在扩展信息
-        UserProfile existingProfile = getProfileByUserId(userId);
-        
-        if (existingProfile != null) {
-            // 更新扩展信息
-            return updateProfile(existingProfile, request);
-        } else {
-            // 创建扩展信息
-            return createProfile(userId, request);
-        }
-    }
-    
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public boolean deleteProfileByUserId(String userId) {
-        log.info("删除用户扩展信息 - 用户ID: {}", userId);
-        
-        if (!StringUtils.hasText(userId)) {
-            throw new BusinessException(ErrorCode.PARAM_ERROR, "用户ID不能为空");
-        }
-        
-        LambdaQueryWrapper<UserProfile> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(UserProfile::getUserId, userId);
-        
-        boolean result = remove(queryWrapper);
-        
-        if (result) {
-            log.info("用户扩展信息删除成功 - 用户ID: {}", userId);
-        }
-        
-        return result;
-    }
-    
-    /**
-     * 创建用户扩展信息
-     *
-     * @param userId 用户ID
-     * @param request 更新请求
-     * @return 扩展信息
-     */
-    private UserProfile createProfile(String userId, UserUpdateRequest request) {
-        log.debug("创建用户扩展信息 - 用户ID: {}", userId);
+    public UserProfile createProfile(UserUpdateRequest request) {
+        log.info("创建用户扩展信息 - 请求参数: {}", request);
         
         UserProfile profile = new UserProfile();
-        profile.setUserId(userId);
+        copyProfileFields(profile, request);
+        
+        // 设置创建时间
         profile.setCreatedTime(LocalDateTime.now());
         profile.setUpdatedTime(LocalDateTime.now());
-        
-        // 复制扩展信息字段
-        copyProfileFields(profile, request);
         
         // 保存扩展信息
         save(profile);
         
-        log.info("用户扩展信息创建成功 - 用户ID: {}", userId);
+        log.info("用户扩展信息创建成功 - 扩展信息ID: {}", profile.getProfileId());
         return profile;
     }
     
-    /**
-     * 更新用户扩展信息
-     *
-     * @param profile 现有扩展信息
-     * @param request 更新请求
-     * @return 更新后的扩展信息
-     */
-    private UserProfile updateProfile(UserProfile profile, UserUpdateRequest request) {
-        log.debug("更新用户扩展信息 - 用户ID: {}", profile.getUserId());
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public UserProfile updateProfile(String profileId, UserUpdateRequest request) {
+        log.info("更新用户扩展信息 - 扩展信息ID: {}, 请求参数: {}", profileId, request);
         
-        // 复制扩展信息字段
-        copyProfileFields(profile, request);
-        profile.setUpdatedTime(LocalDateTime.now());
+        if (!StringUtils.hasText(profileId)) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "扩展信息ID不能为空");
+        }
+        
+        // 检查扩展信息是否存在
+        UserProfile existingProfile = getProfileByProfileId(profileId);
+        if (existingProfile == null) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "扩展信息不存在");
+        }
         
         // 更新扩展信息
-        updateById(profile);
+        copyProfileFields(existingProfile, request);
+        existingProfile.setUpdatedTime(LocalDateTime.now());
         
-        log.info("用户扩展信息更新成功 - 用户ID: {}", profile.getUserId());
-        return profile;
+        // 保存更新
+        updateById(existingProfile);
+        
+        log.info("用户扩展信息更新成功 - 扩展信息ID: {}", profileId);
+        return existingProfile;
+    }
+    
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteProfile(String profileId) {
+        log.info("删除用户扩展信息 - 扩展信息ID: {}", profileId);
+        
+        if (!StringUtils.hasText(profileId)) {
+            throw new BusinessException(ErrorCode.PARAM_ERROR, "扩展信息ID不能为空");
+        }
+        
+        boolean result = removeById(profileId);
+        
+        if (result) {
+            log.info("用户扩展信息删除成功 - 扩展信息ID: {}", profileId);
+        }
+        
+        return result;
     }
     
     /**

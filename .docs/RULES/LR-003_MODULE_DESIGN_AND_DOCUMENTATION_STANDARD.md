@@ -12,7 +12,7 @@
 ## 指令 (Directive)
 
 ### 1. 设计优先原则
-- **必须 (MUST)** 在开始编码前查看 `infra/moudleDocs/` 目录下的相关设计文档
+- **必须 (MUST)** 在开始编码前查看 `zinfra/moudleDocs/` 目录下的相关设计文档
 - **必须 (MUST)** 根据设计文档中的接口定义、数据模型和功能特性来生成代码
 - **禁止 (MUST NOT)** 在没有设计文档的情况下开始模块开发
 - **必须 (MUST)** 严格按照设计文档中的接口定义生成Controller
@@ -20,13 +20,13 @@
 - **必须 (MUST)** 实现设计文档中定义的所有功能特性
 
 ### 2. 标准化文档结构
-- **必须 (MUST)** 每个模块在 `infra/moudleDocs/` 下包含6个标准化文档
+- **必须 (MUST)** 每个模块在 `zinfra/moudleDocs/` 下包含6个标准化文档
 - **必须 (MUST)** 按照标准命名规范创建文档
 - **必须 (MUST)** 使用统一的文档命名规范（中文或英文均可，但要保持一致性）
 
 #### 2.1 必需文档清单
 ```
-infra/moudleDocs/{模块名称}/
+zinfra/moudleDocs/{模块名称}/
 ├── 模块主体讨论.md           # 模块需求讨论和功能规划
 ├── 模块设计.md              # 模块详细设计文档
 ├── API接口说明.md           # API接口详细说明
@@ -40,7 +40,7 @@ infra/moudleDocs/{模块名称}/
   - 模块概述和功能描述
   - **当前微服务模块级别以及父模块信息** - 明确模块在微服务架构中的层级关系
   - **接口功能列表（Excel表格格式）** - 包含序号、接口名称、请求方法、接口路径、功能描述、职责对应、是否需要Feign客户端、详细文档说明链接
-  - **数据模型设计** - 指向 `infra/database/data/` 目录下的SQL文件，不重复定义表结构
+  - **数据模型设计** - 指向 `zinfra/database/data/` 目录下的SQL文件，不重复定义表结构
   - **接口设计** - 包含请求参数和响应格式，支持跳转链接，不包含详细Java代码
   - 功能特性列表
   - 技术实现方案
@@ -66,7 +66,7 @@ infra/moudleDocs/{模块名称}/
 - **禁止 (MUST NOT)** 跳过任何步骤或用户确认环节
 
 #### 3.1 步骤1：生成文件夹及模块主体讨论
-- **必须 (MUST)** 在 `infra/moudleDocs/` 下创建模块文件夹
+- **必须 (MUST)** 在 `zinfra/moudleDocs/` 下创建模块文件夹
 - **必须 (MUST)** 创建 `模块主体讨论.md` 文档
 - **必须 (MUST)** 用户描述模块需求和功能范围
 - **必须 (MUST)** 明确模块背景、目标、范围
@@ -197,12 +197,12 @@ infra/moudleDocs/{模块名称}/
 
 ## 示例
 当需要开发用户模块时：
-1. 创建模块目录：`infra/moudleDocs/service-user/`
+1. 创建模块目录：`zinfra/moudleDocs/service-user/`
 2. 创建 `模块主体讨论.md` 进行需求讨论
 3. 基于功能拆分生成 `模块设计.md`，包含：
    - 当前微服务模块级别：service-user（用户服务）
    - 父模块：service（服务层）
-   - 数据模型设计指向：`infra/database/data/user/user_init_creat_optimized.sql`
+   - 数据模型设计指向：`zinfra/database/data/user/user_init_creat_optimized.sql`
 4. 生成 `API接口说明.md` 和 `API接口测试.md`
 5. 在接口功能列表中使用Excel表格格式：
    ```markdown

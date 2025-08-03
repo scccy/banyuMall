@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class UserController {
     @PostMapping
     public ResultData<SysUser> createUser(
             @RequestPart("userInfo") @Valid UserCreateRequest request,
-            @RequestPart(value = "avatarFile", required = false) org.springframework.web.multipart.MultipartFile avatarFile,
+            @RequestPart(value = "avatarFile", required = false) MultipartFile avatarFile,
             HttpServletRequest httpRequest) {
         // 从请求头中获取链路追踪信息
         String requestId = httpRequest.getHeader("X-Request-ID");

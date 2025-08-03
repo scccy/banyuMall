@@ -7,6 +7,7 @@ echo "🚀 启动Gateway服务（开发环境）..."
 
 # 设置JVM参数，禁用SLF4J警告
 export JAVA_OPTS="$JAVA_OPTS \
+-Dlogging.file.name=service-gateway \
 -Dlog4j2.disable.jmx=true \
 -Dlog4j2.skipJansi=true \
 -Dlog4j2.statusLogger.level=ERROR \

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.origin.publisher.mapper.PublisherTaskCompletionMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.origin.publisher.entity.PublisherTaskCompletion">
+        <id column="completion_id" property="completionId"/>
+        <result column="task_id" property="taskId"/>
+        <result column="user_id" property="userId"/>
+        <result column="completion_status" property="completionStatus"/>
+        <result column="completion_time" property="completionTime"/>
+        <result column="reward_amount" property="rewardAmount"/>
+        <result column="completion_evidence" property="completionEvidence"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        completion_id, task_id, user_id, completion_status, completion_time, reward_amount, completion_evidence,
+        created_time, updated_time, created_by, updated_by, deleted
+    </sql>
+
+    <!-- 根据任务ID查询完成记录 -->
+    <select id="selectByTaskId" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM publisher_task_completion 
+        WHERE task_id = #{taskId}
+        AND deleted = 0
+        ORDER BY created_time DESC
+    </select>
+
+</mapper> 

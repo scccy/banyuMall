@@ -45,7 +45,28 @@ public class JwtUtil {
      * @return JWT令牌
      */
     public String generateToken(String userId, String username) {
-        return generateToken(userId, username, null, null);
+        return generateToken(userId, username, (Map<String, Object>) null);
+    }
+
+    /**
+     * 生成JWT令牌（带自定义声明）
+     *
+     * @param userId 用户ID
+     * @param username 用户名
+     * @param claims 自定义声明
+     * @return JWT令牌
+     */
+    public String generateToken(String userId, String username, Map<String, Object> claims) {
+        Map<String, Object> tokenClaims = new HashMap<>();
+        tokenClaims.put("userId", userId);
+        tokenClaims.put("username", username);
+        
+        // 添加自定义声明
+        if (claims != null && !claims.isEmpty()) {
+            tokenClaims.putAll(claims);
+        }
+        
+        return createToken(tokenClaims);
     }
 
     /**
@@ -154,6 +175,24 @@ public class JwtUtil {
             return null;
         } catch (Exception e) {
             log.error("从JWT令牌获取权限失败: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 从令牌中获取指定声明
+     *
+     * @param token 令牌
+     * @param claimName 声明名称
+     * @param claimType 声明类型
+     * @return 声明值
+     */
+    public <T> T getClaimFromToken(String token, String claimName, Class<T> claimType) {
+        try {
+            Claims claims = getClaimsFromToken(token);
+            return claims.get(claimName, claimType);
+        } catch (Exception e) {
+            log.error("从JWT令牌获取声明失败 - 声明名: {}, 错误: {}", claimName, e.getMessage());
             return null;
         }
     }

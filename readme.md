@@ -37,7 +37,7 @@ banyuMall/
 │   └── service-gateway/             # API网关服务
 ├── core/                            # 核心业务模块
 │   └── core-publisher/              # 核心发布者服务
-├── infra/                           # 基础设施模块
+├── zinfra/                           # 基础设施模块
 │   ├── database/                    # 数据库相关
 │   ├── docker/                      # Docker配置
 │   ├── k8s/                         # Kubernetes配置
@@ -94,7 +94,7 @@ banyuMall/
 1. **启动基础设施**
    ```bash
    # 启动MySQL和Redis
-   docker-compose -f infra/docker/docker-compose.dev.yml up -d
+   docker-compose -f zinfra/docker/docker-compose.dev.yml up -d
    
    # 启动Nacos
    # 访问 http://localhost:8848/nacos
@@ -104,7 +104,7 @@ banyuMall/
 2. **初始化数据库**
    ```bash
    # 执行数据库初始化脚本
-   mysql -u root -p < infra/database/data/user-init-data.sql
+   mysql -u root -p < zinfra/database/data/user-init-data.sql
    ```
 
 3. **启动服务**
@@ -161,69 +161,69 @@ src/main/resources/
 ## 模块文档
 
 ### 核心模块 (core/)
-- **[core-publisher](infra/moudleDocs/core-publisher/)** - 发布者服务模块
-  - [模块主体讨论](infra/moudleDocs/core-publisher/模块主体讨论.md)
-  - [模块设计](infra/moudleDocs/core-publisher/模块设计.md)
-  - [API接口说明](infra/moudleDocs/core-publisher/API接口说明.md)
-  - [API接口测试](infra/moudleDocs/core-publisher/api-test.md)
-  - [模块迭代说明](infra/moudleDocs/core-publisher/模块迭代说明.md)
-  - [模块迭代设计](infra/moudleDocs/core-publisher/模块迭代设计.md)
+- **[core-publisher](zinfra/moudleDocs/core-publisher/)** - 发布者服务模块
+  - [模块主体讨论](zinfra/moudleDocs/core-publisher/模块主体讨论.md)
+  - [模块设计](zinfra/moudleDocs/core-publisher/模块设计.md)
+  - [API接口说明](zinfra/moudleDocs/core-publisher/API接口说明.md)
+  - [API接口测试](zinfra/moudleDocs/core-publisher/api-test.md)
+  - [模块迭代说明](zinfra/moudleDocs/core-publisher/模块迭代说明.md)
+  - [模块迭代设计](zinfra/moudleDocs/core-publisher/模块迭代设计.md)
 
 ### 服务模块 (service/)
-- **[service-user](infra/moudleDocs/service-user/)** - 用户服务模块
-  - [模块主体讨论](infra/moudleDocs/service-user/模块主体讨论.md)
-  - [模块设计](infra/moudleDocs/service-user/模块设计.md)
-  - [API接口说明](infra/moudleDocs/service-user/API接口说明.md)
-  - [API接口测试](infra/moudleDocs/service-user/api-test.md)
-  - [模块迭代说明](infra/moudleDocs/service-user/模块迭代说明.md)
-  - [模块迭代设计](infra/moudleDocs/service-user/模块迭代设计.md)
+- **[service-user](zinfra/moudleDocs/service-user/)** - 用户服务模块
+  - [模块主体讨论](zinfra/moudleDocs/service-user/模块主体讨论.md)
+  - [模块设计](zinfra/moudleDocs/service-user/模块设计.md)
+  - [API接口说明](zinfra/moudleDocs/service-user/API接口说明.md)
+  - [API接口测试](zinfra/moudleDocs/service-user/api-test.md)
+  - [模块迭代说明](zinfra/moudleDocs/service-user/模块迭代说明.md)
+  - [模块迭代设计](zinfra/moudleDocs/service-user/模块迭代设计.md)
 
-- **[service-auth](infra/moudleDocs/service-auth/)** - 认证服务模块
-  - [模块主体讨论](infra/moudleDocs/service-auth/模块主体讨论.md)
-  - [模块设计](infra/moudleDocs/service-auth/模块设计.md)
-  - [API接口说明](infra/moudleDocs/service-auth/API接口说明.md)
-  - [API接口测试](infra/moudleDocs/service-auth/api-test.md)
-  - [模块迭代说明](infra/moudleDocs/service-auth/模块迭代说明.md)
-  - [模块迭代设计](infra/moudleDocs/service-auth/模块迭代设计.md)
+- **[service-auth](zinfra/moudleDocs/service-auth/)** - 认证服务模块
+  - [模块主体讨论](zinfra/moudleDocs/service-auth/模块主体讨论.md)
+  - [模块设计](zinfra/moudleDocs/service-auth/模块设计.md)
+  - [API接口说明](zinfra/moudleDocs/service-auth/API接口说明.md)
+  - [API接口测试](zinfra/moudleDocs/service-auth/api-test.md)
+  - [模块迭代说明](zinfra/moudleDocs/service-auth/模块迭代说明.md)
+  - [模块迭代设计](zinfra/moudleDocs/service-auth/模块迭代设计.md)
 
-- **[service-gateway](infra/moudleDocs/service-gateway/)** - 网关服务模块
-  - [模块主体讨论](infra/moudleDocs/service-gateway/模块主体讨论.md)
-  - [模块设计](infra/moudleDocs/service-gateway/模块设计.md)
-  - [API接口说明](infra/moudleDocs/service-gateway/API接口说明.md)
-  - [API接口测试](infra/moudleDocs/service-gateway/api-test.md)
-  - [模块迭代说明](infra/moudleDocs/service-gateway/模块迭代说明.md)
-  - [模块迭代设计](infra/moudleDocs/service-gateway/模块迭代设计.md)
+- **[service-gateway](zinfra/moudleDocs/service-gateway/)** - 网关服务模块
+  - [模块主体讨论](zinfra/moudleDocs/service-gateway/模块主体讨论.md)
+  - [模块设计](zinfra/moudleDocs/service-gateway/模块设计.md)
+  - [API接口说明](zinfra/moudleDocs/service-gateway/API接口说明.md)
+  - [API接口测试](zinfra/moudleDocs/service-gateway/api-test.md)
+  - [模块迭代说明](zinfra/moudleDocs/service-gateway/模块迭代说明.md)
+  - [模块迭代设计](zinfra/moudleDocs/service-gateway/模块迭代设计.md)
 
-- **[service-common](infra/moudleDocs/service-common/)** - 通用服务模块
-  - [模块主体讨论](infra/moudleDocs/service-common/模块主体讨论.md)
-  - [模块设计](infra/moudleDocs/service-common/模块设计.md)
-  - [API接口说明](infra/moudleDocs/service-common/API接口说明.md)
-  - [API接口测试](infra/moudleDocs/service-common/api-test.md)
-  - [模块迭代说明](infra/moudleDocs/service-common/模块迭代说明.md)
-  - [模块迭代设计](infra/moudleDocs/service-common/模块迭代设计.md)
+- **[service-common](zinfra/moudleDocs/service-common/)** - 通用服务模块
+  - [模块主体讨论](zinfra/moudleDocs/service-common/模块主体讨论.md)
+  - [模块设计](zinfra/moudleDocs/service-common/模块设计.md)
+  - [API接口说明](zinfra/moudleDocs/service-common/API接口说明.md)
+  - [API接口测试](zinfra/moudleDocs/service-common/api-test.md)
+  - [模块迭代说明](zinfra/moudleDocs/service-common/模块迭代说明.md)
+  - [模块迭代设计](zinfra/moudleDocs/service-common/模块迭代设计.md)
 
-- **[service-base](infra/moudleDocs/service-base/)** - 基础服务模块
-  - [模块主体讨论](infra/moudleDocs/service-base/模块主体讨论.md)
-  - [模块设计](infra/moudleDocs/service-base/模块设计.md)
-  - [API接口说明](infra/moudleDocs/service-base/API接口说明.md)
-  - [API接口测试](infra/moudleDocs/service-base/api-test.md)
-  - [模块迭代说明](infra/moudleDocs/service-base/模块迭代说明.md)
-  - [模块迭代设计](infra/moudleDocs/service-base/模块迭代设计.md)
+- **[service-base](zinfra/moudleDocs/service-base/)** - 基础服务模块
+  - [模块主体讨论](zinfra/moudleDocs/service-base/模块主体讨论.md)
+  - [模块设计](zinfra/moudleDocs/service-base/模块设计.md)
+  - [API接口说明](zinfra/moudleDocs/service-base/API接口说明.md)
+  - [API接口测试](zinfra/moudleDocs/service-base/api-test.md)
+  - [模块迭代说明](zinfra/moudleDocs/service-base/模块迭代说明.md)
+  - [模块迭代设计](zinfra/moudleDocs/service-base/模块迭代设计.md)
 
 ### 第三方模块 (third-party/)
-- **[tp-oss](infra/moudleDocs/third-party-oss/)** - 第三方OSS服务模块
-  - [模块主体讨论](infra/moudleDocs/third-party-oss/模块主体讨论.md)
-  - [模块设计](infra/moudleDocs/third-party-oss/模块设计.md)
-  - [API接口说明](infra/moudleDocs/third-party-oss/API接口说明.md)
-  - [API接口测试](infra/moudleDocs/third-party-oss/api-test.md)
-  - [模块迭代说明](infra/moudleDocs/third-party-oss/模块迭代说明.md)
-  - [模块迭代设计](infra/moudleDocs/third-party-oss/模块迭代设计.md)
+- **[tp-oss](zinfra/moudleDocs/third-party-oss/)** - 第三方OSS服务模块
+  - [模块主体讨论](zinfra/moudleDocs/third-party-oss/模块主体讨论.md)
+  - [模块设计](zinfra/moudleDocs/third-party-oss/模块设计.md)
+  - [API接口说明](zinfra/moudleDocs/third-party-oss/API接口说明.md)
+  - [API接口测试](zinfra/moudleDocs/third-party-oss/api-test.md)
+  - [模块迭代说明](zinfra/moudleDocs/third-party-oss/模块迭代说明.md)
+  - [模块迭代设计](zinfra/moudleDocs/third-party-oss/模块迭代设计.md)
 
 ### 项目文档
-- [微服务总体设计框架](infra/moudleDocs/微服务总体设计框架.md)
-- [标准化模块文档结构模板](infra/moudleDocs/标准化模块文档结构模板.md)
-- [数据库建表语句和表说明](infra/moudleDocs/数据库建表语句和表说明.md)
-- [新建模块工作流程](infra/moudleDocs/新建模块工作流程.md)
+- [微服务总体设计框架](zinfra/moudleDocs/微服务总体设计框架.md)
+- [标准化模块文档结构模板](zinfra/moudleDocs/标准化模块文档结构模板.md)
+- [数据库建表语句和表说明](zinfra/moudleDocs/数据库建表语句和表说明.md)
+- [新建模块工作流程](zinfra/moudleDocs/新建模块工作流程.md)
 
 ## API 文档
 
@@ -262,17 +262,17 @@ src/main/resources/
 
 ```bash
 # 构建镜像
-./infra/docker/build.sh
+./zinfra/docker/build.sh
 
 # 启动服务
-docker-compose -f infra/docker/docker-compose.prod.yml up -d
+docker-compose -f zinfra/docker/docker-compose.prod.yml up -d
 ```
 
 ### Kubernetes部署
 
 ```bash
 # 部署到K8s
-kubectl apply -f infra/k8s/prod/
+kubectl apply -f zinfra/k8s/prod/
 ```
 
 ## 监控
@@ -314,7 +314,7 @@ kubectl apply -f infra/k8s/prod/
 - 按照LR-003规则更新所有模块文档
 - 统一接口路径规范（/service/user, /core/publisher, /third-party/oss等）
 - 完善接口功能列表，添加Feign客户端标识
-- 更新数据模型设计指向infra/database/data/目录
+- 更新数据模型设计指向zinfra/database/data/目录
 - 创建缺失的API接口说明文档
 - 标准化文档命名和结构
 - 修改相关控制器代码以符合新的接口路径规范

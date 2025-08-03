@@ -13,7 +13,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * 创建时间: 2025-08-01
  */
 @Slf4j
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.origin.publisher", "com.origin.base"})
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = {"com.origin.publisher.feign"})
 @MapperScan("com.origin.publisher.mapper")

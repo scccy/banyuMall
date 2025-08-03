@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.origin.publisher.mapper.PublisherShareReviewMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.origin.publisher.entity.PublisherShareReview">
+        <id column="share_review_id" property="shareReviewId"/>
+        <result column="task_id" property="taskId"/>
+        <result column="share_content" property="shareContent"/>
+        <result column="share_platform" property="sharePlatform"/>
+        <result column="share_url" property="shareUrl"/>
+        <result column="screenshot_url" property="screenshotUrl"/>
+        <result column="reviewer_id" property="reviewerId"/>
+        <result column="review_status_id" property="reviewStatusId"/>
+        <result column="review_comment" property="reviewComment"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        share_review_id, task_id, share_content, share_platform, share_url, screenshot_url, reviewer_id, review_status_id, review_comment,
+        created_time, updated_time, created_by, updated_by, deleted
+    </sql>
+
+    <!-- 根据审核状态查询分享审核列表 -->
+    <select id="selectByReviewStatus" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM publisher_share_review 
+        WHERE deleted = 0
+        <if test="reviewStatus != null">
+            AND review_status_id = #{reviewStatus}
+        </if>
+        ORDER BY created_time DESC
+    </select>
+
+</mapper> 

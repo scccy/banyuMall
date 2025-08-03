@@ -1,16 +1,22 @@
 package com.origin.auth.controller;
 
-import com.origin.auth.dto.LoginRequest;
-import com.origin.auth.dto.LoginResponse;
+import com.origin.auth.entity.SysUser;
+import com.origin.common.dto.LoginRequest;
+import com.origin.common.dto.LoginResponse;
 import com.origin.auth.service.AuthService;
+import com.origin.auth.service.SysUserService;
 import com.origin.auth.util.JwtUtil;
+import com.origin.common.dto.PasswordEncryptRequest;
+import com.origin.common.dto.PasswordEncryptResponse;
 import com.origin.common.dto.ResultData;
+
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +32,9 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final SysUserService sysUserService;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * 用户登录
@@ -109,14 +117,14 @@ public class AuthController {
         String clientIp = request.getHeader("X-Client-IP");
         String userAgent = request.getHeader("X-User-Agent");
         
-        log.info("Auth Test - RequestId: {}, ClientIP: {}, UserAgent: {}", 
+        log.info("Auth Health Check - RequestId: {}, ClientIP: {}, UserAgent: {}", 
                 requestId, clientIp, userAgent);
         
-        return ResultData.ok("Auth Service is running!");
+        return ResultData.ok("认证服务运行正常");
     }
 
     /**
-     * 强制登出用户（管理员功能）
+     * 强制登出用户
      *
      * @param userId 用户ID
      * @param request HTTP请求
@@ -130,21 +138,116 @@ public class AuthController {
         String clientIp = request.getHeader("X-Client-IP");
         String userAgent = request.getHeader("X-User-Agent");
         
-        // TODO: 添加管理员权限验证
-        // @PreAuthorize("hasRole('ADMIN')")
+        log.info("强制登出用户 - RequestId: {}, ClientIP: {}, UserAgent: {}, UserId: {}", 
+                requestId, clientIp, userAgent, userId);
         
         try {
-            // 调用业务层处理强制登出逻辑
             authService.forceLogout(userId);
-            
-            log.info("管理员强制登出用户 - 用户ID: {}, 操作者IP: {}, 请求ID: {}", 
-                    userId, clientIp, requestId);
-            
             return ResultData.ok("强制登出成功");
+        } catch (Exception e) {
+            log.error("强制登出失败: {}", e.getMessage());
+            return ResultData.fail("强制登出失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 密码加密
+     *
+     * @param request 密码加密请求
+     * @return 加密后的密码
+     */
+    @Operation(summary = "密码加密", description = "为其他微服务提供密码加密功能")
+    @PostMapping("/password/encrypt")
+    public ResultData<PasswordEncryptResponse> encryptPassword(@RequestBody PasswordEncryptRequest request) {
+        log.info("密码加密请求 - 用户名: {}", request.getUsername());
+        
+        try {
+            String encryptedPassword = passwordEncoder.encode(request.getPassword());
+            
+            PasswordEncryptResponse response = new PasswordEncryptResponse();
+            response.setUsername(request.getUsername());
+            response.setEncryptedPassword(encryptedPassword);
+            
+            log.info("密码加密成功 - 用户名: {}", request.getUsername());
+            return ResultData.ok("密码加密成功", response);
             
         } catch (Exception e) {
-            log.error("强制登出失败 - 用户ID: {}, 错误: {}", userId, e.getMessage());
-            return ResultData.fail("强制登出失败：" + e.getMessage());
+            log.error("密码加密失败 - 用户名: {}, 错误: {}", request.getUsername(), e.getMessage());
+            return ResultData.fail("密码加密失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 密码验证
+     *
+     * @param request 密码验证请求
+     * @return 验证结果
+     */
+    @Operation(summary = "密码验证", description = "为其他微服务提供密码验证功能")
+    @PostMapping("/password/verify")
+    public ResultData<Boolean> verifyPassword(@RequestBody PasswordEncryptRequest request) {
+        log.info("密码验证请求 - 用户名: {}", request.getUsername());
+        
+        try {
+            SysUser user = sysUserService.getByUsername(request.getUsername());
+            if (user == null) {
+                return ResultData.ok("用户不存在", false);
+            }
+            
+            boolean isValid = passwordEncoder.matches(request.getPassword(), user.getPassword());
+            
+            log.info("密码验证完成 - 用户名: {}, 验证结果: {}", request.getUsername(), isValid);
+            return ResultData.ok("密码验证完成", isValid);
+            
+        } catch (Exception e) {
+            log.error("密码验证失败 - 用户名: {}, 错误: {}", request.getUsername(), e.getMessage());
+            return ResultData.fail("密码验证失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @param userId 用户ID
+     * @return 用户信息
+     */
+    @Operation(summary = "获取用户信息", description = "为其他微服务提供用户信息查询功能")
+    @GetMapping("/user/info")
+    public ResultData<SysUser> getUserInfo(@RequestParam("userId") String userId) {
+        log.info("获取用户信息 - 用户ID: {}", userId);
+        
+        try {
+            SysUser user = sysUserService.getById(userId);
+            if (user == null) {
+                return ResultData.fail("用户不存在");
+            }
+            
+            return ResultData.ok("获取用户信息成功", user);
+            
+        } catch (Exception e) {
+            log.error("获取用户信息失败 - 用户ID: {}, 错误: {}", userId, e.getMessage());
+            return ResultData.fail("获取用户信息失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 验证JWT令牌
+     *
+     * @param token JWT令牌
+     * @return 验证结果
+     */
+    @Operation(summary = "验证JWT令牌", description = "为其他微服务提供JWT令牌验证功能")
+    @PostMapping("/validate")
+    public ResultData<Boolean> validateToken(@RequestParam("token") String token) {
+        log.debug("验证JWT令牌");
+        
+        try {
+            boolean isValid = jwtUtil.validateToken(token);
+            return ResultData.ok("令牌验证完成", isValid);
+            
+        } catch (Exception e) {
+            log.error("令牌验证失败: {}", e.getMessage());
+            return ResultData.fail("令牌验证失败：" + e.getMessage());
         }
     }
 }

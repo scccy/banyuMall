@@ -4,8 +4,7 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.origin.user.entity.UserProfile">
-        <id column="id" property="id"/>
-        <result column="user_id" property="userId"/>
+        <id column="profile_id" property="profileId"/>
         <result column="real_name" property="realName"/>
         <result column="company_name" property="companyName"/>
         <result column="company_address" property="companyAddress"/>
@@ -22,17 +21,17 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, user_id, real_name, company_name, company_address, contact_person, 
+        profile_id, real_name, company_name, company_address, contact_person, 
         contact_phone, industry, description, created_time, updated_time, 
         created_by, updated_by, deleted
     </sql>
 
-    <!-- 根据用户ID查询扩展信息 -->
-    <select id="selectByUserId" resultMap="BaseResultMap">
+    <!-- 根据扩展信息ID查询用户扩展信息 -->
+    <select id="selectByProfileId" resultMap="BaseResultMap">
         SELECT 
         <include refid="Base_Column_List"/>
         FROM user_profile 
-        WHERE user_id = #{userId} 
+        WHERE profile_id = #{profileId} 
         AND deleted = 0
     </select>
 

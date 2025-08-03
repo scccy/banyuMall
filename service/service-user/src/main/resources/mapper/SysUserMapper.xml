@@ -4,7 +4,7 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.origin.user.entity.SysUser">
-        <id column="id" property="id"/>
+        <id column="user_id" property="userId"/>
         <result column="phone" property="phone"/>
         <result column="wechat_id" property="wechatId"/>
         <result column="youzan_id" property="youzanId"/>
@@ -17,6 +17,7 @@
         <result column="birthday" property="birthday"/>
         <result column="status" property="status"/>
         <result column="user_type" property="userType"/>
+        <result column="profile_id" property="profileId"/>
         <result column="last_login_time" property="lastLoginTime"/>
         <result column="created_time" property="createdTime"/>
         <result column="updated_time" property="updatedTime"/>
@@ -27,8 +28,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, phone, wechat_id, youzan_id, username, password, nickname, avatar, email, 
-        gender, birthday, status, user_type, last_login_time, created_time, updated_time, 
+        user_id, phone, wechat_id, youzan_id, username, password, nickname, avatar, email, 
+        gender, birthday, status, user_type, profile_id, last_login_time, created_time, updated_time, 
         created_by, updated_by, deleted
     </sql>
 
@@ -47,6 +48,33 @@
         <include refid="Base_Column_List"/>
         FROM sys_user 
         WHERE phone = #{phone} 
+        AND deleted = 0
+    </select>
+
+    <!-- 根据微信ID查询用户 -->
+    <select id="selectByWechatId" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM sys_user 
+        WHERE wechat_id = #{wechatId} 
+        AND deleted = 0
+    </select>
+
+    <!-- 根据有赞ID查询用户 -->
+    <select id="selectByYouzanId" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM sys_user 
+        WHERE youzan_id = #{youzanId} 
+        AND deleted = 0
+    </select>
+
+    <!-- 根据邮箱查询用户 -->
+    <select id="selectByEmail" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM sys_user 
+        WHERE email = #{email} 
         AND deleted = 0
     </select>
 

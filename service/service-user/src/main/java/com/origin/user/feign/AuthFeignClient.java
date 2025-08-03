@@ -1,5 +1,6 @@
 package com.origin.user.feign;
 
+import com.origin.common.dto.LoginRequest;
 import com.origin.common.dto.PasswordEncryptRequest;
 import com.origin.common.dto.PasswordEncryptResponse;
 import com.origin.common.dto.ResultData;
@@ -8,6 +9,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
@@ -16,10 +18,28 @@ import java.util.Map;
  * 认证服务Feign客户端（包含用户认证和密码管理功能）
  * 
  * @author scccy
- * @since 2024-07-30
+ * @since 2025-01-27
  */
 @FeignClient(name = "service-auth", path = "/service/auth", fallback = AuthFeignClientFallback.class)
 public interface AuthFeignClient {
+    
+    /**
+     * 用户登录
+     *
+     * @param loginRequest 登录请求参数
+     * @return 登录结果
+     */
+    @PostMapping("/login")
+    ResultData login(@RequestBody LoginRequest loginRequest);
+
+    /**
+     * 用户登出
+     *
+     * @param authorization 授权头
+     * @return 登出结果
+     */
+    @PostMapping("/logout")
+    ResultData logout(@RequestHeader("Authorization") String authorization);
     
     /**
      * 验证JWT令牌

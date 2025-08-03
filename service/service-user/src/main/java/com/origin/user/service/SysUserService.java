@@ -11,10 +11,11 @@ import com.origin.user.entity.SysUser;
 import java.util.List;
 
 /**
- * 系统用户服务接口
+ * 系统用户服务接口（用户服务专用）
+ * 基于简化的权限控制，专注于用户管理功能
  * 
  * @author scccy
- * @since 2024-07-30
+ * @since 2025-01-27
  */
 public interface SysUserService extends IService<SysUser> {
     
@@ -103,6 +104,30 @@ public interface SysUserService extends IService<SysUser> {
     SysUser getUserByPhone(String phone);
     
     /**
+     * 根据微信ID查询用户
+     *
+     * @param wechatId 微信ID
+     * @return 用户信息
+     */
+    SysUser getUserByWechatId(String wechatId);
+    
+    /**
+     * 根据有赞ID查询用户
+     *
+     * @param youzanId 有赞ID
+     * @return 用户信息
+     */
+    SysUser getUserByYouzanId(String youzanId);
+    
+    /**
+     * 根据邮箱查询用户
+     *
+     * @param email 邮箱
+     * @return 用户信息
+     */
+    SysUser getUserByEmail(String email);
+    
+    /**
      * 上传用户头像
      *
      * @param userId 用户ID
@@ -118,4 +143,37 @@ public interface SysUserService extends IService<SysUser> {
      * @return 头像信息
      */
     AvatarResponse getAvatarInfo(String userId);
+    
+    /**
+     * 验证用户权限
+     *
+     * @param userId 用户ID
+     * @param requiredUserType 需要的用户类型
+     * @return 是否有权限
+     */
+    boolean hasPermission(String userId, Integer requiredUserType);
+    
+    /**
+     * 验证用户是否为管理员
+     *
+     * @param userId 用户ID
+     * @return 是否为管理员
+     */
+    boolean isAdmin(String userId);
+    
+    /**
+     * 验证用户是否为发布者
+     *
+     * @param userId 用户ID
+     * @return 是否为发布者
+     */
+    boolean isPublisher(String userId);
+    
+    /**
+     * 验证用户是否为接受者
+     *
+     * @param userId 用户ID
+     * @return 是否为接受者
+     */
+    boolean isReceiver(String userId);
 } 

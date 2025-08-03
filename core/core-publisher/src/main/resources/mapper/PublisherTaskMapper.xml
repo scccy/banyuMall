@@ -4,19 +4,14 @@
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.origin.publisher.entity.PublisherTask">
-        <id column="id" property="id"/>
+        <id column="task_id" property="taskId"/>
         <result column="task_name" property="taskName"/>
-        <result column="task_type" property="taskType"/>
+        <result column="task_type_id" property="taskTypeId"/>
         <result column="task_description" property="taskDescription"/>
-        <result column="reward_amount" property="rewardAmount"/>
-        <result column="publisher_id" property="publisherId"/>
-        <result column="status" property="status"/>
-        <result column="start_time" property="startTime"/>
-        <result column="end_time" property="endTime"/>
-        <result column="max_participants" property="maxParticipants"/>
-        <result column="current_participants" property="currentParticipants"/>
-        <result column="qr_code_url" property="qrCodeUrl"/>
-        <result column="task_avatar_url" property="taskAvatarUrl"/>
+        <result column="task_reward" property="taskReward"/>
+        <result column="task_icon_url" property="taskIconUrl"/>
+        <result column="detail_id" property="detailId"/>
+        <result column="status_id" property="statusId"/>
         <result column="created_time" property="createdTime"/>
         <result column="updated_time" property="updatedTime"/>
         <result column="created_by" property="createdBy"/>
@@ -26,31 +21,24 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, task_name, task_type, task_description, reward_amount, publisher_id, status,
-        start_time, end_time, max_participants, current_participants, qr_code_url, task_avatar_url,
+        task_id, task_name, task_type_id, task_description, task_reward, task_icon_url, detail_id, status_id,
         created_time, updated_time, created_by, updated_by, deleted
     </sql>
 
-    <!-- 根据发布者ID分页查询任务列表 -->
-    <select id="selectTaskPageByPublisher" resultMap="BaseResultMap">
+    <!-- 根据条件查询任务列表 -->
+    <select id="selectTasksByCondition" resultMap="BaseResultMap">
         SELECT 
         <include refid="Base_Column_List"/>
         FROM publisher_task 
         WHERE deleted = 0
-        <if test="publisherId != null and publisherId != ''">
-            AND publisher_id = #{publisherId}
+        <if test="taskTypeId != null">
+            AND task_type_id = #{taskTypeId}
         </if>
-        <if test="taskType != null and taskType != ''">
-            AND task_type = #{taskType}
+        <if test="statusId != null">
+            AND status_id = #{statusId}
         </if>
-        <if test="status != null and status != ''">
-            AND status = #{status}
-        </if>
-        <if test="startTime != null">
-            AND start_time >= #{startTime}
-        </if>
-        <if test="endTime != null">
-            AND end_time &lt;= #{endTime}
+        <if test="keyword != null and keyword != ''">
+            AND task_name LIKE CONCAT('%', #{keyword}, '%')
         </if>
         ORDER BY created_time DESC
     </select>
@@ -61,43 +49,13 @@
         <include refid="Base_Column_List"/>
         FROM publisher_task 
         WHERE deleted = 0
-        <if test="taskType != null and taskType != ''">
-            AND task_type = #{taskType}
+        <if test="taskTypeId != null">
+            AND task_type_id = #{taskTypeId}
         </if>
-        <if test="status != null and status != ''">
-            AND status = #{status}
+        <if test="statusId != null">
+            AND status_id = #{statusId}
         </if>
         ORDER BY created_time DESC
-        <if test="limit != null and limit > 0">
-            LIMIT #{limit}
-        </if>
-    </select>
-
-    <!-- 查询即将开始的任务 -->
-    <select id="selectUpcomingTasks" resultMap="BaseResultMap">
-        SELECT 
-        <include refid="Base_Column_List"/>
-        FROM publisher_task 
-        WHERE deleted = 0
-        AND status = 'APPROVED'
-        AND start_time > #{currentTime}
-        AND start_time &lt;= DATE_ADD(#{currentTime}, INTERVAL 1 HOUR)
-        ORDER BY start_time ASC
-        <if test="limit != null and limit > 0">
-            LIMIT #{limit}
-        </if>
-    </select>
-
-    <!-- 查询即将结束的任务 -->
-    <select id="selectEndingTasks" resultMap="BaseResultMap">
-        SELECT 
-        <include refid="Base_Column_List"/>
-        FROM publisher_task 
-        WHERE deleted = 0
-        AND status = 'ACTIVE'
-        AND end_time > #{currentTime}
-        AND end_time &lt;= DATE_ADD(#{currentTime}, INTERVAL 1 HOUR)
-        ORDER BY end_time ASC
         <if test="limit != null and limit > 0">
             LIMIT #{limit}
         </if>

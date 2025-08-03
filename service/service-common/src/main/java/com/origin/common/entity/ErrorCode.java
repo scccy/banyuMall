@@ -11,6 +11,7 @@ public enum ErrorCode {
     
     // 客户端错误 (4xx)
     PARAM_ERROR(400, "参数错误"),
+    PARAMS_ERROR(400, "参数错误"), // 别名，保持兼容性
     UNAUTHORIZED(401, "未授权"),
     FORBIDDEN(403, "禁止访问"),
     NOT_FOUND(404, "资源不存在"),
@@ -40,6 +41,7 @@ public enum ErrorCode {
     TASK_STATUS_INVALID(3004, "任务状态无效"),
     TASK_REVIEW_NOT_FOUND(3005, "任务审核记录不存在"),
     TASK_REVIEW_STATUS_INVALID(3006, "任务审核状态无效"),
+    TASK_COMPLETION_NOT_FOUND(3007, "任务完成记录不存在"),
     
     // 文件相关错误 (4000-4999)
     FILE_UPLOAD_FAILED(4001, "文件上传失败"),

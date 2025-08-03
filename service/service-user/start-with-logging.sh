@@ -6,7 +6,7 @@
 echo "启动service-user服务..."
 
 # 设置系统属性
-export JAVA_OPTS="-Dservice.name=service-user -Dlog4j2.configurationFile=classpath:log4j2.xml"
+export JAVA_OPTS="-Dlogging.file.name=service-user -Dlog4j2.configurationFile=classpath:log4j2.xml"
 
 # 启动服务
 cd "$(dirname "$0")"

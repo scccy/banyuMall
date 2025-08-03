@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.origin.publisher.mapper.PublisherTaskDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.origin.publisher.entity.PublisherTaskDetail">
+        <id column="detail_id" property="detailId"/>
+        <result column="task_id" property="taskId"/>
+        <result column="task_config" property="taskConfig"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        detail_id, task_id, task_config, created_time, updated_time, created_by, updated_by, deleted
+    </sql>
+
+    <!-- 根据任务ID查询详情 -->
+    <select id="selectByTaskId" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM publisher_task_detail 
+        WHERE task_id = #{taskId}
+        AND deleted = 0
+    </select>
+
+</mapper> 

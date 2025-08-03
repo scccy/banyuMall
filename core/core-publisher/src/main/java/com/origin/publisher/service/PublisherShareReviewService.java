@@ -1,30 +1,37 @@
 package com.origin.publisher.service;
 
-
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.origin.publisher.dto.ShareReviewQueryRequest;
-import com.origin.publisher.dto.TaskReviewRequest;
-import com.origin.publisher.entity.PublisherShareReview;
+import com.origin.common.dto.PageResult;
+import com.origin.publisher.dto.ShareReviewRequest;
+import com.origin.publisher.dto.ShareReviewResponse;
 
 /**
  * 社群分享审核服务接口
  * 作者: scccy
- * 创建时间: 2025-08-01
+ * 创建时间: 2025-01-27
  */
 public interface PublisherShareReviewService {
     
     /**
-     * 提交社群分享审核
+     * 提交分享审核
+     * @param request 分享审核请求
+     * @return 分享审核ID
      */
-    PublisherShareReview submitShareReview(PublisherShareReview review);
+    String submitShareReview(ShareReviewRequest request);
     
     /**
-     * 审核社群分享
+     * 审核分享内容
+     * @param shareReviewId 分享审核ID
+     * @param reviewStatus 审核状态
+     * @param reviewComment 审核意见
      */
-    boolean reviewShareReview(String id, TaskReviewRequest request);
+    void reviewShareReview(String shareReviewId, Integer reviewStatus, String reviewComment);
     
     /**
-     * 查询社群分享审核列表
+     * 获取分享审核列表
+     * @param page 页码
+     * @param size 每页大小
+     * @param reviewStatus 审核状态
+     * @return 分享审核列表
      */
-    IPage<PublisherShareReview> queryShareReviews(ShareReviewQueryRequest request);
+    PageResult<ShareReviewResponse> getShareReviewList(Integer page, Integer size, Integer reviewStatus);
 } 

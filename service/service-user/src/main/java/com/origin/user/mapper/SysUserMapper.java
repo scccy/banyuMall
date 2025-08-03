@@ -8,10 +8,11 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
- * 系统用户Mapper接口
+ * 系统用户Mapper接口（用户服务专用）
+ * 基于简化的权限控制，专注于用户管理功能
  * 
  * @author scccy
- * @since 2024-07-30
+ * @since 2025-01-27
  */
 @Mapper
 public interface SysUserMapper extends BaseMapper<SysUser> {
@@ -31,6 +32,30 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @return 用户信息
      */
     SysUser selectByPhone(@Param("phone") String phone);
+    
+    /**
+     * 根据微信ID查询用户
+     *
+     * @param wechatId 微信ID
+     * @return 用户信息
+     */
+    SysUser selectByWechatId(@Param("wechatId") String wechatId);
+    
+    /**
+     * 根据有赞ID查询用户
+     *
+     * @param youzanId 有赞ID
+     * @return 用户信息
+     */
+    SysUser selectByYouzanId(@Param("youzanId") String youzanId);
+    
+    /**
+     * 根据邮箱查询用户
+     *
+     * @param email 邮箱
+     * @return 用户信息
+     */
+    SysUser selectByEmail(@Param("email") String email);
     
     /**
      * 分页查询用户列表

@@ -10,10 +10,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * 系统用户实体（共享表，与service-user共同使用）
+ * 系统用户实体（认证服务专用）
+ * 基于简化的权限控制，使用用户类型字段直接控制权限
  * 
- * @author origin
- * @since 2024-07-30
+ * @author scccy
+ * @since 2025-01-27
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -24,8 +25,26 @@ public class SysUser extends BaseEntity {
     /**
      * 用户ID
      */
-    @TableId(value = "id", type = IdType.ASSIGN_ID)
-    private String id;
+    @TableId(value = "user_id", type = IdType.ASSIGN_ID)
+    private String userId;
+    
+    /**
+     * 手机号
+     */
+    @TableField("phone")
+    private String phone;
+    
+    /**
+     * 微信用户ID
+     */
+    @TableField("wechat_id")
+    private String wechatId;
+    
+    /**
+     * 有赞用户ID
+     */
+    @TableField("youzan_id")
+    private String youzanId;
     
     /**
      * 用户名
@@ -34,7 +53,7 @@ public class SysUser extends BaseEntity {
     private String username;
     
     /**
-     * 密码（service-auth管理）
+     * 密码（BCrypt加密）
      */
     @TableField("password")
     private String password;
@@ -46,7 +65,7 @@ public class SysUser extends BaseEntity {
     private String nickname;
     
     /**
-     * 头像
+     * 头像URL
      */
     @TableField("avatar")
     private String avatar;
@@ -56,12 +75,6 @@ public class SysUser extends BaseEntity {
      */
     @TableField("email")
     private String email;
-    
-    /**
-     * 手机号
-     */
-    @TableField("phone")
-    private String phone;
     
     /**
      * 性别：0-未知，1-男，2-女
@@ -76,19 +89,25 @@ public class SysUser extends BaseEntity {
     private LocalDate birthday;
     
     /**
-     * 状态：0-禁用，1-正常，2-待审核，3-已删除
+     * 状态：1-正常，2-禁用，3-待审核，4-已删除
      */
     @TableField("status")
     private Integer status;
     
     /**
-     * 用户类型：1-最高权限，2-普通发布者
+     * 用户类型：1-系统管理员，2-发布者，3-接受者
      */
     @TableField("user_type")
     private Integer userType;
     
     /**
-     * 最后登录时间（service-auth管理）
+     * 扩展信息ID
+     */
+    @TableField("profile_id")
+    private String profileId;
+    
+    /**
+     * 最后登录时间
      */
     @TableField("last_login_time")
     private LocalDateTime lastLoginTime;

@@ -1,5 +1,6 @@
 package com.origin.user.feign;
 
+import com.origin.common.dto.LoginRequest;
 import com.origin.common.dto.PasswordEncryptRequest;
 import com.origin.common.dto.PasswordEncryptResponse;
 import com.origin.common.dto.ResultData;
@@ -13,11 +14,23 @@ import java.util.Map;
  * 认证服务Feign客户端降级处理
  * 
  * @author scccy
- * @since 2024-07-30
+ * @since 2025-01-27
  */
 @Slf4j
 @Component
 public class AuthFeignClientFallback implements AuthFeignClient {
+    
+    @Override
+    public ResultData login(LoginRequest loginRequest) {
+        log.error("认证服务调用失败 - login, username: {}", loginRequest.getUsername());
+        return ResultData.fail("认证服务暂时不可用");
+    }
+    
+    @Override
+    public ResultData logout(String authorization) {
+        log.error("认证服务调用失败 - logout");
+        return ResultData.fail("认证服务暂时不可用");
+    }
     
     @Override
     public ResultData<Boolean> validateToken(String token) {
