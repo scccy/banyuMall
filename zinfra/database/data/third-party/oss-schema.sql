@@ -7,7 +7,7 @@
 -- =====================================================
 
 -- 使用数据库
-USE banyu_mall;
+USE banyu;
 
 -- 1. 文件存储记录表 - 记录文件存储行为
 DROP TABLE IF EXISTS `oss_file_storage`;
@@ -19,7 +19,7 @@ CREATE TABLE `oss_file_storage` (
   `object_key` VARCHAR(500) NOT NULL COMMENT 'OSS对象键',
   `access_url` VARCHAR(500) NOT NULL COMMENT '文件访问URL',
   `bucket_name` VARCHAR(100) NOT NULL COMMENT 'OSS存储桶名称',
-  `file_path` VARCHAR(500) NOT NULL COMMENT '文件路径(如:core-publisher/task-image/2025/08/01/)',
+  `file_path` VARCHAR(500) NOT NULL COMMENT '文件路径(如:core/publisher/task-image/2025/08/01/)',
   `source_service` VARCHAR(50) NOT NULL COMMENT '来源服务(如:core-publisher)',
   `business_type` VARCHAR(50) NOT NULL COMMENT '业务类型(如:task-image)',
   `user_id` VARCHAR(32) DEFAULT NULL COMMENT '上传用户ID',
