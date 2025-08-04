@@ -9,7 +9,7 @@ MICROSERVICES=(
     "service/service-gateway" 
     "service/service-user"
     "core/core-publisher"
-    "third-party/aliyun-oss"
+    "third-party/third-party-aliyunOss"
 )
 
 # 远程仓库基础URL

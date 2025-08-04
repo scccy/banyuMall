@@ -31,7 +31,7 @@ BanyuMall项目已成功拆分为多个独立的微服务仓库，每个微服�
 
 | 微服务名称 | 仓库地址 | 描述 | 依赖关系 |
 |-----------|---------|------|----------|
-| aliyun-oss | http://117.50.221.113:8077/banyu/aliyun-oss | 阿里云OSS服务 | 依赖service-base, service-common |
+| third-party-aliyunOss | http://117.50.221.113:8077/banyu/third-party-aliyunOss | 阿里云OSS服务 | 依赖service-base, service-common |
 
 ## 依赖关系图
 
@@ -40,7 +40,7 @@ service-common (基础工具)
     ↑
 service-base (基础配置)
     ↑
-service-auth, service-user, core-publisher, aliyun-oss
+service-auth, service-user, core-publisher, third-party-aliyunOss
     ↑
 service-gateway (仅依赖service-common)
 ```
@@ -63,7 +63,7 @@ git clone http://117.50.221.113:8077/banyu/service-user.git
 git clone http://117.50.221.113:8077/banyu/core-publisher.git
 
 # 克隆第三方服务
-git clone http://117.50.221.113:8077/banyu/aliyun-oss.git
+git clone http://117.50.221.113:8077/banyu/third-party-aliyunOss.git
 ```
 
 ### 2. 开发流程

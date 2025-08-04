@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
  * @author scccy
  * @since 2025-08-01
  */
-@FeignClient(name = "aliyun-oss", path = "/tp/oss", fallback = OssFileFeignClientFallback.class)
+@FeignClient(name = "third-party-aliyunOss", path = "/tp/oss", fallback = OssFileFeignClientFallback.class)
 public interface OssFileFeignClient {
     
     /**

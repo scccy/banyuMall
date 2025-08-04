@@ -24,7 +24,7 @@
 | 序号 | 服务名称 | Feign客户端 | 接口路径 | 主要用途 | 测试方法 | 查看详情 |
 |------|----------|-------------|----------|----------|----------|----------|
 | 1 | service-auth | AuthFeignClient | `/service/auth` | 用户认证、密码加密验证、权限验证 | authFeignTest | [查看详情](#feign-1-认证服务) |
-| 2 | aliyun-oss | OssFileFeignClient | `/tp/oss` | 文件上传、头像管理 | ossFeignTest | [查看详情](#feign-2-文件服务) |
+| 2 | third-party-aliyunOss | OssFileFeignClient | `/tp/oss` | 文件上传、头像管理 | ossFeignTest | [查看详情](#feign-2-文件服务) |
 | 3 | service-user | UserFeignClient | `/service/user` | 用户信息查询（内部调用） | userFeignTest | [查看详情](#feign-3-用户服务) |
 
 ---
@@ -506,14 +506,14 @@ public interface AuthFeignClient {
 文件上传、头像管理相关的Feign客户端接口。
 
 #### 服务信息
-- **服务名称**: aliyun-oss
+- **服务名称**: third-party-aliyunOss
 - **Feign客户端**: OssFileFeignClient
 - **接口路径**: `/tp/oss`
 - **主要用途**: 文件上传、头像管理
 
 #### 接口定义
 ```java
-@FeignClient(name = "aliyun-oss", path = "/tp/oss", fallback = OssFileFeignClientFallback.class)
+@FeignClient(name = "third-party-aliyunOss", path = "/tp/oss", fallback = OssFileFeignClientFallback.class)
 public interface OssFileFeignClient {
     
     // 上传文件到OSS
@@ -720,7 +720,7 @@ feign:
       service-auth:
         connect-timeout: 1000
         read-timeout: 2000
-      aliyun-oss:
+      third-party-aliyunOss:
         connect-timeout: 1000
         read-timeout: 2000
 

@@ -2,7 +2,7 @@
 
 ## 📋 测试概述
 
-**模块名称**: third-party-oss (aliyun-oss)  
+**模块名称**: third-party-aliyunOss  
 **测试类型**: API功能测试  
 **测试环境**: 开发环境  
 **测试工具**: Postman / curl  
@@ -21,7 +21,7 @@
 ### 服务启动
 ```bash
 # 启动OSS服务
-cd third-party/aliyun-oss
+cd third-party/third-party-aliyunOss
 mvn spring-boot:run -Dspring-boot.run.profiles=dev
 
 # 启动依赖服务
