@@ -12,10 +12,10 @@ import com.origin.common.exception.BusinessException;
 public class FileUploadException extends BusinessException {
 
     public FileUploadException(String message) {
-        super(ErrorCode.FILE_UPLOAD_FAILED, message);
+        super(ErrorCode.OSS_FILE_UPLOAD_FAILED, message);
     }
 
     public FileUploadException(String taskId, String fileType, String message) {
-        super(ErrorCode.FILE_UPLOAD_FAILED, "任务ID: " + taskId + ", 文件类型: " + fileType + ", 上传失败: " + message);
+        super(ErrorCode.OSS_FILE_UPLOAD_FAILED, "任务ID: " + taskId + ", 文件类型: " + fileType + ", 上传失败: " + message);
     }
 } 

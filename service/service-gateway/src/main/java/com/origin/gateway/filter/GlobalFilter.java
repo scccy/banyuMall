@@ -1,11 +1,13 @@
 package com.origin.gateway.filter;
 
+import jakarta.servlet.FilterChain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -18,7 +20,7 @@ import java.util.UUID;
  */
 @Slf4j
 @Component
-public class GlobalFilter implements org.springframework.cloud.gateway.filter.GlobalFilter, Ordered {
+public class GlobalFilter implements Ordered {
     
     private static final String REQUEST_ID_HEADER = "X-Request-ID";
     private static final String CLIENT_IP_HEADER = "X-Client-IP";
@@ -26,8 +28,8 @@ public class GlobalFilter implements org.springframework.cloud.gateway.filter.Gl
     private static final String REQUEST_TIME_HEADER = "X-Request-Time";
     private static final String SERVICE_NAME_HEADER = "X-Service-Name";
 
-    @Override
-    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getPath().value();
         String method = request.getMethod().name();

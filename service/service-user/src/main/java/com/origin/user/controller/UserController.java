@@ -2,6 +2,7 @@ package com.origin.user.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.origin.common.dto.ResultData;
+import com.origin.common.entity.ErrorCode;
 import com.origin.common.exception.BusinessException;
 import com.origin.user.dto.AvatarResponse;
 import com.origin.user.dto.UserCreateRequest;
@@ -68,10 +69,10 @@ public class UserController {
             return ResultData.fail(e.getErrorCode(), e.getMessage());
         } catch (RuntimeException e) {
             log.error("创建用户运行时异常: ", e);
-            return ResultData.fail("业务处理异常: " + e.getMessage());
+            return ResultData.fail(ErrorCode.USER_ALREADY_EXISTS, "用户创建失败: " + e.getMessage());
         } catch (Exception e) {
             log.error("创建用户系统异常: ", e);
-            return ResultData.fail("系统异常，请联系管理员");
+            return ResultData.fail(ErrorCode.INTERNAL_ERROR, "系统异常，请联系管理员");
         }
     }
 
@@ -94,12 +95,24 @@ public class UserController {
         log.info("获取用户信息 - RequestId: {}, ClientIP: {}, UserAgent: {}, UserId: {}", 
                 requestId, clientIp, userAgent, userId);
         
-        SysUser user = sysUserService.getUserById(userId);
-        if (user == null) {
-            return ResultData.fail("用户不存在");
+        try {
+            SysUser user = sysUserService.getUserById(userId);
+            if (user == null) {
+                log.warn("用户不存在 - 用户ID: {}", userId);
+                return ResultData.fail(ErrorCode.USER_NOT_FOUND, "用户不存在");
+            }
+            
+            return ResultData.ok("获取用户信息成功", user);
+        } catch (BusinessException e) {
+            log.warn("获取用户信息业务异常: {}", e.getMessage());
+            return ResultData.fail(e.getErrorCode(), e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("获取用户信息运行时异常: ", e);
+            return ResultData.fail(ErrorCode.INTERNAL_ERROR, "获取用户信息失败: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("获取用户信息系统异常: ", e);
+            return ResultData.fail(ErrorCode.INTERNAL_ERROR, "系统异常，请联系管理员");
         }
-        
-        return ResultData.ok("获取用户信息成功", user);
     }
 
     /**
@@ -112,7 +125,7 @@ public class UserController {
      * @return 更新结果
      */
     @Operation(summary = "更新用户信息", description = "更新用户的基础信息（昵称、头像、邮箱等），可选择上传头像")
-    @PutMapping("/{userId}")
+    @PostMapping("/{userId}")
     public ResultData<SysUser> updateUser(
             @Parameter(description = "用户ID") @PathVariable String userId,
             @RequestPart("userInfo") @Valid UserUpdateRequest request,
@@ -134,10 +147,10 @@ public class UserController {
             return ResultData.fail(e.getErrorCode(), e.getMessage());
         } catch (RuntimeException e) {
             log.error("更新用户信息运行时异常: ", e);
-            return ResultData.fail("业务处理异常: " + e.getMessage());
+            return ResultData.fail(ErrorCode.USER_UPDATE_FAILED, "用户信息更新失败: " + e.getMessage());
         } catch (Exception e) {
             log.error("更新用户信息系统异常: ", e);
-            return ResultData.fail("系统异常，请联系管理员");
+            return ResultData.fail(ErrorCode.INTERNAL_ERROR, "系统异常，请联系管理员");
         }
     }
 
@@ -149,7 +162,7 @@ public class UserController {
      * @return 删除结果
      */
     @Operation(summary = "删除用户", description = "软删除指定用户")
-    @DeleteMapping("/{userId}")
+    @PostMapping("/{userId}/delete")
     public ResultData<String> deleteUser(@Parameter(description = "用户ID") @PathVariable String userId,
                                         HttpServletRequest httpRequest) {
         // 从请求头中获取链路追踪信息
@@ -160,11 +173,22 @@ public class UserController {
         log.info("删除用户 - RequestId: {}, ClientIP: {}, UserAgent: {}, UserId: {}", 
                 requestId, clientIp, userAgent, userId);
         
-        boolean success = sysUserService.deleteUser(userId);
-        if (success) {
-            return ResultData.ok("用户删除成功");
-        } else {
-            return ResultData.fail("用户删除失败");
+        try {
+            boolean success = sysUserService.deleteUser(userId);
+            if (success) {
+                return ResultData.ok("用户删除成功");
+            } else {
+                return ResultData.fail(ErrorCode.USER_UPDATE_FAILED, "用户删除失败");
+            }
+        } catch (BusinessException e) {
+            log.warn("删除用户业务异常: {}", e.getMessage());
+            return ResultData.fail(e.getErrorCode(), e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("删除用户运行时异常: ", e);
+            return ResultData.fail(ErrorCode.USER_UPDATE_FAILED, "用户删除失败: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("删除用户系统异常: ", e);
+            return ResultData.fail(ErrorCode.INTERNAL_ERROR, "系统异常，请联系管理员");
         }
     }
 
@@ -187,8 +211,19 @@ public class UserController {
         log.info("用户列表查询 - RequestId: {}, ClientIP: {}, UserAgent: {}, 查询条件: {}", 
                 requestId, clientIp, userAgent, request);
         
-        IPage<SysUser> page = sysUserService.getUserPage(request);
-        return ResultData.ok("查询成功", page);
+        try {
+            IPage<SysUser> page = sysUserService.getUserPage(request);
+            return ResultData.ok("查询成功", page);
+        } catch (BusinessException e) {
+            log.warn("用户列表查询业务异常: {}", e.getMessage());
+            return ResultData.fail(e.getErrorCode(), e.getMessage());
+        } catch (RuntimeException e) {
+            log.error("用户列表查询运行时异常: ", e);
+            return ResultData.fail(ErrorCode.INTERNAL_ERROR, "查询失败: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("用户列表查询系统异常: ", e);
+            return ResultData.fail(ErrorCode.INTERNAL_ERROR, "系统异常，请联系管理员");
+        }
     }
 
     /**
@@ -199,7 +234,7 @@ public class UserController {
      * @return 删除结果
      */
     @Operation(summary = "批量删除用户", description = "批量软删除多个用户")
-    @DeleteMapping("/batch")
+    @PostMapping("/batch/delete")
     public ResultData<String> batchDeleteUsers(@RequestBody List<String> userIds,
                                               HttpServletRequest httpRequest) {
         // 从请求头中获取链路追踪信息
@@ -209,6 +244,26 @@ public class UserController {
         
         log.info("批量删除用户 - RequestId: {}, ClientIP: {}, UserAgent: {}, UserIds: {}", 
                 requestId, clientIp, userAgent, userIds);
+        
+        // 参数验证
+        if (userIds == null || userIds.isEmpty()) {
+            log.warn("批量删除用户 - 用户ID列表为空");
+            return ResultData.fail(ErrorCode.PARAM_ERROR, "用户ID列表不能为空");
+        }
+        
+        // 验证用户ID列表大小，防止恶意请求
+        if (userIds.size() > 100) {
+            log.warn("批量删除用户 - 用户ID列表过大: {}", userIds.size());
+            return ResultData.fail(ErrorCode.PARAM_ERROR, "批量删除用户数量不能超过100个");
+        }
+        
+        // 验证用户ID格式
+        for (String userId : userIds) {
+            if (userId == null || userId.trim().isEmpty()) {
+                log.warn("批量删除用户 - 存在无效的用户ID: {}", userId);
+                return ResultData.fail(ErrorCode.PARAM_ERROR, "用户ID不能为空");
+            }
+        }
         
         int successCount = sysUserService.batchDeleteUsers(userIds);
         return ResultData.ok("批量删除完成，成功删除 " + successCount + " 个用户");
@@ -264,10 +319,10 @@ public class UserController {
             return ResultData.fail(e.getErrorCode(), e.getMessage());
         } catch (RuntimeException e) {
             log.error("获取头像信息运行时异常: ", e);
-            return ResultData.fail("业务处理异常: " + e.getMessage());
+            return ResultData.fail(ErrorCode.USER_AVATAR_UPLOAD_FAILED, "头像信息获取失败: " + e.getMessage());
         } catch (Exception e) {
             log.error("获取头像信息系统异常: ", e);
-            return ResultData.fail("系统异常，请联系管理员");
+            return ResultData.fail(ErrorCode.INTERNAL_ERROR, "系统异常，请联系管理员");
         }
     }
 } 

@@ -1,8 +1,8 @@
 package com.origin.user.feign;
 
 import com.origin.common.dto.ResultData;
-import com.origin.oss.dto.FileUploadRequest;
-import com.origin.oss.dto.FileUploadResponse;
+import com.origin.common.dto.FileUploadRequest;
+import com.origin.common.dto.FileUploadResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 

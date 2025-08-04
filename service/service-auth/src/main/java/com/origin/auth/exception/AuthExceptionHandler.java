@@ -67,4 +67,17 @@ public class AuthExceptionHandler {
         log.error("授权异常: {}", e.getMessage());
         return ResultData.fail(ErrorCode.FORBIDDEN, "没有权限访问该资源");
     }
+
+    /**
+     * 处理运行时异常
+     * 
+     * @param e 运行时异常
+     * @return 错误响应
+     */
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResultData<Object> handleRuntimeException(RuntimeException e) {
+        log.error("运行时异常: {}", e.getMessage());
+        return ResultData.fail(ErrorCode.INTERNAL_ERROR, e.getMessage());
+    }
 } 

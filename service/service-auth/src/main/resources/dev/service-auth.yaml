@@ -91,6 +91,7 @@ security:
     - /actuator/info
     - /actuator/metrics
 
+
 # Swagger配置（开发环境启用）
 springdoc:
   swagger-ui:

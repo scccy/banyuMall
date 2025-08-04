@@ -47,12 +47,12 @@ public class TaskCompletionServiceImpl implements TaskCompletionService {
         // 验证任务是否存在
         PublisherTask task = taskMapper.selectById(taskId);
         if (task == null) {
-            throw new BusinessException(ErrorCode.TASK_NOT_FOUND);
+            throw new BusinessException(ErrorCode.PUBLISHER_TASK_NOT_FOUND);
         }
         
         // 验证任务状态
         if (task.getStatusId() != 2) {
-            throw new BusinessException(ErrorCode.TASK_STATUS_INVALID, "只有上架状态的任务才能提交完成");
+            throw new BusinessException(ErrorCode.PUBLISHER_TASK_STATUS_INVALID, "只有上架状态的任务才能提交完成");
         }
         
         // 检查是否已经完成过
@@ -62,7 +62,7 @@ public class TaskCompletionServiceImpl implements TaskCompletionService {
                .eq(PublisherTaskCompletion::getDeleted, false);
         
         if (taskCompletionMapper.selectCount(wrapper) > 0) {
-            throw new BusinessException(ErrorCode.TASK_ALREADY_COMPLETED, "该任务已经完成过");
+            throw new BusinessException(ErrorCode.PUBLISHER_TASK_ALREADY_COMPLETED, "该任务已经完成过");
         }
         
         // 创建完成记录
@@ -91,7 +91,7 @@ public class TaskCompletionServiceImpl implements TaskCompletionService {
         // 验证任务是否存在
         PublisherTask task = taskMapper.selectById(taskId);
         if (task == null) {
-            throw new BusinessException(ErrorCode.TASK_NOT_FOUND);
+            throw new BusinessException(ErrorCode.PUBLISHER_TASK_NOT_FOUND);
         }
         
         // 构建查询条件
@@ -119,7 +119,7 @@ public class TaskCompletionServiceImpl implements TaskCompletionService {
         // 验证完成记录是否存在
         PublisherTaskCompletion completion = taskCompletionMapper.selectById(completionId);
         if (completion == null) {
-            throw new BusinessException(ErrorCode.TASK_COMPLETION_NOT_FOUND);
+            throw new BusinessException(ErrorCode.PUBLISHER_TASK_COMPLETION_NOT_FOUND);
         }
         
         // 验证审核状态

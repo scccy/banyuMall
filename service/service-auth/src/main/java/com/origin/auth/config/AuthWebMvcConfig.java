@@ -2,6 +2,7 @@ package com.origin.auth.config;
 
 import com.origin.auth.interceptor.JwtInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "auth.jwt.enabled", havingValue = "true", matchIfMissing = true)
 public class AuthWebMvcConfig implements WebMvcConfigurer {
 
     private final JwtInterceptor jwtInterceptor;
@@ -26,6 +28,16 @@ public class AuthWebMvcConfig implements WebMvcConfigurer {
                         "/auth/logout", 
                         "/auth/captcha",
                         "/auth/register",
+                        "/service/auth/login",
+                        "/service/auth/logout", 
+                        "/service/auth/captcha",
+                        "/service/auth/register",
+                        "/service/auth/test",
+                        "/service/auth/password/encrypt",
+                        "/service/auth/password/verify",
+                        "/service/auth/user/info",
+                        "/service/auth/validate",
+                        "/service/auth/logout/force/**",
                         "/test/**",
                         "/jwt-test/**",
                         "/password-test/**",

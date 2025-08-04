@@ -14,7 +14,8 @@ spring:
   
   # 配置导入 - 从Nacos加载配置
   config:
-    import: nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
+    import: 
+      - nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
 
   
   # Nacos服务注册与发现配置
@@ -98,8 +99,7 @@ management:
     git:
       mode: full
 
-# 网关配置 - 路由配置通过Nacos远程配置管理
-# 本地不配置路由，避免与Nacos配置冲突
+# 网关配置 - 路由配置通过本地配置文件管理
 
 # 日志配置（开发环境详细日志）
 logging:

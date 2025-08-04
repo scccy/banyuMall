@@ -1,8 +1,8 @@
 package com.origin.oss.controller;
 
 import com.origin.common.dto.ResultData;
-import com.origin.oss.dto.FileUploadRequest;
-import com.origin.oss.dto.FileUploadResponse;
+import com.origin.common.dto.FileUploadRequest;
+import com.origin.common.dto.FileUploadResponse;
 import com.origin.oss.service.OssFileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

@@ -12,10 +12,10 @@ import com.origin.common.exception.BusinessException;
 public class TaskReviewException extends BusinessException {
 
     public TaskReviewException(String message) {
-        super(ErrorCode.TASK_REVIEW_STATUS_INVALID, message);
+        super(ErrorCode.PUBLISHER_TASK_REVIEW_STATUS_INVALID, message);
     }
 
     public TaskReviewException(String taskId, String reviewStatus, String message) {
-        super(ErrorCode.TASK_REVIEW_STATUS_INVALID, "任务ID: " + taskId + ", 审核状态: " + reviewStatus + ", " + message);
+        super(ErrorCode.PUBLISHER_TASK_REVIEW_STATUS_INVALID, "任务ID: " + taskId + ", 审核状态: " + reviewStatus + ", " + message);
     }
 } 

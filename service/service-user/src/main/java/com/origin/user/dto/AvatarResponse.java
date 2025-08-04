@@ -2,6 +2,7 @@ package com.origin.user.dto;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import java.time.LocalDateTime;
 
 /**
  * 头像响应DTO
@@ -24,6 +25,11 @@ public class AvatarResponse {
     private String avatarUrl;
     
     /**
+     * 头像缩略图URL
+     */
+    private String avatarThumbnail;
+    
+    /**
      * 文件大小（字节）
      */
     private Long fileSize;
@@ -31,10 +37,20 @@ public class AvatarResponse {
     /**
      * 文件类型
      */
+    private String fileType;
+    
+    /**
+     * MIME类型
+     */
     private String mimeType;
     
     /**
      * 原始文件名
      */
     private String originalFileName;
+    
+    /**
+     * 上传时间
+     */
+    private LocalDateTime uploadTime;
 } 

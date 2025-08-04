@@ -86,17 +86,42 @@ logging:
   config: classpath:log4j2.xml
   level:
     com.origin.auth: debug
+    com.origin.auth.controller: debug
+    com.origin.auth.service: debug
+    com.origin.auth.interceptor: debug
+    com.origin.auth.config: debug
+    com.origin.auth.util: debug
     org.springframework.security: debug
     org.springframework.web: debug
-    com.origin.auth.util: debug
+    org.springframework.web.servlet: debug
+    org.springframework.web.servlet.mvc: debug
+    org.springframework.web.servlet.mvc.method.annotation: debug
     # 禁用Log4j2包扫描警告
     org.apache.logging.log4j.status: ERROR
     org.apache.logging.log4j.core.config: ERROR
     root: info
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
   file:
     name: logs/service-auth.log
     max-size: 100MB
-    max-history: 30 
+    max-history: 30
+
+# MyBatis-Plus配置（开发环境）
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+    call-setters-on-nulls: false
+    jdbc-type-for-null: 'null'
+    # 开发环境启用SQL日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.origin.auth.entity 

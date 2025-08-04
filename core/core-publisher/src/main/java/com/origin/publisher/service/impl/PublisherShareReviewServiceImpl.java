@@ -58,11 +58,11 @@ public class PublisherShareReviewServiceImpl implements PublisherShareReviewServ
         
         PublisherShareReview review = shareReviewMapper.selectById(shareReviewId);
         if (review == null) {
-            throw new BusinessException(ErrorCode.TASK_REVIEW_NOT_FOUND);
+            throw new BusinessException(ErrorCode.PUBLISHER_TASK_REVIEW_NOT_FOUND);
         }
         
         if (review.getReviewStatusId() != 1) {
-            throw new BusinessException(ErrorCode.TASK_REVIEW_STATUS_INVALID, "只有待审核状态的记录才能审核");
+            throw new BusinessException(ErrorCode.PUBLISHER_TASK_REVIEW_STATUS_INVALID, "只有待审核状态的记录才能审核");
         }
         
         review.setReviewStatusId(reviewStatus);

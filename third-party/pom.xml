@@ -16,6 +16,20 @@
     <name>third-party</name>
     <description>第三方业务模块</description>
     
+    <!-- Maven私有仓库发布配置 -->
+    <distributionManagement>
+        <repository>
+            <id>nexus-releases</id>
+            <name>Nexus Release Repository</name>
+            <url>http://117.50.185.51:8881/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <name>Nexus Snapshot Repository</name>
+            <url>http://117.50.185.51:8881/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+    
     <modules>
         <module>aliyun-oss</module>
     </modules>

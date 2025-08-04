@@ -60,6 +60,9 @@ spring:
     level:
       com.origin.user: info
       org.springframework.web: warn
+      # MyBatis-Plus SQL日志监控（测试环境）
+      com.baomidou.mybatisplus: debug
+      com.origin.user.mapper: debug
       root: warn
     pattern:
       console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

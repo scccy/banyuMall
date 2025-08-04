@@ -12,10 +12,10 @@ import com.origin.common.exception.BusinessException;
 public class TaskStatusException extends BusinessException {
 
     public TaskStatusException(String message) {
-        super(ErrorCode.TASK_STATUS_INVALID, message);
+        super(ErrorCode.PUBLISHER_TASK_STATUS_INVALID, message);
     }
 
     public TaskStatusException(String taskId, String currentStatus, String expectedStatus) {
-        super(ErrorCode.TASK_STATUS_INVALID, "任务ID: " + taskId + ", 当前状态: " + currentStatus + ", 期望状态: " + expectedStatus);
+        super(ErrorCode.PUBLISHER_TASK_STATUS_INVALID, "任务ID: " + taskId + ", 当前状态: " + currentStatus + ", 期望状态: " + expectedStatus);
     }
 } 

@@ -78,7 +78,7 @@ public class AuthController {
         
         if (!StringUtils.hasText(token) || !token.startsWith("Bearer ")) {
             log.warn("登出失败 - 缺少有效的Authorization头");
-            return ResultData.fail("登出失败：缺少有效的token");
+            return ResultData.ok("登出失败：缺少有效的token");
         }
         
         token = token.substring(7);
@@ -173,6 +173,8 @@ public class AuthController {
             
         } catch (Exception e) {
             log.error("密码加密失败 - 用户名: {}, 错误: {}", request.getUsername(), e.getMessage());
+            // 从业务角度考虑，密码加密失败不应该影响服务可用性
+            // 返回200状态码，通过业务状态码500表示加密失败
             return ResultData.fail("密码加密失败：" + e.getMessage());
         }
     }
@@ -219,13 +221,15 @@ public class AuthController {
         try {
             SysUser user = sysUserService.getById(userId);
             if (user == null) {
-                return ResultData.fail("用户不存在");
+                return ResultData.ok("用户不存在", null);
             }
             
             return ResultData.ok("获取用户信息成功", user);
             
         } catch (Exception e) {
             log.error("获取用户信息失败 - 用户ID: {}, 错误: {}", userId, e.getMessage());
+            // 从业务角度考虑，获取用户信息失败不应该影响服务可用性
+            // 返回200状态码，通过业务状态码500表示查询失败
             return ResultData.fail("获取用户信息失败：" + e.getMessage());
         }
     }

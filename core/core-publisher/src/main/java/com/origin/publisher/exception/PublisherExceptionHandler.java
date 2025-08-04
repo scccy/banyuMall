@@ -27,7 +27,7 @@ public class PublisherExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResultData<Object> handleTaskNotFoundException(TaskNotFoundException e) {
         log.warn("任务不存在: {}", e.getMessage());
-        return ResultData.fail(ErrorCode.TASK_NOT_FOUND, e.getMessage());
+        return ResultData.fail(ErrorCode.PUBLISHER_TASK_NOT_FOUND, e.getMessage());
     }
 
     /**
@@ -37,7 +37,7 @@ public class PublisherExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResultData<Object> handleTaskStatusException(TaskStatusException e) {
         log.warn("任务状态异常: {}", e.getMessage());
-        return ResultData.fail(ErrorCode.TASK_STATUS_INVALID, e.getMessage());
+        return ResultData.fail(ErrorCode.PUBLISHER_TASK_STATUS_INVALID, e.getMessage());
     }
 
     /**
@@ -47,7 +47,7 @@ public class PublisherExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResultData<Object> handleTaskReviewException(TaskReviewException e) {
         log.warn("任务审核异常: {}", e.getMessage());
-        return ResultData.fail(ErrorCode.TASK_REVIEW_STATUS_INVALID, e.getMessage());
+        return ResultData.fail(ErrorCode.PUBLISHER_TASK_REVIEW_STATUS_INVALID, e.getMessage());
     }
 
     /**
@@ -57,7 +57,7 @@ public class PublisherExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResultData<Object> handleFileUploadException(FileUploadException e) {
         log.warn("文件上传异常: {}", e.getMessage());
-        return ResultData.fail(ErrorCode.FILE_UPLOAD_FAILED, e.getMessage());
+        return ResultData.fail(ErrorCode.OSS_FILE_UPLOAD_FAILED, e.getMessage());
     }
 
     /**

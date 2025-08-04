@@ -12,10 +12,10 @@ import com.origin.common.exception.BusinessException;
 public class UserAvatarUploadException extends BusinessException {
 
     public UserAvatarUploadException(String message) {
-        super(ErrorCode.FILE_UPLOAD_FAILED, message);
+        super(ErrorCode.USER_AVATAR_UPLOAD_FAILED, message);
     }
 
     public UserAvatarUploadException(String userId, String message) {
-        super(ErrorCode.FILE_UPLOAD_FAILED, "用户ID: " + userId + ", 头像上传失败: " + message);
+        super(ErrorCode.USER_AVATAR_UPLOAD_FAILED, "用户ID: " + userId + ", 头像上传失败: " + message);
     }
 } 

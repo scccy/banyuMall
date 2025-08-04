@@ -44,8 +44,8 @@ spring:
       cache-enabled: true
       call-setters-on-nulls: false
       jdbc-type-for-null: 'null'
-      # 测试环境关闭SQL日志
-      log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+      # 测试环境启用SQL日志
+      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     global-config:
       db-config:
         id-type: assign_id
@@ -55,16 +55,24 @@ spring:
     mapper-locations: classpath*:/mapper/**/*.xml
     type-aliases-package: com.origin.auth.entity
 
-  # 日志配置（测试环境中等日志）
+  # 日志配置（测试环境详细日志）
   logging:
     level:
-      com.origin.auth: info
-      org.springframework.security: warn
-      org.springframework.web: warn
-      root: warn
+      com.origin.auth: debug
+      com.origin.auth.controller: debug
+      com.origin.auth.service: debug
+      com.origin.auth.interceptor: debug
+      com.origin.auth.config: debug
+      org.springframework.security: debug
+      org.springframework.web: debug
+      org.springframework.web.servlet: debug
+      org.springframework.web.servlet.mvc: debug
+      org.springframework.web.servlet.mvc.method.annotation: debug
+      org.springframework.test: debug
+      root: info
     pattern:
-      console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-      file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+      console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
+      file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
     file:
       name: logs/service-auth.log
       max-size: 100MB
@@ -98,6 +106,11 @@ jwt:
   # 是否启用黑名单
   enable-blacklist: ${JWT_ENABLE_BLACKLIST:true}
   # Redis黑名单前缀
+
+# 认证配置
+auth:
+  jwt:
+    enabled: false  # 测试环境禁用JWT拦截器
   blacklist-prefix: ${JWT_BLACKLIST_PREFIX:token:blacklist:}
   # Redis有效令牌前缀
   valid-token-prefix: ${JWT_VALID_TOKEN_PREFIX:token:valid:}

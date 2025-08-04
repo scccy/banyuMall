@@ -8,8 +8,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.origin.common.dto.ResultData;
 import com.origin.common.exception.BusinessException;
 import com.origin.common.entity.ErrorCode;
-import com.origin.oss.dto.FileUploadRequest;
-import com.origin.oss.dto.FileUploadResponse;
+import com.origin.common.dto.FileUploadRequest;
+import com.origin.common.dto.FileUploadResponse;
 import com.origin.user.dto.AvatarResponse;
 import com.origin.user.dto.UserCreateRequest;
 import com.origin.user.dto.UserQueryRequest;
@@ -193,7 +193,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         log.info("删除用户 - 用户ID: {}", userId);
         
         // 检查用户是否存在
-        SysUser user = validateUserExists(userId);
+        SysUser user = getUserById(userId);
+        if (user == null) {
+            log.warn("删除用户失败 - 用户不存在: {}", userId);
+            return false;
+        }
         
         // 软删除
         user.setStatus(USER_STATUS_DELETED);
@@ -204,6 +208,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             // 清除缓存
             clearUserCache(userId);
             log.info("用户删除成功 - 用户ID: {}", userId);
+        } else {
+            log.warn("用户删除失败 - 数据库更新失败: {}", userId);
         }
         
         return result;
@@ -290,7 +296,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             ResultData<FileUploadResponse> uploadResult = ossFileFeignClient.uploadFile(uploadRequest);
             
             if (!uploadResult.isSuccess()) {
-                throw new BusinessException(ErrorCode.FILE_UPLOAD_FAILED, "头像上传失败: " + uploadResult.getMessage());
+                throw new BusinessException(ErrorCode.USER_AVATAR_UPLOAD_FAILED, "头像上传失败: " + uploadResult.getMessage());
             }
             
             FileUploadResponse uploadResponse = uploadResult.getData();
@@ -440,7 +446,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private SysUser validateUserExists(String userId) {
         SysUser user = getUserById(userId);
         if (user == null) {
-            throw new BusinessException(ErrorCode.PARAM_ERROR, "用户不存在");
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND, "用户不存在");
         }
         return user;
     }

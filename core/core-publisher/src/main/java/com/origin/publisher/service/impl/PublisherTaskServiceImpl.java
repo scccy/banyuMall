@@ -78,7 +78,7 @@ public class PublisherTaskServiceImpl implements PublisherTaskService {
         // 验证任务是否存在
         PublisherTask existingTask = taskMapper.selectById(taskId);
         if (existingTask == null) {
-            throw new BusinessException(ErrorCode.TASK_NOT_FOUND);
+            throw new BusinessException(ErrorCode.PUBLISHER_TASK_NOT_FOUND);
         }
         
         // 验证请求参数
@@ -110,7 +110,7 @@ public class PublisherTaskServiceImpl implements PublisherTaskService {
         
         PublisherTask task = taskMapper.selectById(taskId);
         if (task == null) {
-            throw new BusinessException(ErrorCode.TASK_NOT_FOUND);
+            throw new BusinessException(ErrorCode.PUBLISHER_TASK_NOT_FOUND);
         }
         
         TaskDetailResponse response = new TaskDetailResponse();
@@ -179,7 +179,7 @@ public class PublisherTaskServiceImpl implements PublisherTaskService {
         
         PublisherTask task = taskMapper.selectById(taskId);
         if (task == null) {
-            throw new BusinessException(ErrorCode.TASK_NOT_FOUND);
+            throw new BusinessException(ErrorCode.PUBLISHER_TASK_NOT_FOUND);
         }
         
         // 逻辑删除任务
@@ -204,7 +204,7 @@ public class PublisherTaskServiceImpl implements PublisherTaskService {
         
         PublisherTask task = taskMapper.selectById(taskId);
         if (task == null) {
-            throw new BusinessException(ErrorCode.TASK_NOT_FOUND);
+            throw new BusinessException(ErrorCode.PUBLISHER_TASK_NOT_FOUND);
         }
         
         task.setStatusId(statusId);
@@ -220,11 +220,11 @@ public class PublisherTaskServiceImpl implements PublisherTaskService {
         
         PublisherTask task = taskMapper.selectById(taskId);
         if (task == null) {
-            throw new BusinessException(ErrorCode.TASK_NOT_FOUND);
+            throw new BusinessException(ErrorCode.PUBLISHER_TASK_NOT_FOUND);
         }
         
         if (task.getStatusId() != 1) {
-            throw new BusinessException(ErrorCode.TASK_STATUS_INVALID, "只有草稿状态的任务才能发布");
+            throw new BusinessException(ErrorCode.PUBLISHER_TASK_STATUS_INVALID, "只有草稿状态的任务才能发布");
         }
         
         task.setStatusId(2); // 上架状态
@@ -240,11 +240,11 @@ public class PublisherTaskServiceImpl implements PublisherTaskService {
         
         PublisherTask task = taskMapper.selectById(taskId);
         if (task == null) {
-            throw new BusinessException(ErrorCode.TASK_NOT_FOUND);
+            throw new BusinessException(ErrorCode.PUBLISHER_TASK_NOT_FOUND);
         }
         
         if (task.getStatusId() != 2) {
-            throw new BusinessException(ErrorCode.TASK_STATUS_INVALID, "只有上架状态的任务才能下架");
+            throw new BusinessException(ErrorCode.PUBLISHER_TASK_STATUS_INVALID, "只有上架状态的任务才能下架");
         }
         
         task.setStatusId(3); // 下架状态

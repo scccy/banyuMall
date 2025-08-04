@@ -12,10 +12,10 @@ import com.origin.common.exception.BusinessException;
 public class TaskNotFoundException extends BusinessException {
 
     public TaskNotFoundException(String message) {
-        super(ErrorCode.TASK_NOT_FOUND, message);
+        super(ErrorCode.PUBLISHER_TASK_NOT_FOUND, message);
     }
 
     public TaskNotFoundException(String taskId, String message) {
-        super(ErrorCode.TASK_NOT_FOUND, "任务ID: " + taskId + ", " + message);
+        super(ErrorCode.PUBLISHER_TASK_NOT_FOUND, "任务ID: " + taskId + ", " + message);
     }
 } 

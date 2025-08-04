@@ -12,6 +12,7 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 
+
 /**
  * Gateway WebFlux配置类
  * 确保Gateway服务使用响应式Web环境而不是传统的Servlet环境

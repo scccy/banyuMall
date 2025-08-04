@@ -2,8 +2,8 @@ package com.origin.oss.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.origin.oss.config.OssConfig;
-import com.origin.oss.dto.FileUploadRequest;
-import com.origin.oss.dto.FileUploadResponse;
+import com.origin.common.dto.FileUploadRequest;
+import com.origin.common.dto.FileUploadResponse;
 import com.origin.oss.entity.OssFileStorage;
 import com.origin.oss.mapper.OssFileStorageMapper;
 import com.origin.common.entity.ErrorCode;
@@ -51,7 +51,7 @@ public class OssFileServiceImpl implements OssFileService {
         
         // 1. 文件大小检查
         if (file.getSize() > MAX_FILE_SIZE) {
-            throw new BusinessException(ErrorCode.FILE_SIZE_EXCEEDED);
+            throw new BusinessException(ErrorCode.OSS_FILE_SIZE_EXCEEDED);
         }
         
         // 2. 文件类型检查
@@ -103,7 +103,7 @@ public class OssFileServiceImpl implements OssFileService {
     public String getFileAccessUrl(Long fileId) {
         OssFileStorage fileStorage = ossFileStorageMapper.selectById(fileId);
         if (fileStorage == null) {
-            throw new BusinessException(ErrorCode.FILE_NOT_FOUND);
+            throw new BusinessException(ErrorCode.OSS_FILE_NOT_FOUND);
         }
         
         // TODO: 生成预签名URL
@@ -198,7 +198,7 @@ public class OssFileServiceImpl implements OssFileService {
             return accessUrl;
         } catch (Exception e) {
             log.error("文件上传到OSS失败: objectKey={}, error={}", objectKey, e.getMessage(), e);
-            throw new BusinessException(ErrorCode.FILE_UPLOAD_FAILED, "文件上传失败: " + e.getMessage());
+            throw new BusinessException(ErrorCode.OSS_UPLOAD_ERROR, "文件上传失败: " + e.getMessage());
         }
     }
 } 

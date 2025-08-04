@@ -1,7 +1,7 @@
 package com.origin.oss.service;
 
-import com.origin.oss.dto.FileUploadRequest;
-import com.origin.oss.dto.FileUploadResponse;
+import com.origin.common.dto.FileUploadRequest;
+import com.origin.common.dto.FileUploadResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 /**

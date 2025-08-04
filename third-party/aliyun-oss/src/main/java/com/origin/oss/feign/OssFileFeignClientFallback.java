@@ -1,7 +1,7 @@
 package com.origin.oss.feign;
 
 import com.origin.common.dto.ResultData;
-import com.origin.oss.dto.FileUploadResponse;
+import com.origin.common.dto.FileUploadResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
