@@ -1,6 +1,6 @@
 package com.origin.publisher.service;
 
-import com.origin.common.dto.PageResult;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.origin.publisher.dto.*;
 
 /**
@@ -36,7 +36,7 @@ public interface PublisherTaskService {
      * @param request 查询请求
      * @return 任务列表
      */
-    PageResult<TaskListResponse> getTaskList(TaskListRequest request);
+    IPage<TaskListResponse> getTaskList(TaskListRequest request);
     
     /**
      * 删除任务

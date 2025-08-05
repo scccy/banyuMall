@@ -19,9 +19,9 @@ public class ThirdPartyConfigDTO {
     private String configId;
 
     /**
-     * 平台类型(wechatwork/dingtalk/feishu/youzan等)
+     * 平台类型(123456789-企业微信/234567890-钉钉/345678901-飞书等)
      */
-    private String platformType;
+    private Integer platformType;
 
     /**
      * 平台名称

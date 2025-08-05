@@ -1,8 +1,8 @@
 package com.origin.publisher.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.origin.common.dto.PageResult;
 import com.origin.common.entity.ErrorCode;
 import com.origin.common.exception.BusinessException;
 import com.origin.publisher.dto.ShareReviewRequest;
@@ -74,7 +74,7 @@ public class PublisherShareReviewServiceImpl implements PublisherShareReviewServ
     }
     
     @Override
-    public PageResult<ShareReviewResponse> getShareReviewList(Integer page, Integer size, Integer reviewStatus) {
+    public IPage<ShareReviewResponse> getShareReviewList(Integer page, Integer size, Integer reviewStatus) {
         log.info("获取分享审核列表，页码：{}，大小：{}，审核状态：{}", page, size, reviewStatus);
         
         LambdaQueryWrapper<PublisherShareReview> wrapper = new LambdaQueryWrapper<>();
@@ -86,13 +86,16 @@ public class PublisherShareReviewServiceImpl implements PublisherShareReviewServ
         wrapper.orderByDesc(PublisherShareReview::getCreatedTime);
         
         Page<PublisherShareReview> pageParam = new Page<>(page, size);
-        Page<PublisherShareReview> result = shareReviewMapper.selectPage(pageParam, wrapper);
+        IPage<PublisherShareReview> result = shareReviewMapper.selectPage(pageParam, wrapper);
         
         List<ShareReviewResponse> responses = result.getRecords().stream()
             .map(this::convertToResponse)
             .collect(Collectors.toList());
         
-        return new PageResult<>(responses, result.getTotal(), result.getCurrent(), result.getSize());
+        // 创建新的IPage对象返回
+        Page<ShareReviewResponse> responsePage = new Page<>(result.getCurrent(), result.getSize(), result.getTotal());
+        responsePage.setRecords(responses);
+        return responsePage;
     }
     
     private ShareReviewResponse convertToResponse(PublisherShareReview review) {

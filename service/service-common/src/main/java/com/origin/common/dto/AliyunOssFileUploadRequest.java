@@ -6,13 +6,13 @@ import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * 文件上传请求DTO
+ * 阿里云OSS文件上传请求DTO
  * 
  * @author scccy
  * @since 2025-07-31
  */
 @Data
-public class FileUploadRequest {
+public class AliyunOssFileUploadRequest {
 
     /**
      * 上传的文件

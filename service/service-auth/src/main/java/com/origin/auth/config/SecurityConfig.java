@@ -1,7 +1,6 @@
 package com.origin.auth.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,7 +29,6 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableCaching
-@ConfigurationProperties(prefix = "security")
 public class SecurityConfig {
 
     @Value("${spring.security.user.name:admin}")
@@ -42,11 +40,8 @@ public class SecurityConfig {
     @Value("${spring.security.user.roles:ADMIN}")
     private String roles;
 
-    private final SecurityProperties securityProperties;
-
-    public SecurityConfig(SecurityProperties securityProperties) {
-        this.securityProperties = securityProperties;
-    }
+    @Value("${security.permit-all:}")
+    private List<String> permitAllPaths;
 
     /**
      * 密码加密器
@@ -85,7 +80,6 @@ public class SecurityConfig {
             // 配置请求授权
             .authorizeHttpRequests(authz -> {
                 // 从配置中获取允许的路径
-                List<String> permitAllPaths = securityProperties.getPermitAll();
                 if (permitAllPaths != null && !permitAllPaths.isEmpty()) {
                     authz.requestMatchers(permitAllPaths.toArray(new String[0])).permitAll();
                 }
@@ -94,22 +88,5 @@ public class SecurityConfig {
             });
 
         return http.build();
-    }
-
-    /**
-     * Security配置属性类
-     */
-    @Component
-    @ConfigurationProperties(prefix = "security")
-    public static class SecurityProperties {
-        private List<String> permitAll;
-
-        public List<String> getPermitAll() {
-            return permitAll;
-        }
-
-        public void setPermitAll(List<String> permitAll) {
-            this.permitAll = permitAll;
-        }
     }
 }

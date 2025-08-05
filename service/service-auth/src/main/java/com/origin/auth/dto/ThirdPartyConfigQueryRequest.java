@@ -14,7 +14,7 @@ public class ThirdPartyConfigQueryRequest {
     /**
      * 平台类型
      */
-    private String platformType;
+    private Integer platformType;
 
     /**
      * 平台名称

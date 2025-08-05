@@ -6,7 +6,8 @@ import com.origin.publisher.dto.TaskUpdateRequest;
 import com.origin.publisher.dto.TaskListRequest;
 import com.origin.publisher.dto.TaskDetailResponse;
 import com.origin.publisher.dto.TaskListResponse;
-import com.origin.common.dto.PageResult;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.origin.publisher.service.PublisherTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -316,7 +317,7 @@ class PublisherTaskControllerTest {
     }
 
     // 辅助方法：创建模拟的任务列表响应
-    private PageResult<TaskListResponse> createMockTaskListResponse() {
+    private IPage<TaskListResponse> createMockTaskListResponse() {
         TaskListResponse taskResponse = new TaskListResponse();
         taskResponse.setTaskId("task_20250127_001");
         taskResponse.setTaskName("测试任务");
@@ -325,11 +326,8 @@ class PublisherTaskControllerTest {
         taskResponse.setStatusId(2);
         taskResponse.setCompletionCount(5);
         
-        PageResult<TaskListResponse> pageResult = new PageResult<>();
+        Page<TaskListResponse> pageResult = new Page<>(1L, 10L, 1L);
         pageResult.setRecords(java.util.Arrays.asList(taskResponse));
-        pageResult.setTotal(1L);
-        pageResult.setSize(10L);
-        pageResult.setCurrent(1L);
         
         return pageResult;
     }

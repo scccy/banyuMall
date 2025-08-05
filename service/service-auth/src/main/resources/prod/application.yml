@@ -1,12 +1,48 @@
-# 认证服务 - 生产环境配置（连接Nacos）
+# 认证服务 - 生产环境配置
+# 遵循CONFIG-001规范：统一端口8080，系统变量管理敏感信息，禁用permit-all
+
+server:
+  port: 8080  # 生产环境统一端口
 
 spring:
+  application:
+    name: service-auth
+  
+  # 配置导入 - 从Nacos加载业务配置
+  config:
+    import: nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
+  
+  # Nacos服务注册与发现配置
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER:localhost:8848}
+        username: ${NACOS_USERNAME}
+        password: ${NACOS_PASSWORD}
+        namespace: ${NACOS_NAMESPACE:prod}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        register-enabled: true
+        heart-beat-interval: 5000
+        heart-beat-timeout: 15000
+        ip-delete-timeout: 30000
+      config:
+        server-addr: ${NACOS_SERVER:localhost:8848}
+        username: ${NACOS_USERNAME}
+        password: ${NACOS_PASSWORD}
+        namespace: ${NACOS_NAMESPACE:prod}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        file-extension: yaml
+        refresh-enabled: true
+        timeout: 3000
+        retry-time: 2000
+        long-poll-timeout: 46000
+
   # 数据源配置（生产环境使用环境变量）
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/banyu_mall?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8}
-    username: ${MYSQL_USERNAME:root}
-    password: ${MYSQL_PASSWORD:}
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
     hikari:
       minimum-idle: 10
       maximum-pool-size: 50
@@ -25,9 +61,9 @@ spring:
   # Redis配置（生产环境使用环境变量）
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
+      host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
+      password: ${REDIS_PASSWORD}
       database: ${REDIS_DATABASE:0}
       timeout: 10000ms
       lettuce:
@@ -53,67 +89,54 @@ spring:
         logic-delete-value: 1
         logic-not-delete-value: 0
     mapper-locations: classpath*:/mapper/**/*.xml
-    type-aliases-package: com.origin.auth.entity
-
-  # 日志配置（生产环境精简日志）
-  logging:
-    level:
-      com.origin.auth: warn
-      org.springframework.security: warn
-      org.springframework.web: warn
-      root: warn
-    pattern:
-      console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-      file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-    file:
-      name: logs/service-auth.log
-      max-size: 100MB
-      max-history: 30
+    type-aliases-package: com.origin.*.entity
 
   # 启动性能优化
   main:
     lazy-initialization: false  # 生产环境关闭懒加载
   jmx:
-    enabled: false  # 生产环境关闭JMX
+    enabled: true  # 生产环境启用JMX监控
   
-  # JWT令牌缓存配置（认证服务必需）
+  # JWT令牌缓存配置
+
+
   cache:
     type: redis
     redis:
-      time-to-live: 3600000  # 1小时，与JWT过期时间一致
+      time-to-live: 3600000  # 1小时
       cache-null-values: false
       key-prefix: "auth:jwt:"
 
-
 # JWT配置（生产环境使用环境变量）
 jwt:
-  # JWT密钥 - 生产环境必须使用环境变量
   secret: ${JWT_SECRET}
-  # 过期时间（毫秒）- 1小时
   expiration: ${JWT_EXPIRATION:3600000}
-  # 令牌前缀
   token-prefix: ${JWT_TOKEN_PREFIX:Bearer}
-  # 刷新令牌过期时间（毫秒）- 24小时
   refresh-expiration: ${JWT_REFRESH_EXPIRATION:86400000}
-  # 是否启用黑名单
   enable-blacklist: ${JWT_ENABLE_BLACKLIST:true}
-  # Redis黑名单前缀
   blacklist-prefix: ${JWT_BLACKLIST_PREFIX:token:blacklist:}
-  # Redis有效令牌前缀
   valid-token-prefix: ${JWT_VALID_TOKEN_PREFIX:token:valid:}
-  # 每个用户最大会话数量
   max-sessions-per-user: ${JWT_MAX_SESSIONS_PER_USER:1}
-  # 是否启用多会话模式
   enable-multi-session: ${JWT_ENABLE_MULTI_SESSION:false}
 
-# 安全配置
+# 安全配置（生产环境严格配置，禁用permit-all）
 security:
-  # 不需要认证的路径
-  permit-all:
-    - /auth/login
-    - /auth/register
-    - /actuator/health
-    - /actuator/info
+  authentication:
+    required: true
+  authorization:
+    enabled: true
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: 3600
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:https://yourdomain.com}
+    allowed-methods: GET,POST,PUT,DELETE
+    allow-credentials: true
+  # 需要认证的路径（生产环境严格控制）
+  protected-paths:
+    - /auth/logout
+    - /auth/refresh
+    - /auth/user/**
 
 # Swagger配置（生产环境关闭）
 springdoc:
@@ -122,16 +145,43 @@ springdoc:
   api-docs:
     enabled: false
 
+# 管理端点配置（生产环境限制暴露）
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never  # 不暴露详细健康信息
+    info:
+      enabled: true
+
+# 日志配置（生产环境精简日志）
+logging:
+  level:
+    com.origin.auth: warn
+    org.springframework.security: error
+    org.springframework.web: error
+    root: error
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/service-auth.log
+    max-size: 500MB
+    max-history: 60
+
 # 登录配置
 login:
-  max-attempts: 3  # 最大登录尝试次数
-  lock-duration: 600  # 锁定时间（秒）
-  captcha-enabled: true  # 生产环境启用验证码
+  max-attempts: 3
+  lock-duration: 600
+  captcha-enabled: true
 
 # 令牌配置
 token:
-  refresh-threshold: 300  # 刷新阈值（秒）
-  blacklist-cleanup-interval: 3600  # 黑名单清理间隔（秒）
+  refresh-threshold: 300
+  blacklist-cleanup-interval: 3600
 
 # 线程池配置（生产环境优化）
 thread:
@@ -140,18 +190,3 @@ thread:
     max-size: 50
     queue-capacity: 1000
     keep-alive-seconds: 60
-
-# 性能优化配置
-server:
-  # 连接超时时间
-  connection-timeout: 20000
-  # 读取超时时间
-  read-timeout: 30000
-  # 写入超时时间
-  write-timeout: 30000
-  # 最大连接数
-  max-connections: 8192
-  # 最大线程数
-  threads:
-    max: 200
-    min: 10 

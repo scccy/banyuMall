@@ -18,18 +18,18 @@
 ### 2. 配置文件组织
 ```
 src/main/resources/
-├── dev/
-│   ├── application.yml          # 本地配置文件
-│   ├── service-xxx.yaml         # Nacos远程配置文件
-│   └── README.md                # 配置说明文档
+├──dev/
+│   ├──application.yml          # 本地配置文件
+│   ├──service-xxx.yaml         # Nacos远程配置文件
+│   └──README.md                # 配置说明文档
 ├── test/
-│   ├── application.yml
-│   ├── service-xxx.yaml
-│   └── README.md
+│   ├──application.yml
+│   ├──service-xxx.yaml
+│   └──README.md
 ├── prod/
-│   ├── application.yml
-│   ├── service-xxx.yaml
-│   └── README.md
+│   ├──application.yml
+│   ├──service-xxx.yaml
+│   └──README.md
 └── mapper/
     └── *.xml
 ```
@@ -166,7 +166,7 @@ spring:
   mybatis-plus:
     configuration:
       map-underscore-to-camel-case: true
-      cache-enabled: false
+      cache-enabled: true
       call-setters-on-nulls: true
       jdbc-type-for-null: 'null'
       log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
@@ -293,7 +293,51 @@ management:
 ```
 
 ### 3. 生产环境 (prod/)
-**特点**: 高性能、安全配置、最小日志
+**特点**: 高性能、安全配置、最小日志、统一端口
+
+#### 端口配置规范
+**强制要求**: 生产环境所有微服务必须使用统一端口
+```yaml
+server:
+  port: 8080  # 生产环境微服务统一端口
+```
+
+#### 安全配置强制要求
+**严格禁止**: 生产环境绝对不允许使用permit-all配置
+
+```yaml
+# ❌ 生产环境严禁使用
+security:
+  permit-all: true  # 绝对禁止！
+
+# ✅ 生产环境必须使用严格的安全配置
+security:
+  authentication:
+    required: true
+  authorization:
+    enabled: true
+  jwt:
+    secret: ${JWT_SECRET}  # 必须使用环境变量
+    expiration: 3600
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:https://yourdomain.com}
+    allowed-methods: GET,POST,PUT,DELETE
+    allow-credentials: true
+```
+
+#### 接口安全配置
+```yaml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info  # 仅暴露必要的监控端点
+  endpoint:
+    health:
+      show-details: never  # 不暴露详细健康信息
+    info:
+      enabled: true
+```
 
 #### 性能优化
 ```yaml
@@ -419,6 +463,10 @@ spring:
 2. **混合环境配置** - 不同环境的配置不能混用
 3. **缺少配置文档** - 每个环境目录必须有README.md
 4. **配置重复** - 避免配置项重复定义
+5. **生产环境端口随意配置** - 生产环境微服务端口必须统一为8080
+6. **生产环境密码使用默认值** - 生产环境所有账户密码必须通过系统变量配置
+7. **生产环境使用permit-all** - 生产环境绝对禁止使用security.permit-all配置
+8. **生产环境暴露调试端点** - 禁止暴露actuator的敏感端点
 
 ### 不推荐
 1. **过度配置** - 避免不必要的配置项
@@ -474,4 +522,4 @@ validation:
 **创建时间**: 2025-08-04  
 **最后更新**: 2025-08-04  
 **维护者**: scccy  
-**参考**: `service/service-user/src/main/resources/dev/` 
+**参考**: `service/service-user/src/main/resources/dev/`

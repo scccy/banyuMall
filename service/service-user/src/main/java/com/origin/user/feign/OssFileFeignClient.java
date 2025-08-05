@@ -1,8 +1,8 @@
 package com.origin.user.feign;
 
 import com.origin.common.dto.ResultData;
-import com.origin.common.dto.FileUploadRequest;
-import com.origin.common.dto.FileUploadResponse;
+import com.origin.common.dto.AliyunOssFileUploadRequest;
+import com.origin.common.dto.AliyunOssFileUploadResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +22,7 @@ public interface OssFileFeignClient {
      * @return 上传结果
      */
     @PostMapping("/upload")
-    ResultData<FileUploadResponse> uploadFile(@RequestBody FileUploadRequest request);
+    ResultData<AliyunOssFileUploadResponse> uploadFile(@RequestBody AliyunOssFileUploadRequest request);
     
     /**
      * 获取文件访问URL

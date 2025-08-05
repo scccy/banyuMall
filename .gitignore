@@ -103,3 +103,4 @@ node_modules/
 *.bak
 *.backup
 !/temp-service-base/
+!/service/service-common/target/

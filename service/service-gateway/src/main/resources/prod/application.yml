@@ -1,16 +1,18 @@
-# 网关服务 - 生产环境主配置文件
-# 注意：业务配置和敏感信息已移至Nacos配置中心
+# 网关服务 - 生产环境配置
+# 遵循CONFIG-001规范：统一端口8080，系统变量管理敏感信息
 
-# 服务器配置
 server:
-  port: 8080
-  # 移除servlet配置，使用WebFlux配置
-  # servlet:
-  #   context-path: /gateway
+  port: 8080  # 生产环境统一端口
+  # 性能优化配置
+  connection-timeout: 20000
+  read-timeout: 30000
+  write-timeout: 30000
+  max-connections: 16384
+  threads:
+    max: 400
+    min: 50
 
-# Spring基础配置
 spring:
-  # 应用名称
   application:
     name: service-gateway
   
@@ -21,6 +23,10 @@ spring:
   # 明确指定为响应式Web应用
   main:
     web-application-type: reactive
+    lazy-initialization: false
+  
+  jmx:
+    enabled: true
   
   # 自动配置排除 - 避免WebMvc与WebFlux冲突
   autoconfigure:
@@ -31,54 +37,75 @@ spring:
       - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
       - org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
   
-
-  
   # Nacos服务注册与发现配置
   cloud:
     nacos:
-      # 服务发现配置
       discovery:
-        server-addr: 117.50.197.170:8848
-        username: nacos
-        password: olN2y)]VzEISLITO#_}L0J^$>Nk)1S~W
-        namespace: ba1493dc-20fa-413b-84e1-d929c9a4aeac
-        group: DEFAULT_GROUP
-        # 注册配置
+        server-addr: ${NACOS_SERVER}
+        username: ${NACOS_USERNAME}
+        password: ${NACOS_PASSWORD}
+        namespace: ${NACOS_NAMESPACE:prod}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
         register-enabled: true
-        # 心跳间隔
         heart-beat-interval: 5000
-        # 心跳超时时间
         heart-beat-timeout: 15000
-        # 实例删除超时时间
         ip-delete-timeout: 30000
-      
-      # 配置中心配置
       config:
-        server-addr: 117.50.197.170:8848
-        username: nacos
-        password: olN2y)]VzEISLITO#_}L0J^$>Nk)1S~W
-        namespace: ba1493dc-20fa-413b-84e1-d929c9a4aeac
-        group: DEFAULT_GROUP
+        server-addr: ${NACOS_SERVER}
+        username: ${NACOS_USERNAME}
+        password: ${NACOS_PASSWORD}
+        namespace: ${NACOS_NAMESPACE:prod}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
         file-extension: yaml
-        # 配置刷新
         refresh-enabled: true
-        # 配置超时时间
         timeout: 3000
-        # 配置重试次数
         retry-time: 2000
-        # 长轮询超时时间
         long-poll-timeout: 46000
+    
+    # 网关路由配置
+    gateway:
+      routes:
+        - id: auth-service
+          uri: lb://service-auth
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=0
+        
+        - id: user-service
+          uri: lb://service-user
+          predicates:
+            - Path=/service/user/**
+          filters:
+            - StripPrefix=1
+        
+        - id: core-publisher-service
+          uri: lb://core-publisher
+          predicates:
+            - Path=/core/publisher/**
+          filters:
+            - StripPrefix=1
+      
+      # 全局CORS配置
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: ${ALLOWED_ORIGINS:https://yourdomain.com}
+            allowedMethods: GET,POST,PUT,DELETE,OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
 
-# 管理端点配置
+# 管理端点配置（生产环境限制暴露）
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,gateway
+        include: health,info
   endpoint:
     health:
-      show-details: when-authorized
-  # 应用信息配置
+      show-details: never  # 不暴露详细健康信息
+    info:
+      enabled: true
   info:
     env:
       enabled: true
@@ -87,68 +114,17 @@ management:
 
 # 日志配置（生产环境）
 logging:
-  config: classpath:log4j2.xml
   level:
-    com.origin.gateway: info
-    org.springframework.cloud.gateway: info
-    org.springframework.web: warn
-    # 禁用Log4j2包扫描警告
+    com.origin.gateway: warn
+    org.springframework.cloud.gateway: warn
+    org.springframework.web: error
     org.apache.logging.log4j.status: ERROR
     org.apache.logging.log4j.core.config: ERROR
-    root: warn
+    root: error
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
-    name: logs/infra-gateway.log
-    max-size: 100MB
-    max-history: 30
-
-# 网关配置
-gateway:
-  # 路由配置
-  routes:
-    - id: auth-service
-      uri: lb://service-auth
-      predicates:
-        - Path=/auth/**
-      filters:
-        - StripPrefix=0
-    
-    - id: user-service
-      uri: lb://service-user
-      predicates:
-        - Path=/service/user/**
-      filters:
-        - StripPrefix=1
-    
-    - id: core-publisher-service
-      uri: lb://core-publisher
-      predicates:
-        - Path=/core/publisher/**
-      filters:
-        - StripPrefix=1
-
-  # 全局过滤器配置
-  globalcors:
-    cors-configurations:
-      '[/**]':
-        allowedOrigins: "${ALLOWED_ORIGINS:*}"
-        allowedMethods: "GET,POST,PUT,DELETE,OPTIONS"
-        allowedHeaders: "*"
-        allowCredentials: true
-
-# 性能优化配置
-server:
-  # 连接超时时间
-  connection-timeout: 20000
-  # 读取超时时间
-  read-timeout: 30000
-  # 写入超时时间
-  write-timeout: 30000
-  # 最大连接数
-  max-connections: 16384
-  # 最大线程数
-  threads:
-    max: 400
-    min: 50 
+    name: logs/service-gateway.log
+    max-size: 500MB
+    max-history: 60

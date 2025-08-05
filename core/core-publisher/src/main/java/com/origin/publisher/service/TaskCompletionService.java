@@ -1,6 +1,6 @@
 package com.origin.publisher.service;
 
-import com.origin.common.dto.PageResult;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.origin.publisher.dto.TaskCompletionRequest;
 import com.origin.publisher.dto.TaskCompletionResponse;
 
@@ -26,7 +26,7 @@ public interface TaskCompletionService {
      * @param size 每页大小
      * @return 完成列表
      */
-    PageResult<TaskCompletionResponse> getTaskCompletionList(String taskId, Integer page, Integer size);
+    IPage<TaskCompletionResponse> getTaskCompletionList(String taskId, Integer page, Integer size);
     
     /**
      * 审核任务完成

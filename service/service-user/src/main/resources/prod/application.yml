@@ -1,20 +1,47 @@
-# 用户服务 - 生产环境配置（连接Nacos）
+# 用户服务 - 生产环境配置
+# 遵循CONFIG-001规范：统一端口8080，系统变量管理敏感信息
+
+server:
+  port: 8080  # 生产环境统一端口
+
 spring:
+  application:
+    name: service-user
+  
+  # 配置导入 - 从Nacos加载配置
+  config:
+    import: nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
+  
+  # Nacos服务注册与发现配置
   cloud:
     nacos:
       discovery:
-        server-addr: ${NACOS_SERVER:localhost:8848}
+        server-addr: ${NACOS_SERVER}
+        username: ${NACOS_USERNAME}
+        password: ${NACOS_PASSWORD}
         namespace: ${NACOS_NAMESPACE:prod}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        register-enabled: true
+        heart-beat-interval: 5000
+        heart-beat-timeout: 15000
+        ip-delete-timeout: 30000
       config:
-        server-addr: ${NACOS_SERVER:localhost:8848}
+        server-addr: ${NACOS_SERVER}
+        username: ${NACOS_USERNAME}
+        password: ${NACOS_PASSWORD}
         namespace: ${NACOS_NAMESPACE:prod}
-        file-extension: yml
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        file-extension: yaml
+        refresh-enabled: true
+        timeout: 3000
+        retry-time: 2000
+        long-poll-timeout: 46000
 
-  # 数据源配置（从Nacos获取）
+  # 数据源配置（生产环境使用环境变量）
   datasource:
-    url: ${MYSQL_URL:jdbc:mysql://mysql-service:3306/banyu_mall?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8}
-    username: ${MYSQL_USERNAME:root}
-    password: ${MYSQL_PASSWORD:password}
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       minimum-idle: 10
@@ -22,13 +49,15 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
       connection-timeout: 30000
+      connection-test-query: SELECT 1
 
+  # Redis配置（生产环境使用环境变量）
   data:
     redis:
-      host: ${REDIS_HOST:redis-service}
+      host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:}
-      database: 1
+      password: ${REDIS_PASSWORD}
+      database: ${REDIS_DATABASE:1}
       timeout: 5000ms
       lettuce:
         pool:
@@ -37,10 +66,14 @@ spring:
           max-idle: 10
           min-idle: 5
 
-  # MyBatis-Plus配置
+  # MyBatis-Plus配置（生产环境优化）
   mybatis-plus:
     configuration:
       map-underscore-to-camel-case: true
+      cache-enabled: true
+      call-setters-on-nulls: false
+      jdbc-type-for-null: 'null'
+      # 生产环境关闭SQL日志
       log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
     global-config:
       db-config:
@@ -48,30 +81,40 @@ spring:
         logic-delete-value: 1
         logic-not-delete-value: 0
         id-type: assign_id
+    mapper-locations: classpath*:/mapper/**/*.xml
+    type-aliases-package: com.origin.*.entity
 
-# 日志配置
-logging:
-  level:
-    com.origin.user: info
-    org.springframework: warn
-  file:
-    name: logs/service-user.log
-    max-size: 100MB
-    max-history: 30
+  # 启动性能优化
+  main:
+    lazy-initialization: false
+  jmx:
+    enabled: true
 
-# 管理端点配置
+# 管理端点配置（生产环境限制暴露）
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,prometheus
+        include: health,info
   endpoint:
     health:
-      show-details: when-authorized
-  metrics:
-    export:
-      prometheus:
-        enabled: true
+      show-details: never  # 不暴露详细健康信息
+    info:
+      enabled: true
+
+# 日志配置（生产环境精简日志）
+logging:
+  level:
+    com.origin.user: warn
+    org.springframework: error
+    root: error
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/service-user.log
+    max-size: 500MB
+    max-history: 60
 
 # 用户服务生产环境特定配置
 user:
@@ -82,9 +125,9 @@ user:
     max-config-count: 50
   # 性能配置
   performance:
-          cache-enabled: true
-          cache-ttl: 3600
+    cache-enabled: true
+    cache-ttl: 3600
   # 监控配置
   monitoring:
     enabled: true
-    metrics-enabled: true 
+    metrics-enabled: true

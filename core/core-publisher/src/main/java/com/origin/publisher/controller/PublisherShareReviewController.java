@@ -1,7 +1,7 @@
 package com.origin.publisher.controller;
 
 import com.origin.common.dto.ResultData;
-import com.origin.common.dto.PageResult;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.origin.publisher.dto.ShareReviewRequest;
 import com.origin.publisher.dto.ShareReviewResponse;
 import com.origin.publisher.service.PublisherShareReviewService;
@@ -50,12 +50,12 @@ public class PublisherShareReviewController {
     
     @GetMapping
     @Operation(summary = "获取分享审核列表", description = "获取分享审核列表")
-    public ResultData<PageResult<ShareReviewResponse>> getShareReviewList(
+    public ResultData<IPage<ShareReviewResponse>> getShareReviewList(
             @RequestParam(defaultValue = "1") @Min(value = 1, message = "页码必须大于0") Integer page,
             @RequestParam(defaultValue = "10") @Min(value = 1, message = "每页大小必须大于0") @Max(value = 1000, message = "每页大小不能超过1000") Integer size,
             @RequestParam(required = false) Integer reviewStatus) {
         log.info("获取分享审核列表请求，页码：{}，大小：{}，审核状态：{}", page, size, reviewStatus);
-        PageResult<ShareReviewResponse> result = shareReviewService.getShareReviewList(page, size, reviewStatus);
+        IPage<ShareReviewResponse> result = shareReviewService.getShareReviewList(page, size, reviewStatus);
         return ResultData.ok("获取分享审核列表成功", result);
     }
 } 

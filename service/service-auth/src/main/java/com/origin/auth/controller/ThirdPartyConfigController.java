@@ -49,7 +49,7 @@ public class ThirdPartyConfigController {
     @PutMapping("/{configId}")
     @Operation(summary = "更新第三方平台配置", description = "根据配置ID更新第三方平台配置")
     public ResultData<ThirdPartyConfig> updateConfig(
-            @Parameter(description = "配置ID") @PathVariable @NotBlank String configId,
+            @Parameter(description = "配置ID") @PathVariable @NotNull Integer configId,
             @Valid @RequestBody ThirdPartyConfigDTO configDTO) {
         try {
             ThirdPartyConfig config = thirdPartyConfigService.updateConfig(configId, configDTO);
@@ -63,7 +63,7 @@ public class ThirdPartyConfigController {
     @DeleteMapping("/{configId}")
     @Operation(summary = "删除第三方平台配置", description = "根据配置ID删除第三方平台配置")
     public ResultData<Boolean> deleteConfig(
-            @Parameter(description = "配置ID") @PathVariable @NotBlank String configId) {
+            @Parameter(description = "配置ID") @PathVariable @NotNull Integer configId) {
         try {
             boolean result = thirdPartyConfigService.deleteConfig(configId);
             if (result) {
@@ -80,7 +80,7 @@ public class ThirdPartyConfigController {
     @GetMapping("/{configId}")
     @Operation(summary = "查询第三方平台配置", description = "根据配置ID查询第三方平台配置详情")
     public ResultData<ThirdPartyConfig> getConfigById(
-            @Parameter(description = "配置ID") @PathVariable @NotBlank String configId) {
+            @Parameter(description = "配置ID") @PathVariable @NotNull Integer configId) {
         try {
             ThirdPartyConfig config = thirdPartyConfigService.getConfigById(configId);
             if (config != null) {
@@ -97,7 +97,7 @@ public class ThirdPartyConfigController {
     @GetMapping("/platform/{platformType}")
     @Operation(summary = "根据平台类型查询配置", description = "根据平台类型查询启用的第三方平台配置")
     public ResultData<ThirdPartyConfig> getConfigByPlatformType(
-            @Parameter(description = "平台类型") @PathVariable @NotBlank String platformType) {
+            @Parameter(description = "平台类型") @PathVariable @NotNull Integer platformType) {
         try {
             ThirdPartyConfig config = thirdPartyConfigService.getConfigByPlatformType(platformType);
             if (config != null) {
@@ -126,7 +126,7 @@ public class ThirdPartyConfigController {
     @PutMapping("/{configId}/status")
     @Operation(summary = "更新配置状态", description = "启用或禁用第三方平台配置")
     public ResultData<Boolean> updateConfigStatus(
-            @Parameter(description = "配置ID") @PathVariable @NotBlank String configId,
+            @Parameter(description = "配置ID") @PathVariable @NotNull Integer configId,
             @Parameter(description = "配置状态：0-禁用，1-启用") @RequestParam @NotNull Integer status) {
         try {
             boolean result = thirdPartyConfigService.updateConfigStatus(configId, status);

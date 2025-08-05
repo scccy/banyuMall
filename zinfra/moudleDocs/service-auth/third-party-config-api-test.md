@@ -21,7 +21,7 @@ curl -X POST "http://localhost:8080/service/auth/third-party/config" \
   -H "Content-Type: application/json" \
   -H "X-Request-ID: test-request-001" \
   -d '{
-    "platformType": "wechatwork",
+    "platformType": 1,
     "platformName": "企业微信",
     "corpId": "ww1234567890abcdef",
     "corpSecret": "corp_secret_example",
@@ -73,11 +73,11 @@ curl -X POST "http://localhost:8080/service/auth/third-party/config" \
 
 **请求示例**:
 ```bash
-curl -X PUT "http://localhost:8080/service/auth/third-party/config/config_001" \
+curl -X PUT "http://localhost:8080/service/auth/third-party/config/1" \
   -H "Content-Type: application/json" \
   -H "X-Request-ID: test-request-002" \
   -d '{
-    "platformType": "wechatwork",
+    "platformType": 1,
     "platformName": "企业微信(更新)",
     "corpId": "ww1234567890abcdef",
     "corpSecret": "new_corp_secret",
@@ -100,7 +100,7 @@ curl -X PUT "http://localhost:8080/service/auth/third-party/config/config_001" \
 
 **请求示例**:
 ```bash
-curl -X DELETE "http://localhost:8080/service/auth/third-party/config/config_001" \
+curl -X DELETE "http://localhost:8080/service/auth/third-party/config/1" \
   -H "X-Request-ID: test-request-003"
 ```
 
@@ -119,7 +119,7 @@ curl -X DELETE "http://localhost:8080/service/auth/third-party/config/config_001
 
 **请求示例**:
 ```bash
-curl -X GET "http://localhost:8080/service/auth/third-party/config/config_001" \
+curl -X GET "http://localhost:8080/service/auth/third-party/config/1" \
   -H "X-Request-ID: test-request-004"
 ```
 
@@ -129,7 +129,7 @@ curl -X GET "http://localhost:8080/service/auth/third-party/config/config_001" \
 
 **请求示例**:
 ```bash
-curl -X GET "http://localhost:8080/service/auth/third-party/config/platform/wechatwork" \
+curl -X GET "http://localhost:8080/service/auth/third-party/config/platform/1" \
   -H "X-Request-ID: test-request-005"
 ```
 
@@ -139,7 +139,7 @@ curl -X GET "http://localhost:8080/service/auth/third-party/config/platform/wech
 
 **请求示例**:
 ```bash
-curl -X GET "http://localhost:8080/service/auth/third-party/config/list?current=1&size=10&platformType=wechatwork&configStatus=1" \
+curl -X GET "http://localhost:8080/service/auth/third-party/config/list?current=1&size=10&platformType=1&configStatus=1" \
   -H "X-Request-ID: test-request-006"
 ```
 
@@ -152,7 +152,7 @@ curl -X GET "http://localhost:8080/service/auth/third-party/config/list?current=
     "records": [
       {
         "configId": "config_001",
-        "platformType": "wechatwork",
+        "platformType": 1,
         "platformName": "企业微信",
         "corpId": "ww1234567890abcdef",
         "configStatus": 1,
@@ -173,7 +173,7 @@ curl -X GET "http://localhost:8080/service/auth/third-party/config/list?current=
 
 **请求示例**:
 ```bash
-curl -X PUT "http://localhost:8080/service/auth/third-party/config/config_001/status?status=0" \
+curl -X PUT "http://localhost:8080/service/auth/third-party/config/1/status?status=0" \
   -H "X-Request-ID: test-request-007"
 ```
 

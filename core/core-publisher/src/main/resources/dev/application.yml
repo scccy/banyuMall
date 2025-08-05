@@ -58,8 +58,8 @@ spring:
     banner-mode: off  # 关闭启动横幅
     # 允许循环依赖（开发环境）
     allow-circular-references: true
-    # 允许Bean定义覆盖
-    allow-bean-definition-overriding: true
+    # 禁止Bean定义覆盖
+    allow-bean-definition-overriding: false
   # JMX配置
   jmx:
     enabled: false  # 开发环境关闭JMX

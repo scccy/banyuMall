@@ -54,6 +54,7 @@ spring:
   # 启动性能优化（开发环境）
   main:
     lazy-initialization: true  # 开发环境启用懒加载
+    allow-bean-definition-overriding: false  # 禁止Bean定义覆盖
   
   # JMX配置
   jmx:

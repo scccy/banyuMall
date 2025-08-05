@@ -4,9 +4,11 @@ import com.origin.common.dto.LoginRequest;
 import com.origin.common.dto.PasswordEncryptRequest;
 import com.origin.common.dto.PasswordEncryptResponse;
 import com.origin.common.dto.ResultData;
+import com.origin.common.entity.ThirdPartyConfig;
 import com.origin.user.entity.SysUser;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -15,13 +17,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Map;
 
 /**
- * 认证服务Feign客户端（包含用户认证和密码管理功能）
+ * 认证服务Feign客户端（包含用户认证、密码管理和第三方配置功能）
  * 
  * @author scccy
  * @since 2025-07-31
  */
 @FeignClient(name = "service-auth", path = "/service/auth", fallback = AuthFeignClientFallback.class)
 public interface AuthFeignClient {
+    
+    // ==================== 用户认证功能 ====================
     
     /**
      * 用户登录
@@ -68,6 +72,8 @@ public interface AuthFeignClient {
     @GetMapping("/user/permissions")
     ResultData<Map<String, Object>> getUserPermissions(@RequestParam("userId") String userId);
     
+    // ==================== 密码管理功能 ====================
+    
     /**
      * 密码加密
      *
@@ -85,4 +91,32 @@ public interface AuthFeignClient {
      */
     @PostMapping("/password/verify")
     ResultData<Boolean> verifyPassword(@RequestBody PasswordEncryptRequest request);
+    
+    // ==================== 第三方配置管理功能 ====================
+    
+    /**
+     * 根据平台类型查询配置
+     * 
+     * @param platformType 平台类型
+     * @return 配置信息
+     */
+    @GetMapping("/third-party/config/platform/{platformType}")
+    ResultData<ThirdPartyConfig> getConfigByPlatformType(@PathVariable("platformType") Integer platformType);
+
+    /**
+     * 根据配置ID查询配置
+     * 
+     * @param configId 配置ID
+     * @return 配置信息
+     */
+    @GetMapping("/third-party/config/{configId}")
+    ResultData<ThirdPartyConfig> getConfigById(@PathVariable("configId") Integer configId);
+
+    /**
+     * 第三方配置健康检查
+     * 
+     * @return 服务状态
+     */
+    @GetMapping("/third-party/config/test")
+    ResultData<String> testThirdPartyConfig();
 } 

@@ -56,7 +56,7 @@ public class ThirdPartyConfigServiceImpl implements ThirdPartyConfigService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ThirdPartyConfig updateConfig(String configId, ThirdPartyConfigDTO configDTO) {
+    public ThirdPartyConfig updateConfig(Integer configId, ThirdPartyConfigDTO configDTO) {
         log.info("更新第三方平台配置，配置ID：{}", configId);
         
         // 检查配置是否存在
@@ -77,7 +77,7 @@ public class ThirdPartyConfigServiceImpl implements ThirdPartyConfigService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean deleteConfig(String configId) {
+    public boolean deleteConfig(Integer configId) {
         log.info("删除第三方平台配置，配置ID：{}", configId);
         
         // 检查配置是否存在
@@ -94,13 +94,13 @@ public class ThirdPartyConfigServiceImpl implements ThirdPartyConfigService {
     }
 
     @Override
-    public ThirdPartyConfig getConfigById(String configId) {
+    public ThirdPartyConfig getConfigById(Integer configId) {
         log.debug("根据配置ID查询配置，配置ID：{}", configId);
         return thirdPartyConfigMapper.selectById(configId);
     }
 
     @Override
-    public ThirdPartyConfig getConfigByPlatformType(String platformType) {
+    public ThirdPartyConfig getConfigByPlatformType(Integer platformType) {
         log.debug("根据平台类型查询配置，平台类型：{}", platformType);
         return thirdPartyConfigMapper.selectByPlatformType(platformType);
     }
@@ -113,7 +113,7 @@ public class ThirdPartyConfigServiceImpl implements ThirdPartyConfigService {
         LambdaQueryWrapper<ThirdPartyConfig> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ThirdPartyConfig::getDeleted, 0);
         
-        if (StringUtils.hasText(request.getPlatformType())) {
+        if (request.getPlatformType() != null) {
             queryWrapper.eq(ThirdPartyConfig::getPlatformType, request.getPlatformType());
         }
         
@@ -129,12 +129,16 @@ public class ThirdPartyConfigServiceImpl implements ThirdPartyConfigService {
         
         // 分页查询
         Page<ThirdPartyConfig> page = new Page<>(request.getCurrent(), request.getSize());
-        return thirdPartyConfigMapper.selectPage(page, queryWrapper);
+        IPage<ThirdPartyConfig> result = thirdPartyConfigMapper.selectPage(page, queryWrapper);
+        
+        log.debug("分页查询第三方平台配置完成，总记录数：{}", result.getTotal());
+        
+        return result;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean updateConfigStatus(String configId, Integer status) {
+    public boolean updateConfigStatus(Integer configId, Integer status) {
         log.info("更新第三方平台配置状态，配置ID：{}，状态：{}", configId, status);
         
         // 检查配置是否存在

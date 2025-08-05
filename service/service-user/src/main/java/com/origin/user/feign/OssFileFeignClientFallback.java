@@ -1,8 +1,8 @@
 package com.origin.user.feign;
 
 import com.origin.common.dto.ResultData;
-import com.origin.common.dto.FileUploadRequest;
-import com.origin.common.dto.FileUploadResponse;
+import com.origin.common.dto.AliyunOssFileUploadRequest;
+import com.origin.common.dto.AliyunOssFileUploadResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class OssFileFeignClientFallback implements OssFileFeignClient {
     
     @Override
-    public ResultData<FileUploadResponse> uploadFile(FileUploadRequest request) {
+    public ResultData<AliyunOssFileUploadResponse> uploadFile(AliyunOssFileUploadRequest request) {
         log.error("OSS文件上传服务调用失败，触发降级处理");
         return ResultData.fail("OSS服务暂时不可用，请稍后重试");
     }

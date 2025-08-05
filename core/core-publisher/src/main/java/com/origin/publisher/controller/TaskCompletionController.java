@@ -1,7 +1,7 @@
 package com.origin.publisher.controller;
 
-import com.origin.common.dto.PageResult;
 import com.origin.common.dto.ResultData;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.origin.publisher.dto.TaskCompletionRequest;
 import com.origin.publisher.dto.TaskCompletionResponse;
 import com.origin.publisher.service.TaskCompletionService;
@@ -41,12 +41,12 @@ public class TaskCompletionController {
     
     @GetMapping("/tasks/{taskId}/completions")
     @Operation(summary = "获取任务完成列表", description = "获取指定任务的完成记录列表")
-    public ResultData<PageResult<TaskCompletionResponse>> getTaskCompletionList(
+    public ResultData<IPage<TaskCompletionResponse>> getTaskCompletionList(
             @PathVariable String taskId,
             @RequestParam(defaultValue = "1") @Min(value = 1, message = "页码必须大于0") Integer page,
             @RequestParam(defaultValue = "10") @Min(value = 1, message = "每页大小必须大于0") @Max(value = 1000, message = "每页大小不能超过1000") Integer size) {
         log.info("获取任务完成列表请求，任务ID：{}，页码：{}，大小：{}", taskId, page, size);
-        PageResult<TaskCompletionResponse> result = taskCompletionService.getTaskCompletionList(taskId, page, size);
+        IPage<TaskCompletionResponse> result = taskCompletionService.getTaskCompletionList(taskId, page, size);
         return ResultData.ok("获取任务完成列表成功", result);
     }
     

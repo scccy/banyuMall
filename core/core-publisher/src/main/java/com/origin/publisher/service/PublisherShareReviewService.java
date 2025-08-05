@@ -1,6 +1,6 @@
 package com.origin.publisher.service;
 
-import com.origin.common.dto.PageResult;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.origin.publisher.dto.ShareReviewRequest;
 import com.origin.publisher.dto.ShareReviewResponse;
 
@@ -33,5 +33,5 @@ public interface PublisherShareReviewService {
      * @param reviewStatus 审核状态
      * @return 分享审核列表
      */
-    PageResult<ShareReviewResponse> getShareReviewList(Integer page, Integer size, Integer reviewStatus);
+    IPage<ShareReviewResponse> getShareReviewList(Integer page, Integer size, Integer reviewStatus);
 } 

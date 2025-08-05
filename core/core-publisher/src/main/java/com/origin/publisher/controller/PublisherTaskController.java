@@ -1,7 +1,7 @@
 package com.origin.publisher.controller;
 
 import com.origin.common.dto.ResultData;
-import com.origin.common.dto.PageResult;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.origin.publisher.dto.*;
 import com.origin.publisher.service.PublisherTaskService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,9 +54,9 @@ public class PublisherTaskController {
     
     @GetMapping
     @Operation(summary = "获取任务列表", description = "获取任务列表（包含完成人数统计）")
-    public ResultData<PageResult<TaskListResponse>> getTaskList(@Valid TaskListRequest request) {
+    public ResultData<IPage<TaskListResponse>> getTaskList(@Valid TaskListRequest request) {
         log.info("获取任务列表请求，参数：{}", request);
-        PageResult<TaskListResponse> result = taskService.getTaskList(request);
+        IPage<TaskListResponse> result = taskService.getTaskList(request);
         return ResultData.ok("获取任务列表成功", result);
     }
     

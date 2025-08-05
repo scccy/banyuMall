@@ -1,8 +1,9 @@
 package com.origin.user.feign;
 
+import com.origin.common.dto.AliyunOssFileUploadRequest;
+import com.origin.common.dto.AliyunOssFileUploadResponse;
 import com.origin.common.dto.ResultData;
-import com.origin.common.dto.FileUploadRequest;
-import com.origin.common.dto.FileUploadResponse;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,28 +31,28 @@ class OssFileFeignClientTest {
     @DisplayName("文件服务调用 - 正常调用测试")
     void ossFeignTest() {
         // 模拟文件上传响应
-        FileUploadResponse mockResponse = new FileUploadResponse();
+        AliyunOssFileUploadResponse mockResponse = new AliyunOssFileUploadResponse();
         mockResponse.setFileId(123L);
         mockResponse.setAccessUrl("https://oss.example.com/files/test-file-id-123.jpg");
         mockResponse.setOriginalName("test-avatar.jpg");
         mockResponse.setFileSize(1024L);
         
-        when(ossFileFeignClient.uploadFile(any(FileUploadRequest.class)))
+        when(ossFileFeignClient.uploadFile(any(AliyunOssFileUploadRequest.class)))
                 .thenReturn(ResultData.ok("文件上传成功", mockResponse));
         
         // 测试文件上传功能
-        FileUploadRequest request = new FileUploadRequest();
+        AliyunOssFileUploadRequest request = new AliyunOssFileUploadRequest();
         request.setSourceService("service-user");
         request.setBusinessType("user-avatar");
         request.setFilePath("service-user/user-avatar/2025/08/04/");
         request.setUploadUserId(1L);
         request.setUploadUserName("testuser");
         
-        ResultData<FileUploadResponse> result = ossFileFeignClient.uploadFile(request);
+        ResultData<AliyunOssFileUploadResponse> result = ossFileFeignClient.uploadFile(request);
         
         assertNotNull(result);
         assertTrue(result.isSuccess());
-        FileUploadResponse response = result.getData();
+        AliyunOssFileUploadResponse response = result.getData();
         assertNotNull(response);
         assertNotNull(response.getFileId());
         assertNotNull(response.getAccessUrl());
@@ -82,16 +83,16 @@ class OssFileFeignClientTest {
     @DisplayName("文件服务调用 - 服务不可用降级测试")
     void fallbackTest() {
         // 模拟服务不可用时的降级响应
-        when(ossFileFeignClient.uploadFile(any(FileUploadRequest.class)))
+        when(ossFileFeignClient.uploadFile(any(AliyunOssFileUploadRequest.class)))
                 .thenReturn(ResultData.fail("服务暂时不可用"));
         
         // 测试服务不可用时的降级处理
-        FileUploadRequest request = new FileUploadRequest();
+        AliyunOssFileUploadRequest request = new AliyunOssFileUploadRequest();
         request.setSourceService("service-user");
         request.setBusinessType("user-avatar");
         request.setFilePath("service-user/user-avatar/2025/08/04/");
         
-        ResultData<FileUploadResponse> result = ossFileFeignClient.uploadFile(request);
+        ResultData<AliyunOssFileUploadResponse> result = ossFileFeignClient.uploadFile(request);
         
         assertNotNull(result);
         assertFalse(result.isSuccess());

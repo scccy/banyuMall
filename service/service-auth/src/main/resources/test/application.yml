@@ -53,7 +53,7 @@ spring:
         logic-delete-value: 1
         logic-not-delete-value: 0
     mapper-locations: classpath*:/mapper/**/*.xml
-    type-aliases-package: com.origin.auth.entity
+    type-aliases-package: com.origin.*.entity
 
   # 日志配置（测试环境详细日志）
   logging:
@@ -91,6 +91,8 @@ spring:
       time-to-live: 3600000  # 1小时，与JWT过期时间一致
       cache-null-values: false
       key-prefix: "auth:jwt:"
+
+
 
 
 # JWT配置（测试环境使用环境变量）

@@ -1,8 +1,8 @@
 package com.origin.publisher.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.origin.common.dto.PageResult;
 import com.origin.common.entity.ErrorCode;
 import com.origin.common.exception.BusinessException;
 import com.origin.publisher.dto.TaskCompletionRequest;
@@ -85,7 +85,7 @@ public class TaskCompletionServiceImpl implements TaskCompletionService {
     }
     
     @Override
-    public PageResult<TaskCompletionResponse> getTaskCompletionList(String taskId, Integer page, Integer size) {
+    public IPage<TaskCompletionResponse> getTaskCompletionList(String taskId, Integer page, Integer size) {
         log.info("获取任务完成列表，任务ID：{}，页码：{}，大小：{}", taskId, page, size);
         
         // 验证任务是否存在
@@ -101,14 +101,17 @@ public class TaskCompletionServiceImpl implements TaskCompletionService {
         
         // 分页查询
         Page<PublisherTaskCompletion> pageParam = new Page<>(page, size);
-        Page<PublisherTaskCompletion> result = taskCompletionMapper.selectPage(pageParam, wrapper);
+        IPage<PublisherTaskCompletion> result = taskCompletionMapper.selectPage(pageParam, wrapper);
         
         // 转换为响应对象
         List<TaskCompletionResponse> responses = result.getRecords().stream()
             .map(this::convertToResponse)
             .collect(Collectors.toList());
         
-        return new PageResult<>(responses, result.getTotal(), result.getCurrent(), result.getSize());
+        // 创建新的IPage对象返回
+        Page<TaskCompletionResponse> responsePage = new Page<>(result.getCurrent(), result.getSize(), result.getTotal());
+        responsePage.setRecords(responses);
+        return responsePage;
     }
     
     @Override

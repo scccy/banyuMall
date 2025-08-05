@@ -4,13 +4,13 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /**
- * 文件上传响应DTO
+ * 阿里云OSS文件上传响应DTO
  * 
  * @author scccy
  * @since 2025-07-31
  */
 @Data
-public class FileUploadResponse {
+public class AliyunOssFileUploadResponse {
 
     /**
      * 文件ID

@@ -1,8 +1,8 @@
 package com.origin.publisher.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.origin.common.dto.PageResult;
 import com.origin.common.entity.ErrorCode;
 import com.origin.common.exception.BusinessException;
 import com.origin.publisher.dto.*;
@@ -130,7 +130,7 @@ public class PublisherTaskServiceImpl implements PublisherTaskService {
     }
     
     @Override
-    public PageResult<TaskListResponse> getTaskList(TaskListRequest request) {
+    public IPage<TaskListResponse> getTaskList(TaskListRequest request) {
         log.info("获取任务列表，请求参数：{}", request);
         
         // 构建查询条件
@@ -150,7 +150,7 @@ public class PublisherTaskServiceImpl implements PublisherTaskService {
         
         // 分页查询
         Page<PublisherTask> page = new Page<>(request.getPage(), request.getSize());
-        Page<PublisherTask> result = taskMapper.selectPage(page, wrapper);
+        IPage<PublisherTask> result = taskMapper.selectPage(page, wrapper);
         
         // 转换为响应对象
         List<TaskListResponse> responses = result.getRecords().stream()
@@ -169,7 +169,10 @@ public class PublisherTaskServiceImpl implements PublisherTaskService {
             );
         }
         
-        return new PageResult<>(responses, result.getTotal(), result.getCurrent(), result.getSize());
+        // 创建新的IPage对象返回
+        Page<TaskListResponse> responsePage = new Page<>(result.getCurrent(), result.getSize(), result.getTotal());
+        responsePage.setRecords(responses);
+        return responsePage;
     }
     
     @Override

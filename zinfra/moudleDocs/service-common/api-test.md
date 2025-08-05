@@ -81,15 +81,11 @@ public void testSuccessResponse() {
 public void testPageResponse() {
     // Given
     List<String> records = Arrays.asList("item1", "item2", "item3");
-    PageResult<String> pageResult = new PageResult<>();
+    Page<String> pageResult = new Page<>(1L, 10L, 3L);
     pageResult.setRecords(records);
-    pageResult.setTotal(3L);
-    pageResult.setSize(10L);
-    pageResult.setCurrent(1L);
-    pageResult.setPages(1L);
     
     // When
-    ResultData<PageResult<String>> result = ResultData.ok(pageResult);
+    ResultData<IPage<String>> result = ResultData.ok(pageResult);
     
     // Then
     assertThat(result.getCode()).isEqualTo(200);

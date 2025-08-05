@@ -36,5 +36,5 @@ public interface ThirdPartyConfigMapper extends BaseMapper<ThirdPartyConfig> {
      * @param platformType 平台类型
      * @return 配置信息
      */
-    ThirdPartyConfig selectByPlatformType(@Param("platformType") String platformType);
+    ThirdPartyConfig selectByPlatformType(@Param("platformType") Integer platformType);
 } 

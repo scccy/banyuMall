@@ -2,10 +2,13 @@ package com.origin.auth.config;
 
 import com.origin.auth.interceptor.JwtInterceptor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 /**
  * 认证模块的WebMvc配置
@@ -13,39 +16,25 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "auth.jwt.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "jwt.enabled", havingValue = "true", matchIfMissing = true)
 public class AuthWebMvcConfig implements WebMvcConfigurer {
 
     private final JwtInterceptor jwtInterceptor;
 
+    @Value("${security.permit-all:}")
+    private List<String> permitAllPaths;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // 注册JWT拦截器，拦截所有请求，但排除登录、登出、验证码等不需要认证的接口
-        registry.addInterceptor(jwtInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns(
-                        "/auth/login",
-                        "/auth/logout", 
-                        "/auth/captcha",
-                        "/auth/register",
-                        "/service/auth/login",
-                        "/service/auth/logout", 
-                        "/service/auth/captcha",
-                        "/service/auth/register",
-                        "/service/auth/test",
-                        "/service/auth/password/encrypt",
-                        "/service/auth/password/verify",
-                        "/service/auth/user/info",
-                        "/service/auth/validate",
-                        "/service/auth/logout/force/**",
-                        "/test/**",
-                        "/jwt-test/**",
-                        "/password-test/**",
-                        "/doc.html",
-                        "/webjars/**",
-                        "/v3/api-docs/**",
-                        "/swagger-ui/**",
-                        "/swagger-resources/**"
-                );
+        // 注册JWT拦截器
+        var registration = registry.addInterceptor(jwtInterceptor);
+        
+        // 拦截所有路径
+        registration.addPathPatterns("/**");
+        
+        // 排除不需要认证的路径（从配置文件读取）
+        if (permitAllPaths != null && !permitAllPaths.isEmpty()) {
+            registration.excludePathPatterns(permitAllPaths.toArray(new String[0]));
+        }
     }
 } 

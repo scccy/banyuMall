@@ -8,8 +8,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.origin.common.dto.ResultData;
 import com.origin.common.exception.BusinessException;
 import com.origin.common.entity.ErrorCode;
-import com.origin.common.dto.FileUploadRequest;
-import com.origin.common.dto.FileUploadResponse;
+import com.origin.common.dto.AliyunOssFileUploadRequest;
+import com.origin.common.dto.AliyunOssFileUploadResponse;
 import com.origin.user.dto.AvatarResponse;
 import com.origin.user.dto.UserCreateRequest;
 import com.origin.user.dto.UserQueryRequest;
@@ -290,16 +290,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         
         try {
             // 构建OSS上传请求
-            FileUploadRequest uploadRequest = buildFileUploadRequest(file, userId, user.getUsername());
+            AliyunOssFileUploadRequest uploadRequest = buildFileUploadRequest(file, userId, user.getUsername());
             
             // 调用OSS服务上传文件
-            ResultData<FileUploadResponse> uploadResult = ossFileFeignClient.uploadFile(uploadRequest);
+            ResultData<AliyunOssFileUploadResponse> uploadResult = ossFileFeignClient.uploadFile(uploadRequest);
             
             if (!uploadResult.isSuccess()) {
                 throw new BusinessException(ErrorCode.USER_AVATAR_UPLOAD_FAILED, "头像上传失败: " + uploadResult.getMessage());
             }
             
-            FileUploadResponse uploadResponse = uploadResult.getData();
+            AliyunOssFileUploadResponse uploadResponse = uploadResult.getData();
             
             // 更新用户头像信息
             updateUserAvatar(userId, uploadResponse.getAccessUrl());
@@ -549,8 +549,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     /**
      * 构建文件上传请求
      */
-    private FileUploadRequest buildFileUploadRequest(org.springframework.web.multipart.MultipartFile file, String userId, String username) {
-        FileUploadRequest uploadRequest = new FileUploadRequest();
+    private AliyunOssFileUploadRequest buildFileUploadRequest(org.springframework.web.multipart.MultipartFile file, String userId, String username) {
+        AliyunOssFileUploadRequest uploadRequest = new AliyunOssFileUploadRequest();
         uploadRequest.setFile(file);
         uploadRequest.setSourceService("service-user");
         uploadRequest.setBusinessType("avatar");

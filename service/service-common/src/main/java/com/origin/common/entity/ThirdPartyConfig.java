@@ -20,14 +20,14 @@ public class ThirdPartyConfig {
     /**
      * 配置ID
      */
-    @TableId(value = "config_id", type = IdType.ASSIGN_UUID)
-    private String configId;
+    @TableId(value = "config_id", type = IdType.AUTO)
+    private Integer configId;
 
     /**
-     * 平台类型(wechatwork/dingtalk/feishu/youzan等)
+     * 平台类型(123456789-企业微信/234567890-钉钉/345678901-飞书等)
      */
     @TableField("platform_type")
-    private String platformType;
+    private Integer platformType;
 
     /**
      * 平台名称

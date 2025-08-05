@@ -28,7 +28,7 @@ public interface ThirdPartyConfigService {
      * @param configDTO 配置信息
      * @return 更新结果
      */
-    ThirdPartyConfig updateConfig(String configId, ThirdPartyConfigDTO configDTO);
+    ThirdPartyConfig updateConfig(Integer configId, ThirdPartyConfigDTO configDTO);
 
     /**
      * 删除第三方平台配置
@@ -36,7 +36,7 @@ public interface ThirdPartyConfigService {
      * @param configId 配置ID
      * @return 删除结果
      */
-    boolean deleteConfig(String configId);
+    boolean deleteConfig(Integer configId);
 
     /**
      * 根据配置ID查询配置
@@ -44,7 +44,7 @@ public interface ThirdPartyConfigService {
      * @param configId 配置ID
      * @return 配置信息
      */
-    ThirdPartyConfig getConfigById(String configId);
+    ThirdPartyConfig getConfigById(Integer configId);
 
     /**
      * 根据平台类型查询配置
@@ -52,7 +52,7 @@ public interface ThirdPartyConfigService {
      * @param platformType 平台类型
      * @return 配置信息
      */
-    ThirdPartyConfig getConfigByPlatformType(String platformType);
+    ThirdPartyConfig getConfigByPlatformType(Integer platformType);
 
     /**
      * 分页查询配置列表
@@ -69,5 +69,5 @@ public interface ThirdPartyConfigService {
      * @param status 状态：0-禁用，1-启用
      * @return 操作结果
      */
-    boolean updateConfigStatus(String configId, Integer status);
+    boolean updateConfigStatus(Integer configId, Integer status);
 } 

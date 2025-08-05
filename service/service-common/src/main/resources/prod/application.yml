@@ -1,0 +1,85 @@
+# 公共服务 - 生产环境配置
+# 遵循CONFIG-001规范：统一端口8080，系统变量管理敏感信息
+
+server:
+  port: 8080  # 生产环境统一端口
+
+spring:
+  application:
+    name: service-common
+  
+  # 配置导入 - 从Nacos加载配置
+  config:
+    import: nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
+  
+  # Nacos服务注册与发现配置
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_SERVER}
+        username: ${NACOS_USERNAME}
+        password: ${NACOS_PASSWORD}
+        namespace: ${NACOS_NAMESPACE:prod}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        register-enabled: true
+        heart-beat-interval: 5000
+        heart-beat-timeout: 15000
+        ip-delete-timeout: 30000
+      config:
+        server-addr: ${NACOS_SERVER}
+        username: ${NACOS_USERNAME}
+        password: ${NACOS_PASSWORD}
+        namespace: ${NACOS_NAMESPACE:prod}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        file-extension: yaml
+        refresh-enabled: true
+        timeout: 3000
+        retry-time: 2000
+        long-poll-timeout: 46000
+
+  # Redis配置（生产环境使用环境变量）
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
+      database: ${REDIS_DATABASE:3}
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-wait: -1ms
+          max-idle: 10
+          min-idle: 5
+
+  # 启动性能优化
+  main:
+    lazy-initialization: false
+  jmx:
+    enabled: true
+
+# 管理端点配置（生产环境限制暴露）
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+    info:
+      enabled: true
+
+# 日志配置（生产环境精简日志）
+logging:
+  level:
+    com.origin.common: warn
+    org.springframework: error
+    root: error
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/service-common.log
+    max-size: 500MB
+    max-history: 60

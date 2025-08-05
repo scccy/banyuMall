@@ -61,6 +61,7 @@ spring:
   # 启动性能优化（开发环境）
   main:
     lazy-initialization: true  # 开发环境启用懒加载
+    allow-bean-definition-overriding: false  # 禁止Bean定义覆盖
   # JMX配置
   jmx:
     enabled: false  # 开发环境关闭JMX
@@ -108,6 +109,8 @@ logging:
     max-size: 100MB
     max-history: 30
 
+
+
 # MyBatis-Plus配置（开发环境）
 mybatis-plus:
   configuration:
@@ -124,4 +127,4 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.origin.auth.entity 
+  type-aliases-package: com.origin.*.entity 
