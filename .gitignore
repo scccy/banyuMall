@@ -102,3 +102,4 @@ node_modules/
 *.temp
 *.bak
 *.backup
+!/temp-service-base/
