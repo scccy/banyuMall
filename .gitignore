@@ -104,3 +104,6 @@ node_modules/
 *.backup
 !/temp-service-base/
 !/service/service-common/target/
+/service/service-auth/
+!/service/service-auth/target/
+/service/service-base/
