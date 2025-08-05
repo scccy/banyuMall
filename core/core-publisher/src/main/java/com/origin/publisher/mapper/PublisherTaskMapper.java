@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 任务主表Mapper接口
  * 作者: scccy
- * 创建时间: 2025-01-27
+ * 创建时间: 2025-07-31
  */
 @Mapper
 public interface PublisherTaskMapper extends BaseMapper<PublisherTask> {

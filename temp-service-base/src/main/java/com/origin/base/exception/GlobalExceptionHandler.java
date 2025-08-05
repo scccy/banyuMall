@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * 3. 各微服务模块应该有自己的业务异常处理器
  *
  * @author origin
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Slf4j
 @RestControllerAdvice

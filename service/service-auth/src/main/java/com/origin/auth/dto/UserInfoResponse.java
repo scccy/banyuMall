@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * 用户信息响应DTO
  * 
  * @author scccy
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Data
 @Accessors(chain = true)

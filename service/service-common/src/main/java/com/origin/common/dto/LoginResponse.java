@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
  * 基于简化的权限控制，使用用户类型字段
  * 
  * @author scccy
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Data
 @Accessors(chain = true)

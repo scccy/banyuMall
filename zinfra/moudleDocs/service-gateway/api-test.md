@@ -7,7 +7,7 @@
 **测试环境**: 开发环境  
 **测试工具**: Postman / curl  
 **作者**: scccy  
-**创建时间**: 2025-01-27  
+**创建时间**: 2025-07-31  
 
 ### 测试目标
 - 验证网关路由转发功能
@@ -55,7 +55,7 @@ Content-Type: application/json
   "data": {
     "service": "service-auth",
     "status": "UP",
-    "timestamp": "2025-01-27T14:30:00"
+    "timestamp": "2025-07-31T14:30:00"
   }
 }
 ```
@@ -233,7 +233,7 @@ Content-Type: application/json
   "code": 404,
   "message": "路由不存在",
   "data": null,
-  "timestamp": "2025-01-27T14:30:00"
+  "timestamp": "2025-07-31T14:30:00"
 }
 ```
 
@@ -259,7 +259,7 @@ Content-Type: application/json
   "code": 503,
   "message": "服务暂时不可用，请稍后重试",
   "data": null,
-  "timestamp": "2025-01-27T14:30:00"
+  "timestamp": "2025-07-31T14:30:00"
 }
 ```
 
@@ -283,7 +283,7 @@ Content-Type: application/json
   "code": 504,
   "message": "请求超时，请稍后重试",
   "data": null,
-  "timestamp": "2025-01-27T14:30:00"
+  "timestamp": "2025-07-31T14:30:00"
 }
 ```
 
@@ -383,7 +383,7 @@ ab -n 1000 -c 100 http://localhost:8080/auth/health
 
 **预期日志格式**:
 ```
-2025-01-27 14:30:00 [reactor-http-nio-2] INFO  c.o.g.filter.GlobalFilter - Gateway Request - RequestId: req-1706344200000-abc12345, Time: 2025-01-27T14:30:00, Method: GET, Path: /auth/health, ClientIP: 127.0.0.1, UserAgent: PostmanRuntime/7.32.3
+2025-07-31 14:30:00 [reactor-http-nio-2] INFO  c.o.g.filter.GlobalFilter - Gateway Request - RequestId: req-1706344200000-abc12345, Time: 2025-07-31T14:30:00, Method: GET, Path: /auth/health, ClientIP: 127.0.0.1, UserAgent: PostmanRuntime/7.32.3
 ```
 
 **验证要点**:
@@ -397,7 +397,7 @@ ab -n 1000 -c 100 http://localhost:8080/auth/health
 
 **预期日志格式**:
 ```
-2025-01-27 14:30:00 [reactor-http-nio-2] INFO  c.o.g.filter.GlobalFilter - Gateway Response - RequestId: req-1706344200000-abc12345, Time: 2025-01-27T14:30:00, Method: GET, Path: /auth/health, Status: 200, Duration: 45ms
+2025-07-31 14:30:00 [reactor-http-nio-2] INFO  c.o.g.filter.GlobalFilter - Gateway Response - RequestId: req-1706344200000-abc12345, Time: 2025-07-31T14:30:00, Method: GET, Path: /auth/health, Status: 200, Duration: 45ms
 ```
 
 **验证要点**:
@@ -549,5 +549,5 @@ echo "=== 测试完成 ==="
 ---
 
 **文档版本**: v1.0  
-**最后更新**: 2025-01-27  
+**最后更新**: 2025-07-31  
 **维护人员**: scccy 

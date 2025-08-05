@@ -1,6 +1,7 @@
 package com.origin.user.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.origin.user.dto.AvatarResponse;
 import com.origin.user.dto.UserCreateRequest;
 import com.origin.user.dto.UserQueryRequest;
@@ -11,8 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -311,12 +310,10 @@ class UserControllerTest {
         user.setUserType(2);
         user.setStatus(1);
 
-        IPage<SysUser> page = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>();
+        // 使用新的Page构造函数，避免过时API
+        Page<SysUser> page = new Page<>(1, 10);
         page.setRecords(Arrays.asList(user));
         page.setTotal(1);
-        page.setSize(10);
-        page.setCurrent(1);
-        page.setPages(1);
 
         when(sysUserService.getUserPage(any(UserQueryRequest.class))).thenReturn(page);
 
@@ -496,12 +493,10 @@ class UserControllerTest {
     @DisplayName("用户列表查询 - 空结果测试")
     void getUserListEmptyTest() throws Exception {
         // 测试空查询结果
-        IPage<SysUser> emptyPage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>();
+        // 使用新的Page构造函数，避免过时API
+        Page<SysUser> emptyPage = new Page<>(1, 10);
         emptyPage.setRecords(Arrays.asList());
         emptyPage.setTotal(0);
-        emptyPage.setSize(10);
-        emptyPage.setCurrent(1);
-        emptyPage.setPages(0);
 
         when(sysUserService.getUserPage(any(UserQueryRequest.class))).thenReturn(emptyPage);
 

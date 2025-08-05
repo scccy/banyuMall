@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 /**
  * 任务详情表Mapper接口
  * 作者: scccy
- * 创建时间: 2025-01-27
+ * 创建时间: 2025-07-31
  */
 @Mapper
 public interface PublisherTaskDetailMapper extends BaseMapper<PublisherTaskDetail> {

@@ -7,7 +7,7 @@ import com.origin.publisher.dto.TaskCompletionResponse;
 /**
  * 任务完成管理服务接口
  * 作者: scccy
- * 创建时间: 2025-01-27
+ * 创建时间: 2025-07-31
  */
 public interface TaskCompletionService {
     

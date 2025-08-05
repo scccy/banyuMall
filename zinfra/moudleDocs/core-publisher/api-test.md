@@ -7,7 +7,7 @@
 **测试环境**: 开发环境  
 **测试工具**: Postman / curl  
 **作者**: scccy  
-**创建时间**: 2025-01-27  
+**创建时间**: 2025-07-31  
 
 ### 测试目标
 - 验证任务管理功能
@@ -195,7 +195,7 @@ Content-Type: application/json
     "taskReward": 100.00,
     "taskIconUrl": "http://example.com/icon.png",
     "statusId": 1,
-    "createTime": "2025-01-27T14:30:00"
+    "createTime": "2025-07-31T14:30:00"
   }
 }
 ```
@@ -330,7 +330,7 @@ Content-Type: application/json
   "userId": "user_001",
   "completionContent": "任务已完成，截图已上传",
   "screenshotUrls": ["http://example.com/screenshot1.jpg"],
-  "completionTime": "2025-01-27T15:30:00"
+  "completionTime": "2025-07-31T15:30:00"
 }
 ```
 
@@ -392,7 +392,7 @@ Content-Type: application/json
         "completionStatus": 1,
         "completionContent": "任务已完成，截图已上传",
         "reviewStatus": 1,
-        "createTime": "2025-01-27T15:30:00"
+        "createTime": "2025-07-31T15:30:00"
       }
     ],
     "total": 1,
@@ -533,7 +533,7 @@ Content-Type: application/json
         "shareContent": "分享内容测试",
         "shareImages": ["http://example.com/image1.jpg"],
         "reviewStatus": 1,
-        "createTime": "2025-01-27T16:30:00"
+        "createTime": "2025-07-31T16:30:00"
       }
     ],
     "total": 1,
@@ -791,5 +791,5 @@ echo "=== 测试完成 ==="
 ---
 
 **文档版本**: v1.0  
-**最后更新**: 2025-01-27  
+**最后更新**: 2025-07-31  
 **维护人员**: scccy 

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
  * 文件上传响应DTO
  * 
  * @author scccy
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Data
 public class FileUploadResponse {

@@ -13,7 +13,7 @@
 - **主要职责**: 用户管理、用户信息维护、用户档案管理
 - **技术栈**: Spring Boot + MyBatis Plus + Redis + Feign
 - **作者**: scccy
-- **创建时间**: 2025-01-27
+- **创建时间**: 2025-07-31
 ```
 
 ### 2. Feign客户端列表填写示例
@@ -156,5 +156,5 @@ cp .docs/PROCESS/TEMPLATES/MODULE_DESIGN_TEMPLATE.md zinfra/moudleDocs/[模块�
 ---
 
 **示例版本**: v1.0  
-**创建时间**: 2025-01-27  
+**创建时间**: 2025-07-31  
 **维护人员**: scccy 

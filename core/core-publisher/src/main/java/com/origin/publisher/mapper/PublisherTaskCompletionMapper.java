@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * 任务完成流水表Mapper接口
  * 作者: scccy
- * 创建时间: 2025-01-27
+ * 创建时间: 2025-07-31
  */
 @Mapper
 public interface PublisherTaskCompletionMapper extends BaseMapper<PublisherTaskCompletion> {

@@ -76,8 +76,8 @@
     "avatar": "https://oss.example.com/avatars/test_user_001.jpg",
     "userType": 2,
     "status": 1,
-    "createTime": "2025-01-27T10:00:00",
-    "updateTime": "2025-01-27T10:00:00"
+    "createTime": "2025-07-31T10:00:00",
+    "updateTime": "2025-07-31T10:00:00"
   },
   "timestamp": 1703123456789
 }
@@ -137,8 +137,8 @@
     "avatar": "https://oss.example.com/avatars/test_user_001.jpg",
     "userType": 2,
     "status": 1,
-    "createTime": "2025-01-27T10:00:00",
-    "updateTime": "2025-01-27T10:00:00"
+    "createTime": "2025-07-31T10:00:00",
+    "updateTime": "2025-07-31T10:00:00"
   },
   "timestamp": 1703123456789
 }
@@ -200,7 +200,7 @@
     "avatar": "https://oss.example.com/avatars/test_user_001_new.jpg",
     "userType": 2,
     "status": 1,
-    "updateTime": "2025-01-27T11:00:00"
+    "updateTime": "2025-07-31T11:00:00"
   },
   "timestamp": 1703123456789
 }
@@ -298,7 +298,7 @@
         "avatar": "https://oss.example.com/avatars/test_user_001.jpg",
         "userType": 2,
         "status": 1,
-        "createTime": "2025-01-27T10:00:00"
+        "createTime": "2025-07-31T10:00:00"
       }
     ],
     "total": 1,
@@ -397,7 +397,7 @@
     "avatarThumbnail": "https://oss.example.com/avatars/test_user_001_thumb.jpg",
     "fileSize": 102400,
     "fileType": "image/jpeg",
-    "uploadTime": "2025-01-27T10:00:00"
+    "uploadTime": "2025-07-31T10:00:00"
   },
   "timestamp": 1703123456789
 }
@@ -827,5 +827,5 @@ public class TestConfig {
 ---
 
 **文档版本**: v1.0  
-**创建时间**: 2025-01-27  
+**创建时间**: 2025-07-31  
 **维护人员**: scccy 

@@ -6,7 +6,7 @@ import com.origin.common.enums.UserStatusEnum;
 /**
  * 用户权限检查工具类
  * 作者: scccy
- * 创建时间: 2025-01-27
+ * 创建时间: 2025-07-31
  */
 public class UserPermissionUtil {
     

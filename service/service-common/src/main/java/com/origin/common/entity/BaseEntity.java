@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * 基础实体类，包含公共字段
  *
  * @author origin
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Data
 public abstract class BaseEntity implements Serializable {

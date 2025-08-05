@@ -59,14 +59,14 @@ class UserFeignClientTest {
     @DisplayName("用户服务调用 - 用户列表查询测试")
     void getUserListTest() {
         // 模拟用户列表响应
-        IPage<SysUser> mockPage = new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>();
+        // 使用新的Page构造函数，避免过时API
+        com.baomidou.mybatisplus.extension.plugins.pagination.Page<SysUser> mockPage = 
+            new com.baomidou.mybatisplus.extension.plugins.pagination.Page<>(1, 10);
         mockPage.setRecords(Arrays.asList(
             createMockUser("test_user_001", "testuser1"),
             createMockUser("test_user_002", "testuser2")
         ));
         mockPage.setTotal(2);
-        mockPage.setCurrent(1);
-        mockPage.setSize(10);
         
         when(userFeignClient.getUserList(any(Map.class)))
                 .thenReturn(ResultData.ok("查询成功", mockPage));

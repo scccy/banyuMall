@@ -5,7 +5,7 @@
 **ID**: DEP-001  
 **Name**: MyBatis-Plus Maven BOM安装管理  
 **Status**: Active  
-**创建时间**: 2025-01-27  
+**创建时间**: 2025-07-31  
 **参考文档**: [MyBatis-Plus官方安装文档](https://baomidou.com/getting-started/install/)
 
 ## 🎯 核心原则
@@ -207,6 +207,6 @@ public void testMyBatisPlusVersion() {
 ---
 
 **版本**: v1.0  
-**创建日期**: 2025-01-27  
+**创建日期**: 2025-07-31  
 **维护者**: scccy  
 **参考**: [MyBatis-Plus官方文档](https://baomidou.com/getting-started/install/) 

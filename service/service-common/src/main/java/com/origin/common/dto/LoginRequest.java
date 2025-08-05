@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
  * 统一管理登录相关的请求参数
  * 
  * @author scccy
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Data
 @Accessors(chain = true)

@@ -19,7 +19,7 @@ import java.util.Collections;
 /**
  * 全局事务配置类
  * 作者: scccy
- * 创建时间: 2025-01-27
+ * 创建时间: 2025-07-31
  */
 @Aspect
 @Configuration

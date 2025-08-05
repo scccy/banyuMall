@@ -14,7 +14,7 @@ import java.util.Map;
  * 认证服务Feign客户端降级处理
  * 
  * @author scccy
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Slf4j
 @Component

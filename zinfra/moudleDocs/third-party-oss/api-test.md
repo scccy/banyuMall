@@ -7,7 +7,7 @@
 **测试环境**: 开发环境  
 **测试工具**: Postman / curl  
 **作者**: scccy  
-**创建时间**: 2025-01-27  
+**创建时间**: 2025-07-31  
 
 ### 测试目标
 - 验证文件上传功能
@@ -72,7 +72,7 @@ uploadUserName: testuser
     "businessType": "task-image",
     "uploadUserId": 1,
     "uploadUserName": "testuser",
-    "uploadTime": "2025-01-27T14:30:00"
+    "uploadTime": "2025-07-31T14:30:00"
   }
 }
 ```
@@ -117,7 +117,7 @@ uploadUserName: admin
     "businessType": "user-document",
     "uploadUserId": 2,
     "uploadUserName": "admin",
-    "uploadTime": "2025-01-27T14:30:00"
+    "uploadTime": "2025-07-31T14:30:00"
   }
 }
 ```
@@ -321,7 +321,7 @@ userId: 1
       "sourceService": "core-publisher",
       "businessType": "task-images",
       "uploadUserId": 1,
-      "uploadTime": "2025-01-27T14:30:00"
+      "uploadTime": "2025-07-31T14:30:00"
     },
     {
       "fileId": 4,
@@ -335,7 +335,7 @@ userId: 1
       "sourceService": "core-publisher",
       "businessType": "task-images",
       "uploadUserId": 1,
-      "uploadTime": "2025-01-27T14:30:00"
+      "uploadTime": "2025-07-31T14:30:00"
     }
   ]
 }
@@ -639,5 +639,5 @@ echo "=== 测试完成 ==="
 ---
 
 **文档版本**: v1.0  
-**最后更新**: 2025-01-27  
+**最后更新**: 2025-07-31  
 **维护人员**: scccy 

@@ -21,7 +21,7 @@ import java.util.Map;
  * 优化版本 - 支持FastJSON2和角色权限
  * 
  * @author origin
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Component
 @RequiredArgsConstructor

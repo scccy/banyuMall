@@ -18,7 +18,7 @@ import java.util.Map;
  * 认证服务Feign客户端（包含用户认证和密码管理功能）
  * 
  * @author scccy
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @FeignClient(name = "service-auth", path = "/service/auth", fallback = AuthFeignClientFallback.class)
 public interface AuthFeignClient {

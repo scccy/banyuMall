@@ -6,7 +6,7 @@ import lombok.Getter;
 /**
  * 用户状态枚举
  * 作者: scccy
- * 创建时间: 2025-01-27
+ * 创建时间: 2025-07-31
  */
 @Getter
 @AllArgsConstructor

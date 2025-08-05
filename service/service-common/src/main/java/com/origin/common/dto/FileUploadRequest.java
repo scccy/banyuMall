@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
  * 文件上传请求DTO
  * 
  * @author scccy
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Data
 public class FileUploadRequest {

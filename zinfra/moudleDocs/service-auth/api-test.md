@@ -305,9 +305,9 @@
     "userType": 1,
     "status": 1,
     "profileId": "profile123",
-    "lastLoginTime": "2025-01-27T10:00:00",
-    "createTime": "2025-01-27T10:00:00",
-    "updateTime": "2025-01-27T10:00:00"
+    "lastLoginTime": "2025-07-31T10:00:00",
+    "createTime": "2025-07-31T10:00:00",
+    "updateTime": "2025-07-31T10:00:00"
   },
   "timestamp": 1703123456789
 }
@@ -597,5 +597,5 @@ public class TestSecurityConfig {
 ---
 
 **文档版本**: v1.0  
-**创建时间**: 2025-01-27  
+**创建时间**: 2025-07-31  
 **维护人员**: scccy 

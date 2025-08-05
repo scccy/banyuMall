@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Param;
  * 基于简化的权限控制，通过profile_id进行关联
  * 
  * @author scccy
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Mapper
 public interface UserProfileMapper extends BaseMapper<UserProfile> {

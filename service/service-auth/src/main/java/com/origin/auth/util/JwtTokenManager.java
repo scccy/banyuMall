@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * 负责JWT令牌的存储、验证、黑名单管理等完整生命周期
  * 
  * @author origin
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Slf4j
 @Component

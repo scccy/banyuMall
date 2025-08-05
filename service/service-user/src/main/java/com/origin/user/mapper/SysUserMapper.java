@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Param;
  * 基于简化的权限控制，专注于用户管理功能
  * 
  * @author scccy
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Mapper
 public interface SysUserMapper extends BaseMapper<SysUser> {

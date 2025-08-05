@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
  * 基于简化的权限控制，与sys_user通过profile_id关联
  * 
  * @author scccy
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Data
 @EqualsAndHashCode(callSuper = true)

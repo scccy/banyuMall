@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
  * 基于简化的权限控制，通过profile_id进行关联
  * 
  * @author scccy
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Tag(name = "用户扩展信息", description = "用户扩展信息管理接口")
 @RestController

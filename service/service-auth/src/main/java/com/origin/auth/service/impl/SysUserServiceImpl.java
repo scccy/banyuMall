@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
  * 基于简化的权限控制，专注于认证相关的用户管理
  * 
  * @author scccy
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Slf4j
 @Service

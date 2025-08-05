@@ -28,7 +28,7 @@ import java.util.Map;
  * 基于简化的权限控制，使用用户类型字段直接控制权限
  * 
  * @author scccy
- * @since 2025-01-27
+ * @since 2025-07-31
  */
 @Slf4j
 @Service

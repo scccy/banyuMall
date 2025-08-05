@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * 任务详情响应DTO
  * 作者: scccy
- * 创建时间: 2025-01-27
+ * 创建时间: 2025-07-31
  */
 @Data
 public class TaskDetailResponse {

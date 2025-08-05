@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.origin.auth.mapper.ThirdPartyConfigMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.origin.auth.entity.ThirdPartyConfig">
+        <id column="config_id" property="configId"/>
+        <result column="platform_type" property="platformType"/>
+        <result column="platform_name" property="platformName"/>
+        <result column="corp_id" property="corpId"/>
+        <result column="corp_secret" property="corpSecret"/>
+        <result column="token" property="token"/>
+        <result column="encoding_aes_key" property="encodingAesKey"/>
+        <result column="echo_str" property="echoStr"/>
+        <result column="app_id" property="appId"/>
+        <result column="app_secret" property="appSecret"/>
+        <result column="access_token" property="accessToken"/>
+        <result column="webhook_url" property="webhookUrl"/>
+        <result column="callback_url" property="callbackUrl"/>
+        <result column="config_status" property="configStatus"/>
+        <result column="remark" property="remark"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        config_id, platform_type, platform_name, corp_id, corp_secret, token, encoding_aes_key, echo_str,
+        app_id, app_secret, access_token, webhook_url, callback_url, config_status, remark,
+        created_time, updated_time, created_by, updated_by, deleted
+    </sql>
+
+    <!-- 分页查询第三方平台配置 -->
+    <select id="selectConfigPage" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM third_party_config 
+        WHERE deleted = 0
+        <if test="platformType != null and platformType != ''">
+            AND platform_type = #{platformType}
+        </if>
+        <if test="platformName != null and platformName != ''">
+            AND platform_name LIKE CONCAT('%', #{platformName}, '%')
+        </if>
+        <if test="configStatus != null">
+            AND config_status = #{configStatus}
+        </if>
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 根据平台类型查询配置 -->
+    <select id="selectByPlatformType" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM third_party_config 
+        WHERE platform_type = #{platformType}
+        AND deleted = 0
+        AND config_status = 1
+        LIMIT 1
+    </select>
+
+</mapper> 
