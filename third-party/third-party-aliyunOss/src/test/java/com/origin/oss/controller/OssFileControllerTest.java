@@ -1,8 +1,10 @@
-package com.origin.aliyunOss.controller;
+package com.origin.oss.controller;
 
-import com.origin.common.dto.FileUploadRequest;
-import com.origin.common.dto.FileUploadResponse;
+import com.origin.aliyunOss.controller.OssFileController;
+
 import com.origin.aliyunOss.service.OssFileService;
+import com.origin.common.dto.AliyunOssFileUploadRequest;
+import com.origin.common.dto.AliyunOssFileUploadResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +43,7 @@ class OssFileControllerTest {
 
     private MockMultipartFile testImageFile;
     private MockMultipartFile testPdfFile;
-    private FileUploadResponse uploadResponse;
+    private AliyunOssFileUploadResponse uploadResponse;
 
     @BeforeEach
     void setUp() {
@@ -61,7 +63,7 @@ class OssFileControllerTest {
         );
 
         // 初始化上传响应
-        uploadResponse = new FileUploadResponse();
+        uploadResponse = new AliyunOssFileUploadResponse();
         uploadResponse.setFileId(1L);
         uploadResponse.setOriginalName("test-image.jpg");
         uploadResponse.setFileSize(102400L);
@@ -81,7 +83,7 @@ class OssFileControllerTest {
     @DisplayName("上传文件 - 成功")
     void testUploadFileSuccess() throws Exception {
         // 模拟服务层返回
-        when(ossFileService.uploadFile(any(FileUploadRequest.class)))
+        when(ossFileService.uploadFile(any(AliyunOssFileUploadRequest.class)))
                 .thenReturn(uploadResponse);
 
         // 执行测试
@@ -116,7 +118,7 @@ class OssFileControllerTest {
     @DisplayName("上传文件 - 服务异常")
     void testUploadFileServiceException() throws Exception {
         // 模拟服务层抛出异常
-        when(ossFileService.uploadFile(any(FileUploadRequest.class)))
+        when(ossFileService.uploadFile(any(AliyunOssFileUploadRequest.class)))
                 .thenThrow(new RuntimeException("OSS服务异常"));
 
         // 执行测试
@@ -224,17 +226,17 @@ class OssFileControllerTest {
         );
 
         // 创建批量上传响应
-        FileUploadResponse response1 = new FileUploadResponse();
+        AliyunOssFileUploadResponse response1 = new AliyunOssFileUploadResponse();
         response1.setFileId(1L);
         response1.setOriginalName("image1.jpg");
         response1.setAccessUrl("https://example.com/image1.jpg");
 
-        FileUploadResponse response2 = new FileUploadResponse();
+        AliyunOssFileUploadResponse response2 = new AliyunOssFileUploadResponse();
         response2.setFileId(2L);
         response2.setOriginalName("image2.jpg");
         response2.setAccessUrl("https://example.com/image2.jpg");
 
-        List<FileUploadResponse> responses = Arrays.asList(response1, response2);
+        List<AliyunOssFileUploadResponse> responses = Arrays.asList(response1, response2);
 
         // 模拟服务层返回
         when(ossFileService.batchUploadFiles(anyList(), eq("core-publisher"), eq("task-images"), eq(1L)))
@@ -301,7 +303,7 @@ class OssFileControllerTest {
     @DisplayName("上传文档文件 - 成功")
     void testUploadDocumentFileSuccess() throws Exception {
         // 创建文档文件响应
-        FileUploadResponse docResponse = new FileUploadResponse();
+        AliyunOssFileUploadResponse docResponse = new AliyunOssFileUploadResponse();
         docResponse.setFileId(2L);
         docResponse.setOriginalName("test-document.pdf");
         docResponse.setFileSize(2048000L);
@@ -317,7 +319,7 @@ class OssFileControllerTest {
         docResponse.setUploadTime(LocalDateTime.now());
 
         // 模拟服务层返回
-        when(ossFileService.uploadFile(any(FileUploadRequest.class)))
+        when(ossFileService.uploadFile(any(AliyunOssFileUploadRequest.class)))
                 .thenReturn(docResponse);
 
         // 执行测试
@@ -340,7 +342,7 @@ class OssFileControllerTest {
     @DisplayName("文件上传性能测试")
     void testUploadFilePerformance() throws Exception {
         // 模拟服务层返回
-        when(ossFileService.uploadFile(any(FileUploadRequest.class)))
+        when(ossFileService.uploadFile(any(AliyunOssFileUploadRequest.class)))
                 .thenReturn(uploadResponse);
 
         // 执行多次上传测试

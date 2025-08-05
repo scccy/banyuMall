@@ -1,7 +1,7 @@
 package com.origin.aliyunOss.service;
 
-import com.origin.common.dto.FileUploadRequest;
-import com.origin.common.dto.FileUploadResponse;
+import com.origin.common.dto.AliyunOssFileUploadRequest;
+import com.origin.common.dto.AliyunOssFileUploadResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -18,7 +18,7 @@ public interface OssFileService {
      * @param request 文件上传请求
      * @return 文件上传响应
      */
-    FileUploadResponse uploadFile(FileUploadRequest request);
+    AliyunOssFileUploadResponse uploadFile(AliyunOssFileUploadRequest request);
 
     /**
      * 获取文件访问URL
@@ -55,7 +55,7 @@ public interface OssFileService {
      * @param userId 用户ID
      * @return 上传结果列表
      */
-    java.util.List<FileUploadResponse> batchUploadFiles(java.util.List<MultipartFile> files, 
+    java.util.List<AliyunOssFileUploadResponse> batchUploadFiles(java.util.List<MultipartFile> files, 
                                                        String sourceService, 
                                                        String businessType, 
                                                        Long userId);

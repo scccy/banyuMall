@@ -1,7 +1,7 @@
 package com.origin.aliyunOss.feign;
 
 import com.origin.common.dto.ResultData;
-import com.origin.common.dto.FileUploadResponse;
+import com.origin.common.dto.AliyunOssFileUploadResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +29,7 @@ public interface OssFileFeignClient {
      * @return 文件上传响应
      */
     @PostMapping("/upload")
-    ResultData<FileUploadResponse> uploadFile(@RequestPart("file") MultipartFile file,
+    ResultData<AliyunOssFileUploadResponse> uploadFile(@RequestPart("file") MultipartFile file,
                                             @RequestParam("sourceService") String sourceService,
                                             @RequestParam("businessType") String businessType,
                                             @RequestParam("filePath") String filePath,
@@ -66,7 +66,7 @@ public interface OssFileFeignClient {
      * @return 批量上传结果
      */
     @PostMapping("/batch-upload")
-    ResultData<List<FileUploadResponse>> batchUploadFiles(@RequestPart("files") List<MultipartFile> files,
+    ResultData<List<AliyunOssFileUploadResponse>> batchUploadFiles(@RequestPart("files") List<MultipartFile> files,
                                                         @RequestParam("sourceService") String sourceService,
                                                         @RequestParam("businessType") String businessType,
                                                         @RequestParam("userId") Long userId);

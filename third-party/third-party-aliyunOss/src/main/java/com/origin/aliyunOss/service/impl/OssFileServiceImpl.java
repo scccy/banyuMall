@@ -2,8 +2,8 @@ package com.origin.aliyunOss.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.origin.aliyunOss.config.OssConfig;
-import com.origin.common.dto.FileUploadRequest;
-import com.origin.common.dto.FileUploadResponse;
+import com.origin.common.dto.AliyunOssFileUploadRequest;
+import com.origin.common.dto.AliyunOssFileUploadResponse;
 import com.origin.aliyunOss.entity.OssFileStorage;
 import com.origin.aliyunOss.mapper.OssFileStorageMapper;
 import com.origin.common.entity.ErrorCode;
@@ -46,7 +46,7 @@ public class OssFileServiceImpl implements OssFileService {
     );
 
     @Override
-    public FileUploadResponse uploadFile(FileUploadRequest request) {
+    public AliyunOssFileUploadResponse uploadFile(AliyunOssFileUploadRequest request) {
         MultipartFile file = request.getFile();
         
         // 1. 文件大小检查
@@ -84,7 +84,7 @@ public class OssFileServiceImpl implements OssFileService {
         ossFileStorageMapper.insert(fileStorage);
         
         // 6. 构建响应
-        FileUploadResponse response = new FileUploadResponse();
+        AliyunOssFileUploadResponse response = new AliyunOssFileUploadResponse();
         response.setFileId(fileStorage.getId());
         response.setOriginalName(fileStorage.getOriginalName());
         response.setAccessUrl(fileStorage.getAccessUrl());
@@ -140,13 +140,13 @@ public class OssFileServiceImpl implements OssFileService {
     }
 
     @Override
-    public List<FileUploadResponse> batchUploadFiles(List<MultipartFile> files, 
+    public List<AliyunOssFileUploadResponse> batchUploadFiles(List<MultipartFile> files, 
                                                    String sourceService, 
                                                    String businessType, 
                                                    Long userId) {
         return files.stream()
             .map(file -> {
-                FileUploadRequest request = new FileUploadRequest();
+                AliyunOssFileUploadRequest request = new AliyunOssFileUploadRequest();
                 request.setFile(file);
                 request.setSourceService(sourceService);
                 request.setBusinessType(businessType);

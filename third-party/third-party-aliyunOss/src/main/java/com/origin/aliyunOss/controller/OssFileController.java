@@ -1,8 +1,8 @@
 package com.origin.aliyunOss.controller;
 
 import com.origin.common.dto.ResultData;
-import com.origin.common.dto.FileUploadRequest;
-import com.origin.common.dto.FileUploadResponse;
+import com.origin.common.dto.AliyunOssFileUploadRequest;
+import com.origin.common.dto.AliyunOssFileUploadResponse;
 import com.origin.aliyunOss.service.OssFileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -36,7 +36,7 @@ public class OssFileController {
 
     @PostMapping("/upload")
     @Operation(summary = "上传文件", description = "上传文件到阿里云OSS并返回访问地址")
-    public ResultData<FileUploadResponse> uploadFile(
+    public ResultData<AliyunOssFileUploadResponse> uploadFile(
             @Parameter(description = "上传的文件") @RequestPart("file") MultipartFile file,
             @Parameter(description = "来源服务") @RequestParam("sourceService") @NotBlank String sourceService,
             @Parameter(description = "业务类型") @RequestParam("businessType") @NotBlank String businessType,
@@ -45,7 +45,7 @@ public class OssFileController {
             @Parameter(description = "上传用户名") @RequestParam(value = "uploadUserName", required = false) String uploadUserName) {
         
         try {
-            FileUploadRequest request = new FileUploadRequest();
+            AliyunOssFileUploadRequest request = new AliyunOssFileUploadRequest();
             request.setFile(file);
             request.setSourceService(sourceService);
             request.setBusinessType(businessType);
@@ -53,7 +53,7 @@ public class OssFileController {
             request.setUploadUserId(uploadUserId);
             request.setUploadUserName(uploadUserName);
             
-            FileUploadResponse response = ossFileService.uploadFile(request);
+            AliyunOssFileUploadResponse response = ossFileService.uploadFile(request);
             return ResultData.ok("文件上传成功", response);
         } catch (Exception e) {
             log.error("文件上传失败", e);
@@ -92,14 +92,14 @@ public class OssFileController {
 
     @PostMapping("/batch-upload")
     @Operation(summary = "批量上传文件", description = "批量上传多个文件到阿里云OSS")
-    public ResultData<List<FileUploadResponse>> batchUploadFiles(
+    public ResultData<List<AliyunOssFileUploadResponse>> batchUploadFiles(
             @Parameter(description = "上传的文件列表") @RequestPart("files") List<MultipartFile> files,
             @Parameter(description = "来源服务") @RequestParam("sourceService") @NotBlank String sourceService,
             @Parameter(description = "业务类型") @RequestParam("businessType") @NotBlank String businessType,
             @Parameter(description = "用户ID") @RequestParam @NotNull Long userId) {
         
         try {
-            List<FileUploadResponse> responses = ossFileService.batchUploadFiles(files, sourceService, businessType, userId);
+            List<AliyunOssFileUploadResponse> responses = ossFileService.batchUploadFiles(files, sourceService, businessType, userId);
             return ResultData.ok("批量文件上传成功", responses);
         } catch (Exception e) {
             log.error("批量文件上传失败", e);
