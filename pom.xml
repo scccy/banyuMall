@@ -284,8 +284,6 @@
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                     <configuration>
-                        <!-- fork:如果没有该配置，这个devtools不会起作用，即应用不会restart -->
-                        <fork>true</fork>
                         <includeSystemScope>true</includeSystemScope>
                         <excludes>
                             <exclude>
@@ -294,6 +292,14 @@
                             </exclude>
                         </excludes>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <id>repackage</id>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
