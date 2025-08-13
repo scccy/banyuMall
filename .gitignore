@@ -88,3 +88,8 @@ env/
 ENV/
 env.bak/
 venv.bak/
+
+# Project specific exclusions
+.docs/
+docs/
+zproto/
