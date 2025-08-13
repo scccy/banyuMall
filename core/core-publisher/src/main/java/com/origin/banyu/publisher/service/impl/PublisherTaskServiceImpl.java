@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.origin.banyu.common.entity.ErrorCode;
 import com.origin.banyu.common.exception.BusinessException;
 import com.origin.banyu.publisher.dto.*;
-import com.origin.banyu.publisher.entity.*;
-import com.origin.banyu.publisher.mapper.*;
+import com.origin.banyu.publisher.entity.PublisherTask;
+import com.origin.banyu.publisher.entity.PublisherTaskDetail;
+import com.origin.banyu.publisher.mapper.PublisherTaskCompletionMapper;
+import com.origin.banyu.publisher.mapper.PublisherTaskDetailMapper;
+import com.origin.banyu.publisher.mapper.PublisherTaskMapper;
 import com.origin.banyu.publisher.service.BaseEntityService;
 import com.origin.banyu.publisher.service.PublisherTaskService;
-
 import com.origin.banyu.publisher.util.TaskValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -154,6 +155,27 @@ public class PublisherTaskServiceImpl extends BaseEntityService<PublisherTask, T
         // 分页查询
         Page<PublisherTask> page = new Page<>(request.getPage(), request.getSize());
         IPage<PublisherTask> result = taskMapper.selectPage(page, wrapper);
+        
+        // 批量查询任务完成人数
+        if (result.getRecords() != null && !result.getRecords().isEmpty()) {
+            List<String> taskIds = result.getRecords().stream()
+                    .map(PublisherTask::getTaskId)
+                    .collect(Collectors.toList());
+            
+            List<Map<String, Object>> completionCounts = taskCompletionMapper.selectCompletionCountByTaskIds(taskIds);
+            
+            // 将完成人数转换为Map，方便查找
+            Map<String, Integer> completionCountMap = completionCounts.stream()
+                    .collect(Collectors.toMap(
+                            map -> (String) map.get("taskId"),
+                            map -> ((Number) map.get("completionCount")).intValue()
+                    ));
+            
+            // 设置完成人数到任务记录中
+            result.getRecords().forEach(task -> {
+                task.setCompletionCount(completionCountMap.getOrDefault(task.getTaskId(), 0));
+            });
+        }
         
         // 使用基础类的方法构建分页响应
         return buildPageResponse(result, this::convertToTaskListResponse);

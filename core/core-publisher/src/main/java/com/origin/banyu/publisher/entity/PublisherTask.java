@@ -1,12 +1,14 @@
 package com.origin.banyu.publisher.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.origin.banyu.common.entity.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * 任务主表实体
@@ -65,5 +67,11 @@ public class PublisherTask extends BaseEntity {
      */
     @TableField("status_id")
     private Integer statusId;
+
+    /**
+     * 完成人数统计（非数据库字段，计算得出）
+     */
+    @TableField(exist = false)
+    private Integer completionCount;
 
 } 

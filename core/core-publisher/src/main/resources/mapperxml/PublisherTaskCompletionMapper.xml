@@ -34,4 +34,19 @@
         ORDER BY created_time DESC
     </select>
 
+    <!-- 根据任务ID列表查询完成人数统计 -->
+    <select id="selectCompletionCountByTaskIds" resultType="java.util.Map">
+        SELECT 
+            task_id as taskId,
+            COUNT(*) as completionCount
+        FROM publisher_task_completion 
+        WHERE task_id IN 
+        <foreach collection="taskIds" item="taskId" open="(" separator="," close=")">
+            #{taskId}
+        </foreach>
+        AND completion_status = 2
+        AND deleted = 0
+        GROUP BY task_id
+    </select>
+
 </mapper> 
