@@ -93,3 +93,4 @@ venv.bak/
 .docs/
 docs/
 zproto/
+!/server.log
