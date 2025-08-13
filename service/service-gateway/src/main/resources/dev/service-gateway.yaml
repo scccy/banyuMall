@@ -1,0 +1,152 @@
+# 网关服务 - Nacos远程配置文件
+# 配置ID: service-gateway.yaml
+# 配置组: DEFAULT_GROUP
+# 命名空间: ba1493dc-20fa-413b-84e1-d929c9a4aeac
+
+# 服务器性能配置
+server:
+  connection-timeout: ${GATEWAY_CONNECTION_TIMEOUT:10000}
+  read-timeout: ${GATEWAY_READ_TIMEOUT:15000}
+  write-timeout: ${GATEWAY_WRITE_TIMEOUT:15000}
+  max-connections: ${GATEWAY_MAX_CONNECTIONS:4096}
+  threads:
+    max: ${GATEWAY_THREADS_MAX:100}
+    min: ${GATEWAY_THREADS_MIN:10}
+
+# Spring Cloud Gateway配置
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+          lower-case-service-id: false
+
+      # 全局超时配置
+      httpclient:
+        connect-timeout: ${GATEWAY_HTTP_CONNECT_TIMEOUT:10000}
+        response-timeout: ${GATEWAY_HTTP_RESPONSE_TIMEOUT:15000}
+        pool:
+          max-connections: ${GATEWAY_HTTP_MAX_CONNECTIONS:200}
+          max-idle-time: ${GATEWAY_HTTP_MAX_IDLE_TIME:30000}
+          acquire-timeout: ${GATEWAY_HTTP_ACQUIRE_TIMEOUT:5000}
+
+      # 路由配置
+      routes:
+        # 认证服务路由
+        - id: auth-service
+          uri: lb://service-auth
+          predicates:
+            - Path=/service/auth/**
+          filters:
+            - StripPrefix=0
+            - AddRequestHeader=X-Gateway-Source, service-gateway
+            - AddRequestHeader=X-Service-Name, service-auth
+            # 添加重试过滤器
+            - name: Retry
+              args:
+                retries: 2
+                statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE
+                methods: GET,POST
+
+        # 用户服务路由
+        - id: user-service
+          uri: lb://service-user
+          predicates:
+            - Path=/service/user/**
+          filters:
+            - StripPrefix=0
+            - AddRequestHeader=X-Gateway-Source, service-gateway
+            - AddRequestHeader=X-Service-Name, service-user
+            # 添加重试过滤器
+            - name: Retry
+              args:
+                retries: 2
+                statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE
+                methods: GET,POST
+
+        # 发布者服务路由
+        - id: publisher-service
+          uri: lb://core-publisher
+          predicates:
+            - Path=/core/publisher/**
+          filters:
+            - StripPrefix=0
+            - AddRequestHeader=X-Gateway-Source, service-gateway
+            - AddRequestHeader=X-Service-Name, core-publisher
+            # 添加重试过滤器
+            - name: Retry
+              args:
+                retries: 2
+                statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE
+                methods: GET,POST
+
+        # OSS文件服务路由
+        - id: oss-service
+          uri: lb://aliyun-oss
+          predicates:
+            - Path=/tp/oss/**
+          filters:
+            - StripPrefix=0
+            - AddRequestHeader=X-Gateway-Source, service-gateway
+            - AddRequestHeader=X-Service-Name, aliyun-oss
+            # 添加重试过滤器
+            - name: Retry
+              args:
+                retries: 2
+                statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE
+                methods: GET,POST
+
+      # 全局CORS配置
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: ${CORS_ALLOWED_ORIGINS:"*"}
+            allowedMethods: ${CORS_ALLOWED_METHODS:"*"}
+            allowedHeaders: ${CORS_ALLOWED_HEADERS:"*"}
+            allowCredentials: ${CORS_ALLOW_CREDENTIALS:true}
+
+# 网关特定配置
+
+# 性能优化配置
+performance:
+  # 连接池配置
+  connection-pool:
+    max-connections: ${GATEWAY_MAX_CONNECTIONS:4096}
+    max-idle-time: ${GATEWAY_MAX_IDLE_TIME:30000}
+    acquire-timeout: ${GATEWAY_ACQUIRE_TIMEOUT:5000}
+
+  # 线程池配置
+  thread-pool:
+    core-size: ${GATEWAY_THREAD_CORE_SIZE:10}
+    max-size: ${GATEWAY_THREAD_MAX_SIZE:20}
+    queue-capacity: ${GATEWAY_THREAD_QUEUE_CAPACITY:500}
+    keep-alive-seconds: ${GATEWAY_THREAD_KEEP_ALIVE:60}
+
+# 监控配置
+monitoring:
+  # 健康检查配置
+  health:
+    check-interval: ${HEALTH_CHECK_INTERVAL:30}  # 健康检查间隔（秒）
+    timeout: ${HEALTH_CHECK_TIMEOUT:5000}  # 健康检查超时时间（毫秒）
+
+  # 指标配置
+  metrics:
+    enabled: ${METRICS_ENABLED:true}
+    export:
+      prometheus:
+        enabled: ${PROMETHEUS_ENABLED:true}
+        descriptions: true
+        step: 60s
+
+# 安全配置
+# security:
+#   # 白名单配置
+#   whitelist:
+#     enabled: ${WHITELIST_ENABLED:false}
+#     ips: ${WHITELIST_IPS:""}
+
+#   # 黑名单配置
+#   blacklist:
+#     enabled: ${BLACKLIST_ENABLED:false}
+#     ips: ${BLACKLIST_IPS:""}

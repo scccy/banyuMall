@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.origin.banyu.publisher.mapper.PublisherTaskMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.origin.banyu.publisher.entity.PublisherTask">
+        <id column="task_id" property="taskId"/>
+        <result column="task_name" property="taskName"/>
+        <result column="task_type_id" property="taskTypeId"/>
+        <result column="task_description" property="taskDescription"/>
+        <result column="task_reward" property="taskReward"/>
+        <result column="task_icon_url" property="taskIconUrl"/>
+        <result column="detail_id" property="detailId"/>
+        <result column="status_id" property="statusId"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        task_id, task_name, task_type_id, task_description, task_reward, task_icon_url, detail_id, status_id,
+        created_time, updated_time, created_by, updated_by, deleted
+    </sql>
+
+    <!-- 根据条件查询任务列表 -->
+    <select id="selectTasksByCondition" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM publisher_task 
+        WHERE deleted = 0
+        <if test="taskTypeId != null">
+            AND task_type_id = #{taskTypeId}
+        </if>
+        <if test="statusId != null">
+            AND status_id = #{statusId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND task_name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 根据任务类型和状态查询任务列表 -->
+    <select id="selectTasksByTypeAndStatus" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM publisher_task 
+        WHERE deleted = 0
+        <if test="taskTypeId != null">
+            AND task_type_id = #{taskTypeId}
+        </if>
+        <if test="statusId != null">
+            AND status_id = #{statusId}
+        </if>
+        ORDER BY created_time DESC
+        <if test="limit != null and limit > 0">
+            LIMIT #{limit}
+        </if>
+    </select>
+
+</mapper> 

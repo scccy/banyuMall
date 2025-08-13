@@ -1,0 +1,11 @@
+{
+  "name": "observationsFormatStandard",
+  "operation_type": "默认 create/delete/update/read", 
+  "node_type": "memory",
+  "point": 0,
+  "description": "Observations格式标准",
+  "node_description": "OBS-V1 v2标准格式定义和规范",
+  "observations":"使用json字符串,key 为token,value必须简洁",
+  "label": ["rule", "format", "observations", "standard","memory"]
+}
+

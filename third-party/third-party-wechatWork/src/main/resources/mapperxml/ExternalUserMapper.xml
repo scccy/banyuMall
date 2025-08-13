@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.origin.banyu.wechatWork.mapper.ExternalUserMapper">
+
+    <!-- 根据external_userid查询外部用户 -->
+    <select id="selectByExternalUserid" resultType="com.origin.banyu.wechatWork.entity.ExternalUser">
+        SELECT * FROM external_users 
+        WHERE external_userid = #{externalUserid} AND deleted = 0
+    </select>
+
+</mapper> 

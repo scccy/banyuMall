@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.origin.banyu.auth.mapper.ThirdPartyConfigMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.origin.banyu.common.entity.ThirdPartyConfig">
+        <id column="config_id" property="configId"/>
+        <result column="platform_type" property="platformType"/>
+        <result column="platform_name" property="platformName"/>
+        <result column="platform_config" property="platformConfig"/>
+        <result column="config_status" property="configStatus"/>
+        <result column="remark" property="remark"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        config_id, platform_type, platform_name, platform_config, config_status, remark,
+        created_time, updated_time, created_by, updated_by, deleted
+    </sql>
+
+    <!-- 分页查询第三方平台配置 -->
+    <select id="selectConfigPage" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM third_party_config
+        WHERE deleted = 0
+        <if test="platformType != null">
+            AND platform_type = #{platformType}
+        </if>
+        <if test="platformName != null and platformName != ''">
+            AND platform_name LIKE CONCAT('%', #{platformName}, '%')
+        </if>
+        <if test="configStatus != null">
+            AND config_status = #{configStatus}
+        </if>
+        ORDER BY created_time DESC
+    </select>
+
+    <!-- 根据平台类型查询配置 -->
+    <select id="selectByPlatformType" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM third_party_config
+        WHERE deleted = 0
+        AND platform_type = #{platformType}
+        AND config_status = 1
+        LIMIT 1
+    </select>
+
+</mapper> 

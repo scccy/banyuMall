@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.origin.banyu.user.mapper.SysUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.origin.banyu.common.entity.SysUser">
+        <id column="user_id" property="userId"/>
+        <result column="phone" property="phone"/>
+        <result column="wechat_id" property="wechatId"/>
+        <result column="youzan_id" property="youzanId"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="nickname" property="nickname"/>
+        <result column="wechat_nickname" property="wechatNickname"/>
+        <result column="youzan_nickname" property="youzanNickname"/>
+        <result column="avatar" property="avatar"/>
+        <result column="email" property="email"/>
+        <result column="gender" property="gender"/>
+        <result column="birthday" property="birthday"/>
+        <result column="status" property="status"/>
+        <result column="user_type" property="userType"/>
+        <result column="profile_id" property="profileId"/>
+        <result column="last_login_time" property="lastLoginTime"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="created_by" property="createdBy"/>
+        <result column="updated_by" property="updatedBy"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        user_id, phone, wechat_id, youzan_id, username, password, nickname, wechat_nickname, youzan_nickname, avatar, email, 
+        gender, birthday, status, user_type, profile_id, last_login_time, created_time, updated_time, 
+        created_by, updated_by, deleted
+    </sql>
+
+    <!-- 根据用户名查询用户 -->
+    <select id="selectByUsername" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM sys_user 
+        WHERE username = #{username} 
+        AND deleted = 0
+    </select>
+
+    <!-- 根据手机号查询用户 -->
+    <select id="selectByPhone" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM sys_user 
+        WHERE phone = #{phone} 
+        AND deleted = 0
+    </select>
+
+    <!-- 根据微信ID查询用户 -->
+    <select id="selectByWechatId" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM sys_user 
+        WHERE wechat_id = #{wechatId} 
+        AND deleted = 0
+    </select>
+
+    <!-- 根据有赞ID查询用户 -->
+    <select id="selectByYouzanId" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM sys_user 
+        WHERE youzan_id = #{youzanId} 
+        AND deleted = 0
+    </select>
+
+    <!-- 根据邮箱查询用户 -->
+    <select id="selectByEmail" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM sys_user 
+        WHERE email = #{email} 
+        AND deleted = 0
+    </select>
+
+    <!-- 分页查询用户列表 -->
+    <select id="selectUserPage" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM sys_user 
+        WHERE deleted = 0
+        <if test="username != null and username != ''">
+            AND username LIKE CONCAT('%', #{username}, '%')
+        </if>
+        <if test="nickname != null and nickname != ''">
+            AND nickname LIKE CONCAT('%', #{nickname}, '%')
+        </if>
+        <if test="phone != null and phone != ''">
+            AND phone = #{phone}
+        </if>
+        <if test="email != null and email != ''">
+            AND email LIKE CONCAT('%', #{email}, '%')
+        </if>
+        <if test="userType != null">
+            AND user_type = #{userType}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="gender != null">
+            AND gender = #{gender}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND created_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND created_time &lt;= #{endTime}
+        </if>
+        ORDER BY created_time DESC
+    </select>
+
+</mapper> 

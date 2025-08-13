@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.origin.banyu.aliyunOss.mapper.OssUploadLogMapper">
+  <resultMap id="BaseResultMap" type="com.origin.banyu.aliyunOss.entity.OssUploadLog">
+    <id column="log_id" jdbcType="VARCHAR" property="logId" />
+    <result column="original_name" jdbcType="VARCHAR" property="originalName" />
+    <result column="object_path" jdbcType="VARCHAR" property="objectPath" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="object_key" jdbcType="VARCHAR" property="objectKey" />
+    <result column="access_url" jdbcType="VARCHAR" property="accessUrl" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="updated_time" jdbcType="TIMESTAMP" property="updatedTime" />
+    <result column="created_by" jdbcType="VARCHAR" property="createdBy" />
+    <result column="updated_by" jdbcType="VARCHAR" property="updatedBy" />
+    <result column="deleted" jdbcType="BOOLEAN" property="deleted" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    log_id, original_name, object_path, file_name, object_key, access_url, created_time, updated_time, created_by, updated_by, deleted
+  </sql>
+
+  <insert id="insertLog" parameterType="com.origin.banyu.aliyunOss.entity.OssUploadLog">
+    INSERT INTO oss_upload_log
+    (
+      log_id,
+      original_name,
+      object_path,
+      file_name,
+      object_key,
+      access_url,
+      created_time,
+      updated_time,
+      created_by,
+      updated_by,
+      deleted
+    )
+    VALUES
+    (
+      #{logId},
+      #{originalName},
+      #{objectPath},
+      #{fileName},
+      #{objectKey},
+      #{accessUrl},
+      #{createdTime},
+      #{updatedTime},
+      #{createdBy},
+      #{updatedBy},
+      #{deleted}
+    )
+  </insert>
+</mapper>

@@ -1,0 +1,211 @@
+# 认证服务 - Nacos远程配置文件
+# 配置ID: service-auth.yaml
+# 配置组: DEFAULT_GROUP
+# 命名空间: ba1493dc-20fa-413b-84e1-d929c9a4aeac
+
+# 数据源配置
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${MYSQL_URL:jdbc:mysql://117.50.197.170:3306/banyu?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8}
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:qUhquc-dagpup-5rubvu}
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: HikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+  # Redis配置
+  data:
+    redis:
+      host: ${REDIS_HOST:117.50.197.170}
+      port: ${REDIS_PORT:16379}
+      password: ${REDIS_PASSWORD:qUhquc-dagpup-5rubvu}
+      database: ${REDIS_DATABASE:0}
+      timeout: 10000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: -1ms
+          max-idle: 8
+          min-idle: 0
+
+  # MyBatis-Plus配置（开发环境）
+  mybatis-plus:
+    configuration:
+      map-underscore-to-camel-case: true
+      cache-enabled: false
+      call-setters-on-nulls: true
+      jdbc-type-for-null: 'null'
+      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    global-config:
+      db-config:
+        id-type: assign_id
+        logic-delete-field: isDeleted
+        logic-delete-value: 1
+        logic-not-delete-value: 0
+    mapper-locations: classpath*:/mapper/**/*.xml
+    type-aliases-package: com.origin.banyu.auth.entity
+
+
+# JWT配置
+jwt:
+  # JWT密钥 - 开发环境使用默认密钥
+  secret: ${JWT_SECRET:nG9dT@e4^M7#pKc!Wz0qF8vRtLx*A6s1YhJ2BrCm}
+  # 过期时间（毫秒）- 1小时
+  expiration: ${JWT_EXPIRATION:3600000}
+  # 令牌前缀
+  token-prefix: ${JWT_TOKEN_PREFIX:Bearer}
+  # 请求头名称
+  header: ${JWT_HEADER:Authorization}
+  # 刷新令牌过期时间（毫秒）- 24小时
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:86400000}
+  # 是否启用黑名单
+  enable-blacklist: ${JWT_ENABLE_BLACKLIST:true}
+  # Redis黑名单前缀
+  blacklist-prefix: ${JWT_BLACKLIST_PREFIX:token:blacklist:}
+  # Redis有效令牌前缀
+  valid-token-prefix: ${JWT_VALID_TOKEN_PREFIX:token:valid:}
+
+#安全配置
+security:
+  # 不需要认证的路径
+  permit-all:
+    - /**
+    # # 认证相关接口
+    # - /service/auth/login
+    # - /service/auth/logout
+    # - /service/auth/register
+    # - /service/auth/captcha
+
+    # # 密码相关接口
+    # - /service/auth/password/encrypt
+    # - /service/auth/password/verify
+
+    # # 用户信息接口
+    # - /service/auth/user/info
+
+    # # JWT验证接口
+    # - /service/auth/validate
+
+    # # 强制登出接口
+    # - /service/auth/logout/force/**
+
+    # # 测试相关接口
+    # - /service/auth/test/**
+    # - /test
+
+    # # 文档相关接口
+    # - /swagger-ui/**
+    # - /v3/api-docs/**
+
+    # # 监控相关接口
+    # - /service/auth/**
+
+
+# Swagger配置（开发环境启用）
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  packages-to-scan: com.origin.banyu.auth.controller
+
+# 登录配置
+login:
+  max-attempts: 5  # 最大登录尝试次数
+  lock-duration: 300  # 锁定时间（秒）
+  captcha-enabled: false  # 开发环境关闭验证码
+
+# 令牌配置
+token:
+  refresh-threshold: 300  # 刷新阈值（秒）
+  blacklist-cleanup-interval: 3600  # 黑名单清理间隔（秒）
+
+# 线程池配置（开发环境）
+thread:
+  pool:
+    core-size: 10
+    max-size: 20
+    queue-capacity: 500
+    keep-alive-seconds: 60
+
+# OpenFeign配置
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 5000
+        read-timeout: 5000
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true
+  hystrix:
+    enabled: true
+
+# 自定义配置
+auth:
+  # 密码加密配置
+  password:
+    encoder:
+      strength: 10  # 开发环境使用较低强度
+  # 登录配置
+  login:
+    lock-duration: 300
+    max-attempts: 5
+  # 令牌配置
+  token:
+    refresh-threshold: 300  # 刷新阈值（秒）
+    blacklist-cleanup-interval: 3600  # 黑名单清理间隔（秒）
+
+# 监控配置
+monitoring:
+  # 健康检查配置
+  health:
+    check-interval: 30  # 健康检查间隔（秒）
+    timeout: 5000  # 健康检查超时时间（毫秒）
+
+  # 指标配置
+  metrics:
+    enabled: true
+    export:
+      prometheus:
+        enabled: true
+        descriptions: true
+        step: 60s
+
+# 限流配置（开发环境宽松）
+rate-limit:
+  enabled: true
+  # 登录接口限流
+  login:
+    max-requests: 20  # 最大请求数
+    time-window: 60  # 时间窗口（秒）
+  # 通用接口限流
+  general:
+    max-requests: 200  # 最大请求数
+    time-window: 60  # 时间窗口（秒）
+
+# 审计日志配置（开发环境）
+audit:
+  enabled: true
+  # 审计事件
+  events:
+    - LOGIN_SUCCESS
+    - LOGIN_FAILURE
+    - LOGOUT
+    - PASSWORD_CHANGE
+    - ACCOUNT_LOCK
+  # 审计日志存储
+  storage:
+    type: database  # database, file, elasticsearch
+    table: sys_audit_log
