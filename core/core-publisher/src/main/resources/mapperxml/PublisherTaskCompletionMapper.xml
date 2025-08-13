@@ -11,6 +11,7 @@
         <result column="completion_time" property="completionTime"/>
         <result column="reward_amount" property="rewardAmount"/>
         <result column="completion_evidence" property="completionEvidence"/>
+        <result column="completion_detail" property="completionDetail"/>
         <result column="created_time" property="createdTime"/>
         <result column="updated_time" property="updatedTime"/>
         <result column="created_by" property="createdBy"/>
@@ -20,7 +21,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        completion_id, task_id, user_id, completion_status, completion_time, reward_amount, completion_evidence,
+        completion_id, task_id, user_id, completion_status, completion_time, reward_amount, completion_evidence, completion_detail,
         created_time, updated_time, created_by, updated_by, deleted
     </sql>
 

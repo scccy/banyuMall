@@ -1,8 +1,9 @@
-package com.origin.banyu.publisher.dto;
+package com.origin.banyu.publisher.dto.response;
 
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 分享审核响应DTO
@@ -23,6 +24,16 @@ public class ShareReviewResponse {
     private String taskId;
     
     /**
+     * 提交用户ID
+     */
+    private String userId;
+    
+    /**
+     * 微信昵称
+     */
+    private String wechatNickname;
+    
+    /**
      * 分享内容
      */
     private String shareContent;
@@ -33,14 +44,14 @@ public class ShareReviewResponse {
     private String sharePlatform;
     
     /**
-     * 分享链接
+     * 分享链接（多个）
      */
-    private String shareUrl;
+    private List<String> links;
     
     /**
-     * 截图URL
+     * 截图URL（多个）
      */
-    private String screenshotUrl;
+    private List<String> images;
     
     /**
      * 审核状态ID

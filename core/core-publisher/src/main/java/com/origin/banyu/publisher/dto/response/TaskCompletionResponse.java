@@ -1,4 +1,4 @@
-package com.origin.banyu.publisher.dto;
+package com.origin.banyu.publisher.dto.response;
 
 import lombok.Data;
 

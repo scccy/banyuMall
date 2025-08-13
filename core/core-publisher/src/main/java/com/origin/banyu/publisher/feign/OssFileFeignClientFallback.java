@@ -1,8 +1,8 @@
 package com.origin.banyu.publisher.feign;
 
-import com.origin.banyu.common.dto.ResultData;
 import com.origin.banyu.common.dto.AliyunOssFileUploadRequest;
 import com.origin.banyu.common.dto.AliyunOssFileUploadResponse;
+import com.origin.banyu.common.dto.ResultData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

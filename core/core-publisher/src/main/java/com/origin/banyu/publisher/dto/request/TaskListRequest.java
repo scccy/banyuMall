@@ -1,4 +1,4 @@
-package com.origin.banyu.publisher.dto;
+package com.origin.banyu.publisher.dto.request;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

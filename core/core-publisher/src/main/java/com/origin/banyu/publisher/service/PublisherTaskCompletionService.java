@@ -1,15 +1,17 @@
 package com.origin.banyu.publisher.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.origin.banyu.publisher.dto.TaskCompletionRequest;
-import com.origin.banyu.publisher.dto.TaskCompletionResponse;
+import com.origin.banyu.publisher.dto.request.CompletionsGetDetailsRequestDto;
+import com.origin.banyu.publisher.dto.request.TaskCompletionRequest;
+import com.origin.banyu.publisher.dto.response.CompletionDetailResponseDto;
+import com.origin.banyu.publisher.dto.response.TaskCompletionResponse;
 
 /**
  * 任务完成管理服务接口
  * 作者: scccy
  * 创建时间: 2025-07-31
  */
-public interface TaskCompletionService {
+public interface PublisherTaskCompletionService {
     
     /**
      * 提交任务完成
@@ -35,19 +37,10 @@ public interface TaskCompletionService {
      * @param comment 审核意见
      */
     void reviewTaskCompletion(String completionId, Integer reviewStatus, String comment);
-    
-    /**
-     * 检查任务完成状态（自动判断）
-     * @param taskId 任务ID
-     * @param userId 用户ID
-     */
-    void checkTaskCompletion(String taskId, String userId);
-    
-    /**
-     * 处理企业微信回调
-     * @param taskId 任务ID
-     * @param userId 用户ID
-     * @param status 完成状态
-     */
-    void processWechatWorkCallback(String taskId, String userId, String status);
-} 
+
+
+    IPage<CompletionDetailResponseDto> completionsGetDetails(CompletionsGetDetailsRequestDto request);
+
+    // 为控制器封装外层元信息提供任务基本信息
+    com.origin.banyu.publisher.entity.PublisherTask getTaskById(String taskId);
+}

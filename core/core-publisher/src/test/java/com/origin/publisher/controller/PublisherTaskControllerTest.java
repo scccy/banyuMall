@@ -1,11 +1,11 @@
 //package com.origin.banyu.publisher.controller;
 //
 //import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.origin.banyu.publisher.dto.TaskCreateRequest;
-//import com.origin.banyu.publisher.dto.TaskUpdateRequest;
-//import com.origin.banyu.publisher.dto.TaskListRequest;
-//import com.origin.banyu.publisher.dto.TaskDetailResponse;
-//import com.origin.banyu.publisher.dto.TaskListResponse;
+//import com.origin.banyu.publisher.dto.request.TaskCreateRequest;
+//import com.origin.banyu.publisher.dto.request.TaskUpdateRequest;
+//import com.origin.banyu.publisher.dto.request.TaskListRequest;
+//import com.origin.banyu.publisher.dto.response.TaskDetailResponse;
+//import com.origin.banyu.publisher.dto.response.TaskListResponse;
 //import com.baomidou.mybatisplus.core.metadata.IPage;
 //import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 //import com.origin.banyu.publisher.service.PublisherTaskService;

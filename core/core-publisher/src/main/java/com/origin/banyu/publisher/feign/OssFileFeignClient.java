@@ -1,10 +1,13 @@
 package com.origin.banyu.publisher.feign;
 
-import com.origin.banyu.common.dto.ResultData;
 import com.origin.banyu.common.dto.AliyunOssFileUploadRequest;
 import com.origin.banyu.common.dto.AliyunOssFileUploadResponse;
+import com.origin.banyu.common.dto.ResultData;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * OSS文件服务Feign客户端

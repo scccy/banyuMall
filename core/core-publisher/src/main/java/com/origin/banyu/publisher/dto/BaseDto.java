@@ -1,8 +1,5 @@
 package com.origin.banyu.publisher.dto;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -19,7 +16,6 @@ public abstract class BaseDto {
     /**
      * 任务名称
      */
-    @NotBlank(message = "任务名称不能为空")
     private String taskName;
     
     /**
@@ -30,8 +26,6 @@ public abstract class BaseDto {
     /**
      * 任务积分
      */
-    @NotNull(message = "任务积分不能为空")
-    @DecimalMin(value = "0.01", message = "任务积分必须大于0")
     private BigDecimal taskReward;
     
     /**

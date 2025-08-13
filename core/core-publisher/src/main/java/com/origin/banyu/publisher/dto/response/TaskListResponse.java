@@ -1,4 +1,4 @@
-package com.origin.banyu.publisher.dto;
+package com.origin.banyu.publisher.dto.response;
 
 import lombok.Data;
 
@@ -7,12 +7,12 @@ import java.time.LocalDateTime;
 
 
 /**
- * 任务详情响应DTO
+ * 任务列表响应DTO
  * 作者: scccy
  * 创建时间: 2025-07-31
  */
 @Data
-public class TaskDetailResponse {
+public class TaskListResponse {
     
     /**
      * 任务ID
@@ -55,11 +55,6 @@ public class TaskDetailResponse {
     private LocalDateTime createdTime;
     
     /**
-     * 更新时间
-     */
-    private LocalDateTime updatedTime;
-    
-    /**
      * 完成人数统计
      */
     private Integer completionCount;
@@ -68,4 +63,5 @@ public class TaskDetailResponse {
      * 任务特定配置（前端自定义字段）
      */
     private String taskConfig;
+
 } 

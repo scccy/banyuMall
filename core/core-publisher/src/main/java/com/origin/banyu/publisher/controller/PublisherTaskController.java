@@ -1,8 +1,12 @@
 package com.origin.banyu.publisher.controller;
 
-import com.origin.banyu.common.dto.ResultData;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.origin.banyu.publisher.dto.*;
+import com.origin.banyu.common.dto.ResultData;
+import com.origin.banyu.publisher.dto.request.TaskCreateRequest;
+import com.origin.banyu.publisher.dto.request.TaskListRequest;
+import com.origin.banyu.publisher.dto.request.TaskUpdateRequest;
+import com.origin.banyu.publisher.dto.response.TaskDetailResponse;
+import com.origin.banyu.publisher.dto.response.TaskListResponse;
 import com.origin.banyu.publisher.service.PublisherTaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -54,7 +58,7 @@ public class PublisherTaskController {
     }
     
     @GetMapping("/core/publisher/tasksList")
-    @Operation(summary = "获取任务列表", description = "获取任务列表（包含完成人数统计）")
+    @Operation(summary = "获取任务列表", description = "获取任务列表")
     public ResultData<IPage<TaskListResponse>> getTaskList(
             @RequestParam(defaultValue = "1") @Min(1) Integer page,
             @RequestParam(defaultValue = "10") @Min(1) @Max(1000) Integer size,

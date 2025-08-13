@@ -1,6 +1,6 @@
 package com.origin.banyu.publisher.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.origin.banyu.common.entity.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,10 +20,4 @@ public abstract class BasePublisherEntity extends BaseEntity {
      */
     @TableField("task_id")
     private String taskId;
-    
-    /**
-     * 状态ID
-     */
-    @TableField("status_id")
-    private Integer statusId;
 }

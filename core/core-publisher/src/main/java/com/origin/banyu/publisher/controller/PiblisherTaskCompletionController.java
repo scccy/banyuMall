@@ -1,19 +1,21 @@
 package com.origin.banyu.publisher.controller;
 
-import com.origin.banyu.common.dto.ResultData;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.origin.banyu.publisher.dto.TaskCompletionRequest;
-import com.origin.banyu.publisher.dto.TaskCompletionResponse;
-import com.origin.banyu.publisher.service.TaskCompletionService;
+import com.origin.banyu.common.dto.ResultData;
+import com.origin.banyu.publisher.dto.request.CompletionsGetDetailsRequestDto;
+import com.origin.banyu.publisher.dto.response.CompletionDetailResponseDto;
+import com.origin.banyu.publisher.dto.response.TaskCompletionResponse;
+import com.origin.banyu.publisher.service.PublisherTaskCompletionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * 任务完成管理控制器
@@ -26,18 +28,10 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "任务完成管理", description = "任务完成提交、查询、审核等接口")
 @Validated
-public class TaskCompletionController {
+public class PiblisherTaskCompletionController {
     
-    private final TaskCompletionService taskCompletionService;
-    
-//    @PostMapping("/tasks/{taskId}/complete")
-//    @Operation(summary = "提交任务完成", description = "提交任务完成申请")
-//    public ResultData<String> submitTaskCompletion(@PathVariable String taskId,
-//                                                   @RequestBody @Valid TaskCompletionRequest request) {
-//        log.info("提交任务完成请求，任务ID：{}，参数：{}", taskId, request);
-//        String completionId = taskCompletionService.submitTaskCompletion(taskId, request);
-//        return ResultData.success("任务完成提交成功", completionId);
-//    }
+    private final PublisherTaskCompletionService taskCompletionService;
+
     
     @GetMapping("/tasks/{taskId}/completions")
     @Operation(summary = "获取任务完成列表", description = "获取指定任务的完成记录列表")
@@ -45,7 +39,6 @@ public class TaskCompletionController {
             @PathVariable String taskId,
             @RequestParam(defaultValue = "1") @Min(value = 1, message = "页码必须大于0") Integer page,
             @RequestParam(defaultValue = "10") @Min(value = 1, message = "每页大小必须大于0") @Max(value = 1000, message = "每页大小不能超过1000") Integer size) {
-        log.info("获取任务完成列表请求，任务ID：{}，页码：{}，大小：{}", taskId, page, size);
         IPage<TaskCompletionResponse> result = taskCompletionService.getTaskCompletionList(taskId, page, size);
         return ResultData.success("获取任务完成列表成功", result);
     }
@@ -55,18 +48,27 @@ public class TaskCompletionController {
     public ResultData<Void> reviewTaskCompletion(@PathVariable String completionId,
                                                  @RequestParam Integer reviewStatus,
                                                  @RequestParam(required = false) String comment) {
-        log.info("审核任务完成请求，完成记录ID：{}，审核状态：{}，审核意见：{}", completionId, reviewStatus, comment);
         taskCompletionService.reviewTaskCompletion(completionId, reviewStatus, comment);
         return ResultData.success("任务完成审核成功", null);
     }
-    
-    @PostMapping("/tasks/{taskId}/check-completion")
-    @Operation(summary = "检查任务完成状态", description = "检查指定用户的任务完成状态")
-    public ResultData<Void> checkTaskCompletion(@PathVariable String taskId,
-                                                @RequestParam String userId) {
-        log.info("检查任务完成状态请求，任务ID：{}，用户ID：{}", taskId, userId);
-        taskCompletionService.checkTaskCompletion(taskId, userId);
-        return ResultData.success("任务完成状态检查完成", null);
+
+    @PostMapping("/tasks/completions/get/details")
+    @Operation(summary = "查询任务完成情况", description = "查询任务完成情况")
+    public ResultData<Map<String, Object>> completionsGetDetails(@RequestBody CompletionsGetDetailsRequestDto request ) {
+        IPage<CompletionDetailResponseDto> result= taskCompletionService.completionsGetDetails(request);
+        java.util.Map<String, Object> wrapped = new java.util.HashMap<>();
+        // 外层携带任务元信息
+        var task = taskCompletionService.getTaskById(request.getTaskId());
+        wrapped.put("taskName", task.getTaskName());
+        wrapped.put("taskTypeId", task.getTaskTypeId());
+        // 分页元信息
+        wrapped.put("current", result.getCurrent());
+        wrapped.put("size", result.getSize());
+        wrapped.put("total", result.getTotal());
+        wrapped.put("pages", result.getPages());
+        // 仅返回具体数据记录
+        wrapped.put("records", result.getRecords());
+        return ResultData.success("任务完成提交成功", wrapped);
     }
 
 } 

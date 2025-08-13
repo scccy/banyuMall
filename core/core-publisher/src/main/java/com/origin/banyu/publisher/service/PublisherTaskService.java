@@ -1,7 +1,11 @@
 package com.origin.banyu.publisher.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.origin.banyu.publisher.dto.*;
+import com.origin.banyu.publisher.dto.request.TaskCreateRequest;
+import com.origin.banyu.publisher.dto.request.TaskListRequest;
+import com.origin.banyu.publisher.dto.request.TaskUpdateRequest;
+import com.origin.banyu.publisher.dto.response.TaskDetailResponse;
+import com.origin.banyu.publisher.dto.response.TaskListResponse;
 
 /**
  * 任务管理服务接口

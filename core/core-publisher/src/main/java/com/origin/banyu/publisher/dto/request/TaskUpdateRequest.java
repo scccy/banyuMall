@@ -1,5 +1,6 @@
-package com.origin.banyu.publisher.dto;
+package com.origin.banyu.publisher.dto.request;
 
+import com.origin.banyu.publisher.dto.BaseDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

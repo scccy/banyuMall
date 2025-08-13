@@ -1,7 +1,9 @@
 package com.origin.banyu.publisher.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
-import com.origin.banyu.common.entity.BaseEntity;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -59,4 +61,10 @@ public class PublisherTaskCompletion extends BasePublisherEntity {
      */
     @TableField("completion_evidence")
     private String completionEvidence;
+
+	 /**
+	  * 完成详情JSON（用于邀请任务等需要结构化明细的数据）
+	  */
+	 @TableField("completion_detail")
+	 private String completionDetail;
 } 

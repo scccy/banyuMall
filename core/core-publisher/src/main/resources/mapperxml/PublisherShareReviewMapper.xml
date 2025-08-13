@@ -38,4 +38,54 @@
         ORDER BY created_time DESC
     </select>
 
+    <!-- 多条件分页查询：taskId / taskName / reviewStatus / userId / wechatNickname 任意组合 -->
+    <select id="selectByConditions" resultMap="BaseResultMap">
+        SELECT psr.*
+        FROM publisher_share_review psr
+        LEFT JOIN publisher_task pt ON psr.task_id = pt.task_id
+        LEFT JOIN sys_user u ON psr.created_by = u.user_id
+        WHERE psr.deleted = 0
+        <if test="req.taskId != null and req.taskId != ''">
+            AND psr.task_id = #{req.taskId}
+        </if>
+        <if test="req.taskName != null and req.taskName != ''">
+            AND pt.task_name LIKE CONCAT('%', #{req.taskName}, '%')
+        </if>
+        <if test="req.reviewStatus != null">
+            AND psr.review_status_id = #{req.reviewStatus}
+        </if>
+        <if test="req.userId != null and req.userId != ''">
+            AND psr.created_by = #{req.userId}
+        </if>
+        <if test="req.wechatNickname != null and req.wechatNickname != ''">
+            AND u.wechat_nickname LIKE CONCAT('%', #{req.wechatNickname}, '%')
+        </if>
+        ORDER BY psr.created_time DESC
+    </select>
+
+    <!-- 多条件查询所有数据（不分页，用于导出）：taskId / taskName / reviewStatus / userId / wechatNickname 任意组合 -->
+    <select id="selectAllByConditions" resultMap="BaseResultMap">
+        SELECT psr.*
+        FROM publisher_share_review psr
+        LEFT JOIN publisher_task pt ON psr.task_id = pt.task_id
+        LEFT JOIN sys_user u ON psr.created_by = u.user_id
+        WHERE psr.deleted = 0
+        <if test="req.taskId != null and req.taskId != ''">
+            AND psr.task_id = #{req.taskId}
+        </if>
+        <if test="req.taskName != null and req.taskName != ''">
+            AND pt.task_name LIKE CONCAT('%', #{req.taskName}, '%')
+        </if>
+        <if test="req.reviewStatus != null">
+            AND psr.review_status_id = #{req.reviewStatus}
+        </if>
+        <if test="req.userId != null and req.userId != ''">
+            AND psr.created_by = #{req.userId}
+        </if>
+        <if test="req.wechatNickname != null and req.wechatNickname != ''">
+            AND u.wechat_nickname LIKE CONCAT('%', #{req.wechatNickname}, '%')
+        </if>
+        ORDER BY psr.created_time DESC
+    </select>
+
 </mapper> 

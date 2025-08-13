@@ -1,7 +1,7 @@
 package com.origin.banyu.publisher.util;
 
-import com.origin.banyu.publisher.dto.TaskCreateRequest;
-import com.origin.banyu.publisher.dto.TaskUpdateRequest;
+import com.origin.banyu.publisher.dto.request.TaskCreateRequest;
+import com.origin.banyu.publisher.dto.request.TaskUpdateRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;

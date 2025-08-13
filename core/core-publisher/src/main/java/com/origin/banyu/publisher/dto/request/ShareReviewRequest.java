@@ -1,7 +1,6 @@
-package com.origin.banyu.publisher.dto;
+package com.origin.banyu.publisher.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**

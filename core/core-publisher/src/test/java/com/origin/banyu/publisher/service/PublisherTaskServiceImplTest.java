@@ -1,13 +1,15 @@
 package com.origin.banyu.publisher.service;
 
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.origin.banyu.common.entity.ErrorCode;
 import com.origin.banyu.common.exception.BusinessException;
-import com.origin.banyu.publisher.dto.TaskCreateRequest;
-import com.origin.banyu.publisher.dto.TaskDetailResponse;
-import com.origin.banyu.publisher.dto.TaskUpdateRequest;
-import com.origin.banyu.publisher.dto.TaskListRequest;
-import com.origin.banyu.publisher.dto.TaskListResponse;
+import com.origin.banyu.publisher.dto.request.TaskCreateRequest;
+import com.origin.banyu.publisher.dto.request.TaskListRequest;
+import com.origin.banyu.publisher.dto.request.TaskUpdateRequest;
+import com.origin.banyu.publisher.dto.response.TaskDetailResponse;
+import com.origin.banyu.publisher.dto.response.TaskListResponse;
 import com.origin.banyu.publisher.entity.PublisherTask;
 import com.origin.banyu.publisher.entity.PublisherTaskDetail;
 import com.origin.banyu.publisher.mapper.PublisherTaskCompletionMapper;
@@ -37,9 +39,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 /**
  * 服务层集成业务流测试（基于模拟的持久层）
