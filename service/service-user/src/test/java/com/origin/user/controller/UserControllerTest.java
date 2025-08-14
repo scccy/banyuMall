@@ -1,10 +1,7 @@
 package com.origin.user.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.origin.banyu.common.entity.SysUser;
 import com.origin.banyu.user.dto.UserCreateRequest;
-import com.origin.banyu.user.dto.UserQueryRequest;
 import com.origin.banyu.user.dto.UserUpdateRequest;
 import com.origin.banyu.user.service.SysUserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +9,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -20,12 +16,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Arrays;
 import java.util.Random;
 
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * UserController API测试类
@@ -65,26 +60,18 @@ class UserControllerTest {
         
         // 准备测试数据
         UserCreateRequest userCreateRequest = new UserCreateRequest();
+
         userCreateRequest.setUsername(randomPhone);  // 用户名等于手机号
         userCreateRequest.setPassword("123456");
         userCreateRequest.setNickname("测试用户");
         userCreateRequest.setEmail("test@example.com");
         userCreateRequest.setPhone(randomPhone);
-        userCreateRequest.setWechatId("test_wechat_001");  // 添加必填字段
+        userCreateRequest.setWechatWorkId("test_wechatWork_001");  // 添加必填字段
         userCreateRequest.setYouzanId("test_youzan_001");  // 添加必填字段
         userCreateRequest.setUserType(2);
 
-        SysUser createdUser = new SysUser();
-        createdUser.setUserId("test_user_001");
-        createdUser.setUsername(randomPhone);
-        createdUser.setNickname("测试用户");
-        createdUser.setEmail("test@example.com");
-        createdUser.setPhone(randomPhone);
-        createdUser.setWechatId("0");
-        createdUser.setYouzanId("0");
-        createdUser.setAvatar("https://oss.example.com/avatars/test_user_001.jpg");
-        createdUser.setUserType(2);
-        createdUser.setStatus(1);
+        // 注意：实际生成的用户ID是动态的，这里只是用于验证字段映射
+        // 实际测试中应该验证返回的用户对象包含正确的字段值
 
         // 使用真实服务，不需要Mock配置
 
@@ -100,7 +87,7 @@ class UserControllerTest {
                 "userInfo",
                 "",
                 "application/json",
-                String.format("{\"username\":\"%s\",\"password\":\"123456\",\"nickname\":\"测试用户\",\"email\":\"test@example.com\",\"phone\":\"%s\",\"wechatId\":\"test_wechat_001\",\"youzanId\":\"test_youzan_001\",\"userType\":2}", randomPhone, randomPhone).getBytes()
+                String.format("{\"username\":\"%s\",\"password\":\"123456\",\"nickname\":\"测试用户\",\"email\":\"test@example.com\",\"phone\":\"%s\",\"wechatWorkId\":\"test_wechatWork_001\",\"youzanId\":\"test_youzan_001\",\"userType\":2}", randomPhone, randomPhone).getBytes()
         );
 
         // 执行测试
@@ -113,8 +100,9 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").value("用户创建成功"))
-                .andExpect(jsonPath("$.data.userId").value("test_user_001"))
-                .andExpect(jsonPath("$.data.username").value("testuser"));
+                .andExpect(jsonPath("$.data.userId").exists())
+                .andExpect(jsonPath("$.data.username").value(randomPhone))
+                .andExpect(jsonPath("$.data.wechatWorkId").value("test_wechatWork_001"));
     }
 
     @Test
@@ -367,7 +355,7 @@ class UserControllerTest {
         adminRequest.setUsername(randomPhone);
         adminRequest.setPassword("123456");
         adminRequest.setPhone(randomPhone);  // 添加必填字段
-        adminRequest.setWechatId("admin_wechat_001");  // 添加必填字段
+        adminRequest.setWechatWorkId("admin_wechatWork_001");  // 添加必填字段
         adminRequest.setYouzanId("admin_youzan_001");  // 添加必填字段
         adminRequest.setUserType(1); // 管理员
 

@@ -1,6 +1,7 @@
 package com.origin.banyu.common.dto;
 
 import lombok.Data;
+
 import java.util.Map;
 
 /**

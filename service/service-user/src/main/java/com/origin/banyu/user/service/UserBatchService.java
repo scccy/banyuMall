@@ -1,6 +1,7 @@
 package com.origin.banyu.user.service;
 
 import com.origin.banyu.common.entity.SysUser;
+
 import java.util.List;
 
 /**

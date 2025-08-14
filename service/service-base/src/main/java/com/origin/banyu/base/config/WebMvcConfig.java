@@ -45,7 +45,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         FastJsonConfig config = new FastJsonConfig();
 
-        config.setDateFormat("yyyy-MM-dd HH:mm:ss");
+		config.setDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
         config.setJSONB(true);
         config.setReaderFeatures(JSONReader.Feature.FieldBased,
@@ -54,10 +54,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 JSONReader.Feature.SupportSmartMatch
         );
         // 精简返回JSON，默认不输出为null的字段
-        config.setWriterFeatures(
+		config.setWriterFeatures(
                 JSONWriter.Feature.PrettyFormat,
                 JSONWriter.Feature.WriteEnumsUsingName,
-                JSONWriter.Feature.WriteBigDecimalAsPlain
+				JSONWriter.Feature.WriteBigDecimalAsPlain
         );
 
         converter.setFastJsonConfig(config);

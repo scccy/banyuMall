@@ -1,10 +1,10 @@
 package com.origin.banyu.wechatWork.dto;
 
+import com.origin.banyu.common.dto.WechatWorkUserInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.origin.banyu.common.dto.WechatWorkUserInfo;
 
 /**
  * 授权回调响应DTO

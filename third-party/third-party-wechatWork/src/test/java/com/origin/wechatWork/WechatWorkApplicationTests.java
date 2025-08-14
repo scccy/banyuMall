@@ -1,11 +1,11 @@
 package com.origin.banyu.wechatWork;
 
+import com.origin.banyu.wechatWork.service.AccessTokenService;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.origin.banyu.wechatWork.service.AccessTokenService;
 
 /**
  * 企业微信应用测试类

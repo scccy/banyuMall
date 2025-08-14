@@ -1,8 +1,8 @@
 package com.origin.banyu.auth.service;
 
+import com.origin.banyu.auth.dto.UserInfoResponse;
 import com.origin.banyu.common.dto.LoginRequest;
 import com.origin.banyu.common.dto.LoginResponse;
-import com.origin.banyu.auth.dto.UserInfoResponse;
 
 /**
  * 认证服务接口
@@ -107,4 +107,21 @@ public interface AuthService {
      * @return 用户信息
      */
     UserInfoResponse getUserInfo(String userId);
+    
+    /**
+     * 验证密码
+     * 
+     * @param username 用户名
+     * @param password 密码
+     * @return 验证结果
+     */
+    boolean verifyPassword(String username, String password);
+    
+    /**
+     * 获取用户信息（返回SysUser）
+     * 
+     * @param userId 用户ID
+     * @return 用户信息
+     */
+    com.origin.banyu.common.entity.SysUser getUserInfoEntity(String userId);
 } 

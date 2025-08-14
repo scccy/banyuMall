@@ -24,6 +24,11 @@ public class ShareReviewResponse {
     private String taskId;
     
     /**
+     * 任务名称
+     */
+    private String taskName;
+    
+    /**
      * 提交用户ID
      */
     private String userId;

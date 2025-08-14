@@ -6,11 +6,13 @@
     <resultMap id="BaseResultMap" type="com.origin.banyu.common.entity.SysUser">
         <id column="user_id" property="userId"/>
         <result column="phone" property="phone"/>
+        <result column="wechatWork_id" property="wechatWorkId"/>
         <result column="wechat_id" property="wechatId"/>
         <result column="youzan_id" property="youzanId"/>
         <result column="username" property="username"/>
         <result column="password" property="password"/>
         <result column="nickname" property="nickname"/>
+        <result column="wechatWork_nickname" property="wechatWorkNickname"/>
         <result column="wechat_nickname" property="wechatNickname"/>
         <result column="youzan_nickname" property="youzanNickname"/>
         <result column="avatar" property="avatar"/>
@@ -30,7 +32,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        user_id, phone, wechat_id, youzan_id, username, password, nickname, wechat_nickname, youzan_nickname, avatar, email, 
+        user_id, phone, wechatWork_id, wechat_id, youzan_id, username, password, nickname, wechatWork_nickname, wechat_nickname, youzan_nickname, avatar, email, 
         gender, birthday, status, user_type, profile_id, last_login_time, created_time, updated_time, 
         created_by, updated_by, deleted
     </sql>
@@ -53,7 +55,16 @@
         AND deleted = 0
     </select>
 
-    <!-- 根据微信ID查询用户 -->
+    <!-- 根据企业微信ID查询用户 -->
+    <select id="selectByWechatWorkId" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM sys_user 
+        WHERE wechatWork_id = #{wechatWorkId} 
+        AND deleted = 0
+    </select>
+
+    <!-- 根据普通微信ID查询用户 -->
     <select id="selectByWechatId" resultMap="BaseResultMap">
         SELECT 
         <include refid="Base_Column_List"/>

@@ -166,13 +166,13 @@ public class WechatWorkAuthService {
         try {
             // 1. 验证系统用户是否存在
             // 2. 创建或更新企业微信用户记录
-            // 3. 更新系统用户的wechat_id字段
+            // 3. 更新系统用户的wechatWork_id字段
             // 4. 更新授权状态
             
             userService.saveOrUpdateWechatWorkUser(request.getUserInfo());
             
             // 更新系统用户表
-            // ... 调用用户服务更新wechat_id和授权状态
+            // ... 调用用户服务更新wechatWork_id和授权状态
             
             log.info("企业微信用户绑定成功，userid: {}, sysUserId: {}", request.getUserInfo().getWechatworkUserId(), request.getSysUserId());
             

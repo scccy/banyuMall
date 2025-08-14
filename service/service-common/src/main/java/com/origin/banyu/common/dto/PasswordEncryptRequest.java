@@ -1,9 +1,8 @@
 package com.origin.banyu.common.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.experimental.Accessors;
-
-import jakarta.validation.constraints.NotBlank;
 
 /**
  * 密码加密请求DTO

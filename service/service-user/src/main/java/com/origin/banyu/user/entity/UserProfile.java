@@ -1,6 +1,9 @@
 package com.origin.banyu.user.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.origin.banyu.common.entity.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

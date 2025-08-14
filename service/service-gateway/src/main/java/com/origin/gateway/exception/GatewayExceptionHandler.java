@@ -70,6 +70,32 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler {
             } else {
                 resultData = ResultData.fail(ErrorCode.INTERNAL_ERROR, "网关服务异常，请稍后重试");
             }
+        } else if (ex instanceof java.util.concurrent.TimeoutException) {
+            // 处理超时异常
+            log.error("Gateway超时异常: {}", ex.getMessage());
+            httpStatus = HttpStatus.REQUEST_TIMEOUT;
+            resultData = ResultData.fail(ErrorCode.GATEWAY_TIMEOUT, "网关超时，请稍后重试");
+        } else if (ex instanceof java.net.ConnectException) {
+            // 处理连接异常
+            log.error("Gateway连接异常: {}", ex.getMessage());
+            httpStatus = HttpStatus.SERVICE_UNAVAILABLE;
+            resultData = ResultData.fail(ErrorCode.SERVICE_UNAVAILABLE, "服务连接失败，请稍后重试");
+        } else if (ex instanceof java.net.SocketTimeoutException) {
+            // 处理Socket超时异常
+            log.error("Gateway Socket超时异常: {}", ex.getMessage());
+            httpStatus = HttpStatus.REQUEST_TIMEOUT;
+            resultData = ResultData.fail(ErrorCode.GATEWAY_TIMEOUT, "网关Socket超时，请稍后重试");
+        } else if (ex instanceof org.springframework.web.server.ServerWebInputException) {
+            // 处理输入异常
+            log.error("Gateway输入异常: {}", ex.getMessage());
+            httpStatus = HttpStatus.BAD_REQUEST;
+            resultData = ResultData.fail(ErrorCode.PARAM_ERROR, "请求参数错误");
+        } else if (ex instanceof org.springframework.web.server.ResponseStatusException) {
+            // 处理响应状态异常
+            org.springframework.web.server.ResponseStatusException statusEx = (org.springframework.web.server.ResponseStatusException) ex;
+            log.error("Gateway响应状态异常: {} - {}", statusEx.getStatusCode(), statusEx.getReason());
+            httpStatus = HttpStatus.valueOf(statusEx.getStatusCode().value());
+            resultData = ResultData.fail(ErrorCode.GATEWAY_ERROR, statusEx.getReason());
         } else {
             log.error("Gateway系统异常: ", ex);
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;

@@ -34,13 +34,8 @@ public class ThirdPartyConfigController {
     @PostMapping
     @Operation(summary = "创建第三方平台配置", description = "创建新的第三方平台配置")
     public ResultData<ThirdPartyConfig> createConfig(@Valid @RequestBody ThirdPartyConfig config) {
-        try {
-            ThirdPartyConfig createdConfig = thirdPartyConfigService.createConfig(config);
-            return ResultData.success("第三方平台配置创建成功", createdConfig);
-        } catch (Exception e) {
-            log.error("创建第三方平台配置失败", e);
-            return ResultData.fail("第三方平台配置创建失败: " + e.getMessage());
-        }
+        ThirdPartyConfig createdConfig = thirdPartyConfigService.createConfig(config);
+        return ResultData.success("第三方平台配置创建成功", createdConfig);
     }
 
     @PutMapping("/{configId}")
@@ -48,76 +43,39 @@ public class ThirdPartyConfigController {
     public ResultData<ThirdPartyConfig> updateConfig(
             @Parameter(description = "配置ID") @PathVariable @NotNull Integer configId,
             @Valid @RequestBody ThirdPartyConfig config) {
-        try {
-            ThirdPartyConfig updatedConfig = thirdPartyConfigService.updateConfig(configId, config);
-            return ResultData.success("第三方平台配置更新成功", updatedConfig);
-        } catch (Exception e) {
-            log.error("更新第三方平台配置失败，配置ID：{}", configId, e);
-            return ResultData.fail("第三方平台配置更新失败: " + e.getMessage());
-        }
+        ThirdPartyConfig updatedConfig = thirdPartyConfigService.updateConfig(configId, config);
+        return ResultData.success("第三方平台配置更新成功", updatedConfig);
     }
 
     @DeleteMapping("/{configId}")
     @Operation(summary = "删除第三方平台配置", description = "根据配置ID删除第三方平台配置")
     public ResultData<Boolean> deleteConfig(
             @Parameter(description = "配置ID") @PathVariable @NotNull Integer configId) {
-        try {
-            boolean result = thirdPartyConfigService.deleteConfig(configId);
-            if (result) {
-                return ResultData.success("第三方平台配置删除成功", true);
-            } else {
-                return ResultData.fail("第三方平台配置删除失败");
-            }
-        } catch (Exception e) {
-            log.error("删除第三方平台配置失败，配置ID：{}", configId, e);
-            return ResultData.fail("第三方平台配置删除失败: " + e.getMessage());
-        }
+        thirdPartyConfigService.deleteConfig(configId);
+        return ResultData.success("第三方平台配置删除成功", true);
     }
 
     @GetMapping("/{configId}")
     @Operation(summary = "查询第三方平台配置", description = "根据配置ID查询第三方平台配置详情")
     public ResultData<ThirdPartyConfig> getConfigById(
             @Parameter(description = "配置ID") @PathVariable @NotNull Integer configId) {
-        try {
-            ThirdPartyConfig config = thirdPartyConfigService.getConfigById(configId);
-            if (config != null) {
-                return ResultData.success("查询第三方平台配置成功", config);
-            } else {
-                return ResultData.fail("第三方平台配置不存在");
-            }
-        } catch (Exception e) {
-            log.error("查询第三方平台配置失败，配置ID：{}", configId, e);
-            return ResultData.fail("查询第三方平台配置失败: " + e.getMessage());
-        }
+        ThirdPartyConfig config = thirdPartyConfigService.getConfigById(configId);
+        return ResultData.success("查询第三方平台配置成功", config);
     }
 
     @GetMapping("/platform/{platformType}")
     @Operation(summary = "根据平台类型查询配置", description = "根据平台类型查询启用的第三方平台配置")
     public ResultData<ThirdPartyConfig> getConfigByPlatformType(
             @Parameter(description = "平台类型") @PathVariable @NotNull Integer platformType) {
-        try {
-            ThirdPartyConfig config = thirdPartyConfigService.getConfigByPlatformType(platformType);
-            if (config != null) {
-                return ResultData.success("查询第三方平台配置成功", config);
-            } else {
-                return ResultData.fail("第三方平台配置不存在或已禁用");
-            }
-        } catch (Exception e) {
-            log.error("根据平台类型查询配置失败，平台类型：{}", platformType, e);
-            return ResultData.fail("查询第三方平台配置失败: " + e.getMessage());
-        }
+        ThirdPartyConfig config = thirdPartyConfigService.getConfigByPlatformType(platformType);
+        return ResultData.success("查询第三方平台配置成功", config);
     }
 
     @GetMapping("/list")
     @Operation(summary = "分页查询第三方平台配置", description = "分页查询第三方平台配置列表")
     public ResultData<IPage<ThirdPartyConfig>> getConfigPage(@Valid ThirdPartyConfigQueryRequest request) {
-        try {
-            IPage<ThirdPartyConfig> page = thirdPartyConfigService.getConfigPage(request);
-            return ResultData.success("查询成功", page);
-        } catch (Exception e) {
-            log.error("分页查询第三方平台配置失败", e);
-            return ResultData.fail("查询失败: " + e.getMessage());
-        }
+        IPage<ThirdPartyConfig> page = thirdPartyConfigService.getConfigPage(request);
+        return ResultData.success("查询成功", page);
     }
 
     @PutMapping("/{configId}/status")
@@ -125,18 +83,9 @@ public class ThirdPartyConfigController {
     public ResultData<Boolean> updateConfigStatus(
             @Parameter(description = "配置ID") @PathVariable @NotNull Integer configId,
             @Parameter(description = "配置状态：0-禁用，1-启用") @RequestParam @NotNull Integer status) {
-        try {
-            boolean result = thirdPartyConfigService.updateConfigStatus(configId, status);
-            if (result) {
-                String message = status == 1 ? "第三方平台配置启用成功" : "第三方平台配置禁用成功";
-                return ResultData.success(message, true);
-            } else {
-                return ResultData.fail("第三方平台配置状态更新失败");
-            }
-        } catch (Exception e) {
-            log.error("更新第三方平台配置状态失败，配置ID：{}，状态：{}", configId, status, e);
-            return ResultData.fail("第三方平台配置状态更新失败: " + e.getMessage());
-        }
+        thirdPartyConfigService.updateConfigStatus(configId, status);
+        String message = status == 1 ? "第三方平台配置启用成功" : "第三方平台配置禁用成功";
+        return ResultData.success(message, true);
     }
 
     @GetMapping("/test")

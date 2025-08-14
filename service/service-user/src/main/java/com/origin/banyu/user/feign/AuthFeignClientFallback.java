@@ -1,11 +1,11 @@
 package com.origin.banyu.user.feign;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.origin.banyu.common.entity.ThirdPartyConfig;
+import com.origin.banyu.common.dto.ResultData;
 import com.origin.banyu.common.dto.ThirdPartyConfigQueryRequest;
+import com.origin.banyu.common.entity.ThirdPartyConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import com.origin.banyu.common.dto.ResultData;
 /**
  * 认证服务Feign客户端降级处理
  * 

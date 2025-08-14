@@ -80,4 +80,116 @@ public class AuthExceptionHandler {
         log.error("运行时异常: {}", e.getMessage());
         return ResultData.fail(ErrorCode.INTERNAL_ERROR, e.getMessage());
     }
+
+    // ========== 新增异常处理方法 ==========
+
+    /**
+     * 处理JWT解析异常
+     */
+    @ExceptionHandler(io.jsonwebtoken.JwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResultData<Object> handleJwtException(io.jsonwebtoken.JwtException e) {
+        log.error("JWT解析异常: {}", e.getMessage());
+        return ResultData.fail(ErrorCode.TOKEN_INVALID, "令牌格式无效");
+    }
+
+    /**
+     * 处理JWT过期异常
+     */
+    @ExceptionHandler(io.jsonwebtoken.ExpiredJwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResultData<Object> handleExpiredJwtException(io.jsonwebtoken.ExpiredJwtException e) {
+        log.error("JWT过期异常: {}", e.getMessage());
+        return ResultData.fail(ErrorCode.TOKEN_EXPIRED, "令牌已过期");
+    }
+
+    /**
+     * 处理JWT签名异常
+     */
+    @ExceptionHandler(io.jsonwebtoken.SignatureException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResultData<Object> handleSignatureException(io.jsonwebtoken.SignatureException e) {
+        log.error("JWT签名异常: {}", e.getMessage());
+        return ResultData.fail(ErrorCode.TOKEN_INVALID, "令牌签名无效");
+    }
+
+    /**
+     * 处理JWT格式异常
+     */
+    @ExceptionHandler(io.jsonwebtoken.MalformedJwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResultData<Object> handleMalformedJwtException(io.jsonwebtoken.MalformedJwtException e) {
+        log.error("JWT格式异常: {}", e.getMessage());
+        return ResultData.fail(ErrorCode.TOKEN_INVALID, "令牌格式错误");
+    }
+
+    /**
+     * 处理JWT声明异常
+     */
+    @ExceptionHandler(io.jsonwebtoken.PrematureJwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResultData<Object> handlePrematureJwtException(io.jsonwebtoken.PrematureJwtException e) {
+        log.error("JWT声明异常: {}", e.getMessage());
+        return ResultData.fail(ErrorCode.TOKEN_INVALID, "令牌尚未生效");
+    }
+
+    /**
+     * 处理JWT不支持异常
+     */
+    @ExceptionHandler(io.jsonwebtoken.UnsupportedJwtException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResultData<Object> handleUnsupportedJwtException(io.jsonwebtoken.UnsupportedJwtException e) {
+        log.error("JWT不支持异常: {}", e.getMessage());
+        return ResultData.fail(ErrorCode.TOKEN_INVALID, "令牌类型不支持");
+    }
+
+    /**
+     * 处理用户账号被锁定异常
+     */
+    @ExceptionHandler(org.springframework.security.authentication.LockedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResultData<Object> handleLockedException(org.springframework.security.authentication.LockedException e) {
+        log.error("用户账号被锁定: {}", e.getMessage());
+        return ResultData.fail(ErrorCode.ACCOUNT_DISABLED, "账号已被锁定，请联系管理员");
+    }
+
+    /**
+     * 处理用户账号被禁用异常
+     */
+    @ExceptionHandler(org.springframework.security.authentication.DisabledException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResultData<Object> handleDisabledException(org.springframework.security.authentication.DisabledException e) {
+        log.error("用户账号被禁用: {}", e.getMessage());
+        return ResultData.fail(ErrorCode.ACCOUNT_DISABLED, "账号已被禁用，请联系管理员");
+    }
+
+    /**
+     * 处理用户账号过期异常
+     */
+    @ExceptionHandler(org.springframework.security.authentication.AccountExpiredException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResultData<Object> handleAccountExpiredException(org.springframework.security.authentication.AccountExpiredException e) {
+        log.error("用户账号过期: {}", e.getMessage());
+        return ResultData.fail(ErrorCode.ACCOUNT_DISABLED, "账号已过期，请联系管理员");
+    }
+
+    /**
+     * 处理用户凭据过期异常
+     */
+    @ExceptionHandler(org.springframework.security.authentication.CredentialsExpiredException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResultData<Object> handleCredentialsExpiredException(org.springframework.security.authentication.CredentialsExpiredException e) {
+        log.error("用户凭据过期: {}", e.getMessage());
+        return ResultData.fail(ErrorCode.TOKEN_INVALID, "密码已过期，请修改密码");
+    }
+
+    /**
+     * 处理第三方配置异常
+     */
+    @ExceptionHandler(org.springframework.beans.factory.BeanCreationException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResultData<Object> handleBeanCreationException(org.springframework.beans.factory.BeanCreationException e) {
+        log.error("第三方配置异常: {}", e.getMessage());
+        return ResultData.fail(ErrorCode.THIRD_PARTY_SERVICE_CONFIG_ERROR, "第三方服务配置错误");
+    }
 } 

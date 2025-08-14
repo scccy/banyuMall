@@ -1,7 +1,6 @@
 package com.origin.banyu.common;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.origin.banyu.common.dto.ThirdPartyPlatformConfigDTO;
 import com.origin.banyu.common.entity.ThirdPartyConfig;
 import com.origin.banyu.common.enums.PlatformType;

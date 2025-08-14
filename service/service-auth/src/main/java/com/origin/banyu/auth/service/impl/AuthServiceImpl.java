@@ -1,13 +1,12 @@
 package com.origin.banyu.auth.service.impl;
 
-import com.origin.banyu.common.dto.LoginRequest;
-import com.origin.banyu.common.dto.LoginResponse;
 import com.origin.banyu.auth.dto.UserInfoResponse;
-
 import com.origin.banyu.auth.service.AuthService;
 import com.origin.banyu.auth.service.SysUserService;
-import com.origin.banyu.auth.util.JwtUtil;
 import com.origin.banyu.auth.util.JwtTokenManager;
+import com.origin.banyu.auth.util.JwtUtil;
+import com.origin.banyu.common.dto.LoginRequest;
+import com.origin.banyu.common.dto.LoginResponse;
 import com.origin.banyu.common.entity.ErrorCode;
 import com.origin.banyu.common.entity.SysUser;
 import com.origin.banyu.common.exception.BusinessException;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,6 +45,7 @@ public class AuthServiceImpl implements AuthService {
         log.info("用户登录 - 用户名: {}", request.getUsername());
         
         // 验证用户ID(=手机号)和密码
+       // 采用user_id登入
         SysUser user = sysUserService.getById(request.getUsername());
         if (user == null || !sysUserService.validatePassword(request.getPassword(), user.getPassword())) {
             log.warn("登录失败 - 用户名或密码错误: {}", request.getUsername());
@@ -95,12 +94,7 @@ public class AuthServiceImpl implements AuthService {
             return false;
         }
         
-        try {
-            return jwtUtil.validateToken(token);
-        } catch (Exception e) {
-            log.warn("令牌验证失败: {}", e.getMessage());
-            return false;
-        }
+        return jwtUtil.validateToken(token);
     }
 
     @Override
@@ -108,24 +102,20 @@ public class AuthServiceImpl implements AuthService {
     public void logout(String token) {
         log.info("用户登出 - 令牌: {}", token);
         
-        try {
-            // 从token中提取用户信息
-            String userId = jwtUtil.getUserIdFromToken(token);
+        // 从token中提取用户信息
+        String userId = jwtUtil.getUserIdFromToken(token);
+        
+        if (userId != null) {
+            // 使用基于用户ID的token管理
+            jwtTokenManager.removeUserToken(userId);
             
-            if (userId != null) {
-                // 使用基于用户ID的token管理
-                jwtTokenManager.removeUserToken(userId);
-                
-                // 将token加入黑名单
-                long expirationTime = jwtUtil.getExpirationTime(token);
-                if (expirationTime > 0) {
-                    jwtTokenManager.addToBlacklist(token, expirationTime);
-                }
-                
-                log.info("用户登出成功 - 用户ID: {}", userId);
+            // 将token加入黑名单
+            long expirationTime = jwtUtil.getExpirationTime(token);
+            if (expirationTime > 0) {
+                jwtTokenManager.addToBlacklist(token, expirationTime);
             }
-        } catch (Exception e) {
-            log.warn("登出处理异常: {}", e.getMessage());
+            
+            log.info("用户登出成功 - 用户ID: {}", userId);
         }
     }
 
@@ -133,45 +123,26 @@ public class AuthServiceImpl implements AuthService {
     public void forceLogout(String userId) {
         log.info("强制登出用户 - 用户ID: {}", userId);
         
-        try {
-            jwtTokenManager.removeUserToken(userId);
-            log.info("强制登出成功 - 用户ID: {}", userId);
-        } catch (Exception e) {
-            log.warn("强制登出异常: {}", e.getMessage());
-        }
+        jwtTokenManager.removeUserToken(userId);
+        log.info("强制登出成功 - 用户ID: {}", userId);
     }
 
     @Override
     @Cacheable(key = "#token")
     public String getUsernameFromToken(String token) {
-        try {
-            return jwtUtil.getUsernameFromToken(token);
-        } catch (Exception e) {
-            log.warn("从令牌获取用户名失败: {}", e.getMessage());
-            return null;
-        }
+        return jwtUtil.getUsernameFromToken(token);
     }
     
     @Override
     @Cacheable(key = "#token")
     public String getUserIdFromToken(String token) {
-        try {
-            return jwtUtil.getUserIdFromToken(token);
-        } catch (Exception e) {
-            log.warn("从令牌获取用户ID失败: {}", e.getMessage());
-            return null;
-        }
+        return jwtUtil.getUserIdFromToken(token);
     }
     
     @Override
     @Cacheable(key = "#token")
     public Integer getUserTypeFromToken(String token) {
-        try {
-            return jwtUtil.getClaimFromToken(token, "userType", Integer.class);
-        } catch (Exception e) {
-            log.warn("从令牌获取用户类型失败: {}", e.getMessage());
-            return null;
-        }
+        return jwtUtil.getClaimFromToken(token, "userType", Integer.class);
     }
     
     @Override
@@ -229,6 +200,25 @@ public class AuthServiceImpl implements AuthService {
                 .setProfileId(user.getProfileId())
                 .setLastLoginTime(user.getLastLoginTime())
                 .setCreatedTime(user.getCreatedTime());
+    }
+    
+    @Override
+    public boolean verifyPassword(String username, String password) {
+        SysUser user = sysUserService.getByUsername(username);
+        if (user == null) {
+            return false; // 用户不存在，密码验证失败
+        }
+        
+        return sysUserService.validatePassword(password, user.getPassword());
+    }
+    
+    @Override
+    public SysUser getUserInfoEntity(String userId) {
+        SysUser user = sysUserService.getById(userId);
+        if (user == null) {
+            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
+        }
+        return user;
     }
     
     /**

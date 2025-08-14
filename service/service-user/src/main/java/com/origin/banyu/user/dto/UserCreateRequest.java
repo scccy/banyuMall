@@ -24,9 +24,14 @@ public class UserCreateRequest {
     private String phone;
     
     /**
-     * 微信ID
+     * 企业微信ID
      */
-    @NotBlank(message = "微信ID不能为空")
+    @NotBlank(message = "企业微信ID不能为空")
+    private String wechatWorkId;
+    
+    /**
+     * 普通微信ID
+     */
     private String wechatId;
     
     /**

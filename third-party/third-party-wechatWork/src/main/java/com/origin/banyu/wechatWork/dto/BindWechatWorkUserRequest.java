@@ -1,14 +1,12 @@
 package com.origin.banyu.wechatWork.dto;
 
+import com.origin.banyu.common.dto.WechatWorkUserInfo;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import com.origin.banyu.common.dto.WechatWorkUserInfo;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 /**
  * 绑定企业微信用户请求DTO

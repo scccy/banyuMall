@@ -1,7 +1,6 @@
 package com.origin.banyu.common.util;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.origin.banyu.common.dto.ThirdPartyPlatformConfigDTO;
 import com.origin.banyu.common.entity.ThirdPartyConfig;
 import com.origin.banyu.common.enums.PlatformType;
@@ -40,6 +39,7 @@ public class ThirdPartyConfigParser {
     public static Object parseConfigByType(int platformType, String platformConfig) {
         try {
             if (platformConfig == null || platformConfig.trim().isEmpty()) {
+                log.debug("平台配置为空，跳过解析: platformType={}", platformType);
                 return null;
             }
 
@@ -49,9 +49,13 @@ public class ThirdPartyConfigParser {
                 return null;
             }
 
-            return parseConfigByType(type, platformConfig);
+            Object result = parseConfigByType(type, platformConfig);
+            if (result == null) {
+                log.debug("解析结果为空: platformType={}, platformConfig={}", platformType, platformConfig);
+            }
+            return result;
         } catch (Exception e) {
-            log.error("解析平台配置失败: platformType={}, platformConfig={}", platformType, platformConfig, e);
+            log.error("解析平台配置失败: platformType={}, platformConfig={}, error={}", platformType, platformConfig, e.getMessage(), e);
             return null;
         }
     }
@@ -66,6 +70,7 @@ public class ThirdPartyConfigParser {
     public static Object parseConfigByType(PlatformType platformType, String platformConfig) {
         try {
             if (platformConfig == null || platformConfig.trim().isEmpty()) {
+                log.debug("平台配置为空，跳过解析: platformType={}", platformType != null ? platformType.getName() : "null");
                 return null;
             }
 
@@ -74,25 +79,40 @@ public class ThirdPartyConfigParser {
                 return null;
             }
 
+            Object result = null;
             switch (platformType) {
                 case WECHAT_WORK:
-                    return JSON.parseObject(platformConfig, ThirdPartyPlatformConfigDTO.WechatWorkConfig.class);
+                    result = JSON.parseObject(platformConfig, ThirdPartyPlatformConfigDTO.WechatWorkConfig.class);
+                    log.debug("解析企业微信配置成功: configLength={}", platformConfig.length());
+                    break;
                 case WECHAT_PERSONAL:
                     // TODO: 添加个人微信配置解析
-                    log.warn("暂不支持个人微信配置解析");
+                    log.warn("暂不支持个人微信配置解析: platformType={}", platformType.getName());
                     return null;
                 case YOUZAN:
-                    return JSON.parseObject(platformConfig, ThirdPartyPlatformConfigDTO.YouZanConfig.class);
+                    result = JSON.parseObject(platformConfig, ThirdPartyPlatformConfigDTO.YouZanConfig.class);
+                    log.debug("解析有赞配置成功: configLength={}", platformConfig.length());
+                    break;
                 case DINGTALK:
-                    return JSON.parseObject(platformConfig, ThirdPartyPlatformConfigDTO.DingTalkConfig.class);
+                    result = JSON.parseObject(platformConfig, ThirdPartyPlatformConfigDTO.DingTalkConfig.class);
+                    log.debug("解析钉钉配置成功: configLength={}", platformConfig.length());
+                    break;
                 case FEISHU:
-                    return JSON.parseObject(platformConfig, ThirdPartyPlatformConfigDTO.FeiShuConfig.class);
+                    result = JSON.parseObject(platformConfig, ThirdPartyPlatformConfigDTO.FeiShuConfig.class);
+                    log.debug("解析飞书配置成功: configLength={}", platformConfig.length());
+                    break;
                 default:
                     log.warn("暂不支持的平台类型: {}", platformType.getName());
                     return null;
             }
+            
+            if (result == null) {
+                log.warn("解析结果为空: platformType={}, platformConfig={}", platformType.getName(), platformConfig);
+            }
+            return result;
         } catch (Exception e) {
-            log.error("解析平台配置失败: platformType={}, platformConfig={}", platformType.getName(), platformConfig, e);
+            log.error("解析平台配置失败: platformType={}, platformConfig={}, error={}", 
+                     platformType != null ? platformType.getName() : "null", platformConfig, e.getMessage(), e);
             return null;
         }
     }

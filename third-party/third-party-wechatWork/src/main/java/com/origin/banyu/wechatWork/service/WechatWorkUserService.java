@@ -1,12 +1,11 @@
 package com.origin.banyu.wechatWork.service;
 
 import com.alibaba.fastjson2.JSON;
+import com.origin.banyu.common.dto.WechatWorkUserInfo;
 import com.origin.banyu.wechatWork.adapter.WechatWorkApiAdapter;
 import com.origin.banyu.wechatWork.entity.WechatWorkUser;
 import com.origin.banyu.wechatWork.exception.WechatWorkServiceException;
 import com.origin.banyu.wechatWork.mapper.WechatWorkUserMapper;
-import com.origin.banyu.common.dto.WechatWorkUserInfo;
-import com.origin.banyu.common.util.ThirdPartyConfigParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

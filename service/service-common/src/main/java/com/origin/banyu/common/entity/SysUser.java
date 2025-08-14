@@ -29,7 +29,10 @@ public class SysUser extends BaseEntity {
     /** 手机号 */
     @TableField("phone")
     private String phone;
-    /** 微信用户ID */
+    /** 企业微信用户ID */
+    @TableField("wechatWork_id")
+    private String wechatWorkId;
+    /** 普通微信用户ID */
     @TableField("wechat_id")
     private String wechatId;
     /** 有赞用户ID */
@@ -44,7 +47,10 @@ public class SysUser extends BaseEntity {
     /** 昵称 */
     @TableField("nickname")
     private String nickname;
-    /** 微信昵称 */
+    /** 企业微信昵称 */
+    @TableField("wechatWork_nickname")
+    private String wechatWorkNickname;
+    /** 普通微信昵称 */
     @TableField("wechat_nickname")
     private String wechatNickname;
     /** 有赞昵称 */

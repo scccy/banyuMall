@@ -1,8 +1,8 @@
 package com.origin.banyu.auth.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.origin.banyu.common.entity.ThirdPartyConfig;
 import com.origin.banyu.common.dto.ThirdPartyConfigQueryRequest;
+import com.origin.banyu.common.entity.ThirdPartyConfig;
 
 /**
  * 第三方平台配置服务接口

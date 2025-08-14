@@ -16,6 +16,7 @@ import com.origin.banyu.publisher.entity.PublisherShareReview;
 import com.origin.banyu.publisher.feign.UserFeignClient;
 import com.origin.banyu.publisher.mapper.PublisherShareReviewMapper;
 import com.origin.banyu.publisher.service.PublisherTaskShareReviewService;
+import com.origin.banyu.publisher.service.PublisherTaskService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -39,6 +40,7 @@ public class PublisherTaskTaskShareReviewServiceImpl extends BaseService impleme
     
     private final PublisherShareReviewMapper shareReviewMapper;
     private final UserFeignClient userFeignClient;
+    private final PublisherTaskService publisherTaskService;
     
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -79,8 +81,6 @@ public class PublisherTaskTaskShareReviewServiceImpl extends BaseService impleme
     
     @Override
     public IPage<ShareReviewResponse> getShareReviewList(ShareReviewListRequest request) {
-        log.info("获取分享审核列表，请求: page={}, size={}, taskId={}, taskName={}, reviewStatus={}, userId={}, wechatNickname={}",
-                request.getPage(), request.getSize(), request.getTaskId(), request.getTaskName(), request.getReviewStatus(), request.getUserId(), request.getWechatNickname());
 
         Page<PublisherShareReview> pageParam = new Page<>(request.getPage(), request.getSize());
         IPage<PublisherShareReview> result = shareReviewMapper.selectByConditions(pageParam, request);
@@ -92,6 +92,8 @@ public class PublisherTaskTaskShareReviewServiceImpl extends BaseService impleme
 				.distinct()
 				.collect(Collectors.toList());
 
+		log.debug("批量查询用户信息 - 用户ID列表: {}", ids);
+
 		List<SysUser> users;
 		if (ids.isEmpty()) {
 			users = java.util.Collections.emptyList();
@@ -101,6 +103,16 @@ public class PublisherTaskTaskShareReviewServiceImpl extends BaseService impleme
 				users = (batch != null && batch.getCode() == 200&& batch.getData() != null)
 						? batch.getData()
 						: java.util.Collections.emptyList();
+				
+				log.debug("批量查询用户信息结果 - 请求ID数量: {}, 返回用户数量: {}, 响应码: {}", 
+						ids.size(), users.size(), batch != null ? batch.getCode() : "null");
+				
+				// 记录每个用户的昵称信息
+				users.forEach(user -> {
+					log.debug("用户信息 - userId: {}, wechatNickname: {}, wechatWorkNickname: {}, nickname: {}", 
+							user.getUserId(), user.getWechatNickname(), user.getWechatWorkNickname(), user.getNickname());
+				});
+				
 			} catch (Exception ex) {
 				log.warn("批量获取用户信息失败, ids={}", ids, ex);
 				users = java.util.Collections.emptyList();
@@ -110,6 +122,8 @@ public class PublisherTaskTaskShareReviewServiceImpl extends BaseService impleme
 		Map<String, SysUser> userMap = users.stream()
 				.filter(Objects::nonNull)
 				.collect(Collectors.toMap(SysUser::getUserId, u -> u, (a, b) -> a));
+		
+		log.debug("用户映射表构建完成 - 映射表大小: {}", userMap.size());
 
         // 使用基础类的方法构建分页响应
         return buildPageResponse(result, r -> convertToResponse(r, userMap));
@@ -130,6 +144,8 @@ public class PublisherTaskTaskShareReviewServiceImpl extends BaseService impleme
                 .distinct()
                 .collect(Collectors.toList());
 
+        log.debug("批量查询用户信息(不分页) - 用户ID列表: {}", ids);
+
         List<SysUser> users;
         if (ids.isEmpty()) {
             users = java.util.Collections.emptyList();
@@ -139,6 +155,16 @@ public class PublisherTaskTaskShareReviewServiceImpl extends BaseService impleme
                 users = (batch != null && batch.getCode()==200 && batch.getData() != null)
                         ? batch.getData()
                         : java.util.Collections.emptyList();
+                
+                log.debug("批量查询用户信息结果(不分页) - 请求ID数量: {}, 返回用户数量: {}, 响应码: {}", 
+                        ids.size(), users.size(), batch != null ? batch.getCode() : "null");
+                
+                // 记录每个用户的昵称信息
+                users.forEach(user -> {
+                    log.debug("用户信息(不分页) - userId: {}, wechatNickname: {}, wechatWorkNickname: {}, nickname: {}", 
+                            user.getUserId(), user.getWechatNickname(), user.getWechatWorkNickname(), user.getNickname());
+                });
+                
             } catch (Exception ex) {
                 log.warn("批量获取用户信息失败, ids={}", ids, ex);
                 users = java.util.Collections.emptyList();
@@ -148,6 +174,8 @@ public class PublisherTaskTaskShareReviewServiceImpl extends BaseService impleme
         Map<String, SysUser> userMap = users.stream()
                 .filter(Objects::nonNull)
                 .collect(Collectors.toMap(SysUser::getUserId, u -> u, (a, b) -> a));
+        
+        log.debug("用户映射表构建完成(不分页) - 映射表大小: {}", userMap.size());
 
         // 转换为响应对象
         return result.stream()
@@ -168,11 +196,61 @@ public class PublisherTaskTaskShareReviewServiceImpl extends BaseService impleme
         ShareReviewResponse response = new ShareReviewResponse();
         BeanUtils.copyProperties(review, response);
         
-        // 设置微信昵称
-        SysUser user = userMap.get(review.getCreatedBy());
-        if (user != null) {
-            response.setWechatNickname(user.getWechatNickname());
+        // 补充 userId（提交人），保证非空
+        response.setUserId(review.getCreatedBy() == null ? "" : review.getCreatedBy());
+        
+        // 获取任务名称
+        try {
+            if (review.getTaskId() != null && !review.getTaskId().isEmpty()) {
+                var taskDetail = publisherTaskService.getTaskDetail(review.getTaskId());
+                if (taskDetail != null) {
+                    response.setTaskName(taskDetail.getTaskName());
+                }
+            }
+        } catch (Exception ex) {
+            log.warn("获取任务名称失败, taskId: {}", review.getTaskId(), ex);
         }
+        
+        // 处理多链接与多图片：以逗号分隔，保证非空列表
+        List<String> links = (review.getShareUrl() == null || review.getShareUrl().isEmpty())
+                ? new java.util.ArrayList<>()
+                : java.util.Arrays.stream(review.getShareUrl().split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+        response.setLinks(links);
+        
+        List<String> images = (review.getScreenshotUrl() == null || review.getScreenshotUrl().isEmpty())
+                ? new java.util.ArrayList<>()
+                : java.util.Arrays.stream(review.getScreenshotUrl().split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+        response.setImages(images);
+        
+        // 查询微信昵称（优先使用批量结果），保证非空
+        String nickname = "";
+        if (response.getUserId() != null && !response.getUserId().isEmpty() && userMap != null) {
+            SysUser u = userMap.get(response.getUserId());
+            if (u != null) {
+                // 优先使用普通微信昵称，如果没有则使用企业微信昵称，最后使用通用昵称
+                if (u.getWechatNickname() != null && !u.getWechatNickname().trim().isEmpty()) {
+                    nickname = u.getWechatNickname();
+                } else if (u.getWechatWorkNickname() != null && !u.getWechatWorkNickname().trim().isEmpty()) {
+                    nickname = u.getWechatWorkNickname();
+                } else if (u.getNickname() != null && !u.getNickname().trim().isEmpty()) {
+                    nickname = u.getNickname();
+                }
+            }
+            
+            // 添加调试日志
+            log.debug("用户昵称查询 - userId: {}, wechatNickname: {}, wechatWorkNickname: {}, nickname: {}, 最终结果: {}", 
+                    response.getUserId(), u != null ? u.getWechatNickname() : "null", 
+                    u != null ? u.getWechatWorkNickname() : "null", 
+                    u != null ? u.getNickname() : "null", nickname);
+        }
+        
+        response.setWechatNickname(nickname);
         
         return response;
     }

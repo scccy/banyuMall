@@ -1,19 +1,17 @@
 package com.origin.banyu.auth.controller;
 
+import com.origin.banyu.auth.config.TestConfig;
 import com.origin.banyu.auth.config.TestSecurityConfig;
 import com.origin.banyu.auth.service.AuthService;
 import com.origin.banyu.auth.service.SysUserService;
-import com.origin.banyu.auth.config.TestConfig;
+import com.origin.banyu.auth.util.JwtUtil;
 import com.origin.banyu.common.dto.LoginRequest;
 import com.origin.banyu.common.dto.LoginResponse;
-import com.origin.banyu.auth.util.JwtUtil;
-
 import com.origin.banyu.common.entity.SysUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -27,10 +25,10 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 

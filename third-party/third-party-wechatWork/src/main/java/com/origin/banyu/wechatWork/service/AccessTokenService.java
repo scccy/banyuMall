@@ -1,16 +1,17 @@
 package com.origin.banyu.wechatWork.service;
-import com.origin.banyu.common.dto.ResultData;
+
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import com.origin.banyu.common.entity.ThirdPartyConfig;
+import com.origin.banyu.base.manager.OkHttpManager;
+import com.origin.banyu.common.dto.ResultData;
 import com.origin.banyu.common.dto.ThirdPartyPlatformConfigDTO;
+import com.origin.banyu.common.entity.ThirdPartyConfig;
+import com.origin.banyu.common.util.ThirdPartyConfigParser;
 import com.origin.banyu.wechatWork.feign.WechatWorkAuthFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import com.origin.banyu.base.manager.OkHttpManager;
-import com.origin.banyu.common.util.ThirdPartyConfigParser;
 
 import java.util.concurrent.TimeUnit;
 

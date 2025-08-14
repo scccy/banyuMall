@@ -78,6 +78,7 @@ public class ResultData<T> {
             .setData(data);
     }
 
+
     // ==================== 失败响应方法 ====================
     
     /**
@@ -213,58 +214,6 @@ public class ResultData<T> {
         return success(message, null);
     }
 
-    // ==================== 工具方法 ====================
-    
-    /**
-     * 判断响应是否成功
-     *
-     * @return true 如果响应成功，false 否则
-     */
-    public boolean isSuccess() {
-        return this.code != null && this.code == 200;
-    }
 
-    /**
-     * 判断响应是否失败
-     *
-     * @return true 如果响应失败，false 否则
-     */
-    public boolean isFail() {
-        return !isSuccess();
-    }
 
-    /**
-     * 获取响应数据（类型转换方法）
-     *
-     * @param <R> 目标类型
-     * @param clazz 目标类型Class
-     * @return 转换后的数据，如果转换失败返回null
-     */
-    @SuppressWarnings("unchecked")
-    public <R> R getData(Class<R> clazz) {
-        if (clazz.isInstance(this.data)) {
-            return (R) this.data;
-        }
-        return null;
-    }
-
-    /**
-     * 获取响应消息，如果为空则返回默认消息
-     *
-     * @param defaultMessage 默认消息
-     * @return 响应消息或默认消息
-     */
-    public String getMessageOrDefault(String defaultMessage) {
-        return this.message != null && !this.message.trim().isEmpty() ? this.message : defaultMessage;
-    }
-
-    /**
-     * 获取响应代码，如果为空则返回默认代码
-     *
-     * @param defaultCode 默认代码
-     * @return 响应代码或默认代码
-     */
-    public Integer getCodeOrDefault(Integer defaultCode) {
-        return this.code != null ? this.code : defaultCode;
-    }
 }

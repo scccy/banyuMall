@@ -34,9 +34,17 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
     SysUser selectByPhone(@Param("phone") String phone);
     
     /**
-     * 根据微信ID查询用户
+     * 根据企业微信ID查询用户
      *
-     * @param wechatId 微信ID
+     * @param wechatWorkId 企业微信ID
+     * @return 用户信息
+     */
+    SysUser selectByWechatWorkId(@Param("wechatWorkId") String wechatWorkId);
+    
+    /**
+     * 根据普通微信ID查询用户
+     *
+     * @param wechatId 普通微信ID
      * @return 用户信息
      */
     SysUser selectByWechatId(@Param("wechatId") String wechatId);

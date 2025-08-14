@@ -2,10 +2,10 @@ package com.origin.banyu.user.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.origin.banyu.user.dto.UserCreateRequest;
-import com.origin.banyu.user.dto.UserQueryRequest;
-import com.origin.banyu.user.dto.UserUpdateRequest;
 import com.origin.banyu.common.entity.SysUser;
+import com.origin.banyu.user.dto.UserQueryRequest;
+import jakarta.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 系统用户基础服务接口
@@ -22,16 +22,8 @@ public interface SysUserService extends IService<SysUser> {
      * @param request 创建请求
      * @return 创建的用户信息
      */
-    SysUser createUser(UserCreateRequest request);
-    
-    /**
-     * 创建用户（支持头像上传）
-     *
-     * @param request 创建请求
-     * @param avatarFile 头像文件（可选）
-     * @return 创建的用户信息
-     */
-    SysUser createUserWithAvatar(UserCreateRequest request, org.springframework.web.multipart.MultipartFile avatarFile);
+    SysUser createUser(SysUser request);
+
     
     /**
      * 根据用户ID获取用户信息
@@ -48,7 +40,7 @@ public interface SysUserService extends IService<SysUser> {
      * @param request 更新请求
      * @return 更新后的用户信息
      */
-    SysUser updateUser(String userId, UserUpdateRequest request);
+    SysUser updateUser(String userId, SysUser request);
     
     /**
      * 更新用户信息（支持头像上传）
@@ -58,7 +50,7 @@ public interface SysUserService extends IService<SysUser> {
      * @param avatarFile 头像文件（可选）
      * @return 更新后的用户信息
      */
-    SysUser updateUserWithAvatar(String userId, UserUpdateRequest request, org.springframework.web.multipart.MultipartFile avatarFile);
+    SysUser updateUserWithAvatar(String userId, @Valid SysUser request, MultipartFile avatarFile);
     
     /**
      * 删除用户（软删除）

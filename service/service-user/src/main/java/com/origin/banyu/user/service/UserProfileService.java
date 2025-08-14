@@ -2,7 +2,6 @@ package com.origin.banyu.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.origin.banyu.user.dto.AvatarResponse;
-import com.origin.banyu.user.dto.UserUpdateRequest;
 import com.origin.banyu.user.entity.UserProfile;
 
 /**

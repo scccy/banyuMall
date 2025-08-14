@@ -2,11 +2,13 @@ package com.origin.banyu.common.exception;
 
 
 import com.origin.banyu.common.entity.ErrorCode;
+import lombok.Getter;
 
 /**
  * 业务异常类
  * 用于处理业务逻辑相关的异常
  */
+@Getter
 public class BusinessException extends RuntimeException {
     
     private final ErrorCode errorCode;
@@ -30,11 +32,7 @@ public class BusinessException extends RuntimeException {
         super(errorCode.getMessage(), cause);
         this.errorCode = errorCode;
     }
-    
-    public ErrorCode getErrorCode() {
-        return errorCode;
-    }
-    
+
     public int getCode() {
         return errorCode.getCode();
     }

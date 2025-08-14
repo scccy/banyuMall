@@ -1,7 +1,7 @@
 package com.origin.banyu.wechatWork.service;
 
-import com.origin.banyu.wechatWork.adapter.WechatWorkApiAdapter;
 import com.origin.banyu.common.dto.WechatWorkUserInfo;
+import com.origin.banyu.wechatWork.adapter.WechatWorkApiAdapter;
 import com.origin.banyu.wechatWork.entity.WechatWorkUser;
 import com.origin.banyu.wechatWork.exception.WechatWorkServiceException;
 import com.origin.banyu.wechatWork.mapper.WechatWorkUserMapper;
@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**

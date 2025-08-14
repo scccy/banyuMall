@@ -1,12 +1,12 @@
 package com.origin.wechatWork;
 
 import com.origin.banyu.wechatWork.dto.AuthQrCodeResponse;
-import com.origin.banyu.wechatWork.service.WechatWorkAuthService;
 import com.origin.banyu.wechatWork.service.AccessTokenService;
+import com.origin.banyu.wechatWork.service.WechatWorkAuthService;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.*;
 

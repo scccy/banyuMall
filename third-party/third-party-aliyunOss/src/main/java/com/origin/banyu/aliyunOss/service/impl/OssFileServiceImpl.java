@@ -2,10 +2,7 @@ package com.origin.banyu.aliyunOss.service.impl;
 
 import com.origin.banyu.aliyunOss.config.OssConfig;
 import com.origin.banyu.aliyunOss.entity.OssUploadLog;
-
-
 import com.origin.banyu.aliyunOss.exception.FileSizeExceededException;
-
 import com.origin.banyu.aliyunOss.exception.FileTypeNotAllowedException;
 import com.origin.banyu.aliyunOss.exception.OssServiceException;
 import com.origin.banyu.aliyunOss.mapper.OssUploadLogMapper;

@@ -1,6 +1,8 @@
 package com.origin.banyu.user.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -69,7 +71,7 @@ public class UserUpdateRequest {
     /**
      * 联系电话
      */
-    @Pattern(regexp = "^1[3-9]\\d{9}$", message = "联系电话格式不正确")
+
     private String contactPhone;
     
     /**
@@ -81,4 +83,5 @@ public class UserUpdateRequest {
      * 描述
      */
     private String description;
+
 } 

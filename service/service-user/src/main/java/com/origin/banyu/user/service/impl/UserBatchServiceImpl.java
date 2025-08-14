@@ -2,6 +2,7 @@ package com.origin.banyu.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.origin.banyu.base.service.BaseService;
 import com.origin.banyu.common.entity.SysUser;
 import com.origin.banyu.user.mapper.SysUserMapper;
 import com.origin.banyu.user.service.UserBatchService;
@@ -9,14 +10,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Collections;
+import com.origin.banyu.user.mapper.UserProfileMapper;
 
 /**
  * 用户批量操作服务实现类
  * 专注于用户批量操作功能
+ * 继承BaseService，异常处理由AOP自动完成
  * 
  * @author scccy
  * @since 2025-08-12
@@ -24,11 +27,10 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserBatchServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements UserBatchService {
+public class UserBatchServiceImpl implements UserBatchService {
     
-    // 常量定义
-    private static final int USER_STATUS_NORMAL = 1;
-    private static final int USER_STATUS_DELETED = 3;
+    private final SysUserMapper sysUserMapper;
+    private final UserProfileMapper userProfileMapper;
     
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -40,28 +42,29 @@ public class UserBatchServiceImpl extends ServiceImpl<SysUserMapper, SysUser> im
             return false;
         }
         
-        // 构建查询条件
-        LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
-        wrapper.in(SysUser::getUserId, userIds)
-               .eq(SysUser::getStatus, USER_STATUS_NORMAL);
-        
-        // 查询存在的用户
-        List<SysUser> existingUsers = list(wrapper);
-        if (existingUsers.isEmpty()) {
-            log.warn("批量删除用户 - 未找到任何有效的用户");
+        // 软删除用户 - 使用现有的updateBatchById方法
+        List<SysUser> users = sysUserMapper.selectBatchIds(userIds);
+        if (users.isEmpty()) {
+            log.warn("批量删除用户 - 未找到任何用户");
             return false;
         }
         
-        // 批量软删除
-        for (SysUser user : existingUsers) {
-            user.setStatus(USER_STATUS_DELETED);
-            user.setUpdatedTime(LocalDateTime.now());
+        // 设置删除状态
+        for (SysUser user : users) {
+            user.setStatus(3); // 3表示删除状态
         }
         
         // 批量更新
-        boolean result = updateBatchById(existingUsers);
-        log.info("批量删除用户成功 - 删除数量: {}", existingUsers.size());
-        return result;
+        int deletedCount = 0;
+        for (SysUser user : users) {
+            if (sysUserMapper.updateById(user) > 0) {
+                deletedCount++;
+            }
+        }
+        
+        log.info("批量删除用户完成 - 成功删除 {} 个用户", deletedCount);
+        
+        return deletedCount > 0;
     }
     
     @Override
@@ -70,30 +73,12 @@ public class UserBatchServiceImpl extends ServiceImpl<SysUserMapper, SysUser> im
         
         if (userIds == null || userIds.isEmpty()) {
             log.warn("批量获取用户信息 - 用户ID列表为空");
-            return List.of();
+            return Collections.emptyList();
         }
         
-        // 构建查询条件
-        LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
-        wrapper.in(SysUser::getUserId, userIds)
-               .eq(SysUser::getStatus, USER_STATUS_NORMAL)
-               .select(
-                   SysUser::getUserId,
-                   SysUser::getUsername,
-                   SysUser::getPhone,
-                   SysUser::getEmail,
-                   SysUser::getNickname,
-                   SysUser::getAvatar,
-                   SysUser::getUserType,
-                   SysUser::getStatus,
-                   SysUser::getGender,
-                   SysUser::getCreatedTime,
-                   SysUser::getUpdatedTime
-               );
-        
         // 批量查询用户信息
-        List<SysUser> users = list(wrapper);
-        log.info("批量获取用户信息成功 - 查询到用户数量: {}", users.size());
+        List<SysUser> users = sysUserMapper.selectBatchIds(userIds);
+        log.info("批量获取用户信息完成 - 成功获取 {} 个用户信息", users.size());
         
         return users;
     }

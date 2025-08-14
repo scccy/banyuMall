@@ -3,7 +3,6 @@ package com.origin.banyu.base.manager;
 import com.alibaba.fastjson2.JSON;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Map;

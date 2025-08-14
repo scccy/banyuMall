@@ -21,7 +21,7 @@ public class UserQueryRequest {
      * 当前页码
      */
     @Min(value = 1, message = "页码必须大于0")
-    private Integer current = 1;
+    private Integer page = 1;
     
     /**
      * 每页大小

@@ -1,10 +1,11 @@
 package com.origin.banyu.common.entity;
 
-import com.alibaba.fastjson2.JSONObject;
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import java.time.LocalDateTime;
 
 /**
  * 第三方平台配置实体类（精简版）
