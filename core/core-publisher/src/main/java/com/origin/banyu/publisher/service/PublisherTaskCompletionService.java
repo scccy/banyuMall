@@ -1,9 +1,9 @@
 package com.origin.banyu.publisher.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.origin.banyu.common.dto.CompletionDetailResponseDto;
 import com.origin.banyu.publisher.dto.request.CompletionsGetDetailsRequestDto;
 import com.origin.banyu.publisher.dto.request.TaskCompletionRequest;
-import com.origin.banyu.publisher.dto.response.CompletionDetailResponseDto;
 import com.origin.banyu.publisher.dto.response.TaskCompletionResponse;
 
 /**

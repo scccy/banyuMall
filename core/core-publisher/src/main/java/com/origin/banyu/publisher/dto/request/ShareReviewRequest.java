@@ -1,6 +1,5 @@
 package com.origin.banyu.publisher.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -11,31 +10,13 @@ import lombok.Data;
 @Data
 public class ShareReviewRequest {
     
-    /**
-     * 任务ID
-     */
-    @NotBlank(message = "任务ID不能为空")
-    private String taskId;
+
+    private String shareReviewId;
     
-    /**
-     * 分享内容
-     */
-    @NotBlank(message = "分享内容不能为空")
-    private String shareContent;
+
+    private String reviewComment;
     
-    /**
-     * 分享平台
-     */
-    @NotBlank(message = "分享平台不能为空")
-    private String sharePlatform;
-    
-    /**
-     * 分享链接
-     */
-    private String shareUrl;
-    
-    /**
-     * 截图URL
-     */
-    private String screenshotUrl;
+
+    private Integer reviewStatusId;
+
 } 

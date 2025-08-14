@@ -3,6 +3,7 @@ package com.origin.banyu.publisher.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.origin.banyu.publisher.dto.request.ShareReviewListRequest;
 import com.origin.banyu.publisher.dto.request.ShareReviewRequest;
+import com.origin.banyu.publisher.dto.request.SubmitShareReviewListDTO;
 import com.origin.banyu.publisher.dto.response.ShareReviewResponse;
 
 /**
@@ -14,6 +15,7 @@ public interface PublisherTaskShareReviewService {
     
     /**
      * 提交分享审核
+     *
      * @param request 分享审核请求
      * @return 分享审核ID
      */
@@ -42,4 +44,6 @@ public interface PublisherTaskShareReviewService {
       * @return 全量分享审核列表
       */
      java.util.List<ShareReviewResponse> getShareReviewListAll(ShareReviewListRequest request);
-} 
+
+    String submitShareReviewList(SubmitShareReviewListDTO request);
+}

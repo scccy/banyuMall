@@ -2,7 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.origin.banyu.publisher.mapper.PublisherTaskCompletionMapper">
 
-    <!-- 普通任务详情查询（类型1,2,3,4,6） -->
+    <!--
+        已弃用：普通任务详情查询（类型1,2,3,4,6）
+        说明：改为在服务层解析 completion_detail JSON 直接映射到 DTO
     <select id="selectNormalTaskDetailsPage" resultType="com.origin.banyu.publisher.dto.response.CompletionDetailResponseDto$NormalTaskDetail">
         SELECT 
             ptc.user_id,
@@ -18,18 +20,19 @@
             AND pt.task_type_id IN (1, 2, 3, 4, 6)
         ORDER BY ptc.completion_time DESC
     </select>
+    -->
 
-    <!-- 邀请任务详情查询（类型5） -->
+    <!--
+        已弃用：邀请任务详情查询（类型5）
+        说明：改为在服务层解析 completion_detail JSON 直接映射到 DTO
     <select id="selectInviteTaskDetailsPage" resultType="com.origin.banyu.publisher.dto.response.CompletionDetailResponseDto$InviteTaskDetail">
         SELECT 
             ptc.user_id as inviter_user_id,
-            u.wechat_nickname as wechat_work_nickname,
-            JSON_EXTRACT(ptc.completion_detail, '$.invitedUser.userId') as invited_user_id,
-            JSON_EXTRACT(ptc.completion_detail, '$.invitedUser.wechatId') as invited_wechat_id,
-            JSON_EXTRACT(ptc.completion_detail, '$.invitedUser.wechatNickname') as invited_wechat_nickname,
+            u.wechatWork_nickname as wechat_work_nickname,
+            JSON_UNQUOTE(JSON_EXTRACT(ptc.completion_detail, '$.invitedUser.userId')) as invited_user_id,
             pt.task_reward,
             ptc.completion_status,
-            JSON_EXTRACT(ptc.completion_detail, '$.inviteStartTime') as invite_start_time,
+            CAST(JSON_UNQUOTE(JSON_EXTRACT(ptc.completion_detail, '$.inviteStartTime')) AS DATETIME) as invite_start_time,
             ptc.completion_time as invite_success_time
         FROM publisher_task_completion ptc
         LEFT JOIN publisher_task pt ON ptc.task_id = pt.task_id
@@ -39,13 +42,14 @@
             AND pt.task_type_id = 5
         ORDER BY ptc.completion_time DESC
     </select>
+    -->
 
     <!-- 排名任务详情查询（类型7）
          说明：
          - 将 topCount 限制放入内层子查询，外层不写 LIMIT，交给 MyBatis-Plus 自动拼接分页语句
          - 先汇总 earned_reward，再在中间层做 ROW_NUMBER 排序，最后外层供分页
     -->
-    <select id="selectRankTaskDetailsPage" resultType="com.origin.banyu.publisher.dto.response.CompletionDetailResponseDto$RankTaskDetail">
+    <select id="selectRankTaskDetailsPage" resultType="com.origin.banyu.common.dto.CompletionDetailResponseDto$RankTaskDetail">
         SELECT 
             t.rank_id,
             t.user_id,

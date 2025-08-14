@@ -5,11 +5,13 @@ import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.origin.banyu.base.service.BaseService;
+import com.origin.banyu.common.dto.CompletionDetailResponseDto;
 import com.origin.banyu.common.entity.ErrorCode;
 import com.origin.banyu.common.exception.BusinessException;
+import com.origin.banyu.publisher.dto.payload.NormalDetailPayload;
 import com.origin.banyu.publisher.dto.request.CompletionsGetDetailsRequestDto;
 import com.origin.banyu.publisher.dto.request.TaskCompletionRequest;
-import com.origin.banyu.publisher.dto.response.CompletionDetailResponseDto;
 import com.origin.banyu.publisher.dto.response.TaskCompletionResponse;
 import com.origin.banyu.publisher.entity.PublisherTask;
 import com.origin.banyu.publisher.entity.PublisherTaskCompletion;
@@ -18,7 +20,6 @@ import com.origin.banyu.publisher.feign.UserFeignClient;
 import com.origin.banyu.publisher.mapper.PublisherTaskCompletionMapper;
 import com.origin.banyu.publisher.mapper.PublisherTaskDetailMapper;
 import com.origin.banyu.publisher.mapper.PublisherTaskMapper;
-import com.origin.banyu.publisher.service.BaseEntityService;
 import com.origin.banyu.publisher.service.PublisherTaskCompletionService;
 import com.origin.banyu.publisher.util.TaskValidator;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PublisherTaskCompletionServiceImpl extends BaseEntityService<PublisherTaskCompletion, TaskCompletionResponse, String> implements PublisherTaskCompletionService {
+public class PublisherTaskCompletionServiceImpl extends BaseService implements PublisherTaskCompletionService {
     
     private final PublisherTaskCompletionMapper taskCompletionMapper;
     private final PublisherTaskMapper taskMapper;
@@ -179,40 +180,79 @@ public class PublisherTaskCompletionServiceImpl extends BaseEntityService<Publis
         // 根据任务类型查询不同的数据
         switch (task.getTaskTypeId()) {
             case 1, 2, 3, 4, 6 -> {
-                // 普通任务详情查询
-                IPage<CompletionDetailResponseDto.NormalTaskDetail> pageParam = new Page<>(request.getPage(), request.getSize());
-                IPage<CompletionDetailResponseDto.NormalTaskDetail> normalDetailsPage = 
-                    taskCompletionMapper.selectNormalTaskDetailsPage(pageParam, request.getTaskId());
-                
-                // 构建分页响应，外层携带 taskName、taskTypeId，records 只放具体数据
+                // 普通任务详情查询（服务层解析 completion_detail JSON）
+                Page<PublisherTaskCompletion> pageParam = new Page<>(request.getPage(), request.getSize());
+                LambdaQueryWrapper<PublisherTaskCompletion> wrapper = new LambdaQueryWrapper<>();
+                wrapper.eq(PublisherTaskCompletion::getTaskId, request.getTaskId())
+                       .eq(PublisherTaskCompletion::getDeleted, 0)
+                       .orderByDesc(PublisherTaskCompletion::getCompletionTime);
+
+                IPage<PublisherTaskCompletion> entityPage = taskCompletionMapper.selectPage(pageParam, wrapper);
+
                 IPage<CompletionDetailResponseDto> page = new Page<>(request.getPage(), request.getSize());
-                List<CompletionDetailResponseDto> responseList = normalDetailsPage.getRecords().stream()
-                    .map(detail -> {
+                List<CompletionDetailResponseDto> responseList = entityPage.getRecords().stream()
+                    .map(record -> {
                         CompletionDetailResponseDto response = new CompletionDetailResponseDto();
+                        CompletionDetailResponseDto.NormalTaskDetail detail = new CompletionDetailResponseDto.NormalTaskDetail();
+
+                        detail.setUserId(record.getUserId());
+                        detail.setTaskReward(record.getRewardAmount());
+                        detail.setCompletionStatus(record.getCompletionStatus());
+                        detail.setCompletionTime(record.getCompletionTime());
+
+                        String wechatNicknameVal = null;
+                        try {
+                            if (record.getCompletionDetail() != null && !record.getCompletionDetail().isEmpty()) {
+                                NormalDetailPayload payload = JSON.parseObject(record.getCompletionDetail(), NormalDetailPayload.class);
+                                if (payload != null) {
+                                    wechatNicknameVal = payload.resolveWechatNickname();
+                                }
+                            }
+                        } catch (Exception ignore) { }
+                        detail.setWechatNickname(wechatNicknameVal);
+
                         response.setNormalTaskDetail(detail);
                         return response;
                     })
                     .toList();
+
                 page.setRecords(responseList);
-                page.setTotal(normalDetailsPage.getTotal());
+                page.setTotal(entityPage.getTotal());
                 return page;
             }
             case 5 -> {
-                // 邀请任务详情查询
-                Page<CompletionDetailResponseDto.InviteTaskDetail> pageParam = new Page<>(request.getPage(), request.getSize());
-                IPage<CompletionDetailResponseDto.InviteTaskDetail> inviteDetailsPage = 
-                    taskCompletionMapper.selectInviteTaskDetailsPage(pageParam, request.getTaskId());
-                
+                // 邀请任务详情查询（解析 completion_detail JSON，避免复杂 SQL）
+                Page<PublisherTaskCompletion> pageParam = new Page<>(request.getPage(), request.getSize());
+                LambdaQueryWrapper<PublisherTaskCompletion> wrapper = new LambdaQueryWrapper<>();
+                wrapper.eq(PublisherTaskCompletion::getTaskId, request.getTaskId())
+                       .eq(PublisherTaskCompletion::getDeleted, 0)
+                       .orderByDesc(PublisherTaskCompletion::getCompletionTime);
+
+                IPage<PublisherTaskCompletion> entityPage = taskCompletionMapper.selectPage(pageParam, wrapper);
+
                 IPage<CompletionDetailResponseDto> page = new Page<>(request.getPage(), request.getSize());
-                List<CompletionDetailResponseDto> responseList = inviteDetailsPage.getRecords().stream()
-                    .map(detail -> {
+                List<CompletionDetailResponseDto> responseList = entityPage.getRecords().stream()
+                    .map(record -> {
                         CompletionDetailResponseDto response = new CompletionDetailResponseDto();
+                        CompletionDetailResponseDto.InviteTaskDetail detail;
+                        try {
+                            if (record.getCompletionDetail() != null && !record.getCompletionDetail().isEmpty()) {
+                                detail = JSON.parseObject(record.getCompletionDetail(), CompletionDetailResponseDto.InviteTaskDetail.class);
+                            } else {
+                                detail = new CompletionDetailResponseDto.InviteTaskDetail();
+                            }
+                        } catch (Exception ignore) {
+                            detail = new CompletionDetailResponseDto.InviteTaskDetail();
+                        }
+
+
                         response.setInviteTaskDetail(detail);
                         return response;
                     })
                     .toList();
+
                 page.setRecords(responseList);
-                page.setTotal(inviteDetailsPage.getTotal());
+                page.setTotal(entityPage.getTotal());
                 return page;
             }
             case 7 -> {
@@ -303,4 +343,7 @@ public class PublisherTaskCompletionServiceImpl extends BaseEntityService<Publis
         
         return response;
     }
+    
+
+
 } 

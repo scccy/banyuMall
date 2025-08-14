@@ -6,6 +6,7 @@ import com.origin.banyu.common.dto.ResultData;
 import com.origin.banyu.publisher.dto.export.ShareReviewExportDTO;
 import com.origin.banyu.publisher.dto.request.ShareReviewListRequest;
 import com.origin.banyu.publisher.dto.request.ShareReviewRequest;
+import com.origin.banyu.publisher.dto.request.SubmitShareReviewListDTO;
 import com.origin.banyu.publisher.dto.response.ShareReviewResponse;
 import com.origin.banyu.publisher.service.PublisherTaskShareReviewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,17 +43,21 @@ public class PublisherTaskShareReviewController {
     private final PublisherTaskShareReviewService shareReviewService;
     
     @PostMapping
-    @Operation(summary = "提交分享审核", description = "提交社群分享审核申请")
-    public ResultData<String> submitShareReview(@RequestBody @Valid ShareReviewRequest request) {
-        log.info("提交分享审核请求，参数：{}", request);
+    @Operation(summary = "更新审核", description = "更新审核")
+    public ResultData<String> submitShareReview(@RequestBody  ShareReviewRequest request) {
         String shareReviewId = shareReviewService.submitShareReview(request);
-        return ResultData.success("分享审核提交成功", shareReviewId);
+        return ResultData.success("更新审核", shareReviewId);
     }
-
+    @PostMapping("/list")
+    @Operation(summary = "批量更新审核", description = "批量更新审核")
+    public ResultData<String> submitShareReviewList(@RequestBody SubmitShareReviewListDTO request) {
+        String shareReviewId = shareReviewService.submitShareReviewList(request);
+        return ResultData.success("更新审核", shareReviewId);
+    }
     
     @PostMapping("/getList")
     @Operation(summary = "获取分享审核列表", description = "多条件获取分享审核列表：taskId / taskName / reviewStatus / userId / wechatNickname 可任意组合")
-    public ResultData<IPage<ShareReviewResponse>> getShareReviewList(@RequestBody @Valid ShareReviewListRequest request) {
+    public ResultData<IPage<ShareReviewResponse>> getShareReviewList(@RequestBody ShareReviewListRequest request) {
         log.info("获取分享审核列表请求: {}", request);
         IPage<ShareReviewResponse> result = shareReviewService.getShareReviewList(request);
         return ResultData.success("获取分享审核列表成功", result);

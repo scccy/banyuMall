@@ -1,18 +1,20 @@
 package com.origin.banyu.publisher.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.origin.banyu.base.service.BaseService;
 import com.origin.banyu.common.dto.ResultData;
 import com.origin.banyu.common.entity.ErrorCode;
 import com.origin.banyu.common.entity.SysUser;
 import com.origin.banyu.common.exception.BusinessException;
 import com.origin.banyu.publisher.dto.request.ShareReviewListRequest;
 import com.origin.banyu.publisher.dto.request.ShareReviewRequest;
+import com.origin.banyu.publisher.dto.request.SubmitShareReviewListDTO;
 import com.origin.banyu.publisher.dto.response.ShareReviewResponse;
 import com.origin.banyu.publisher.entity.PublisherShareReview;
 import com.origin.banyu.publisher.feign.UserFeignClient;
 import com.origin.banyu.publisher.mapper.PublisherShareReviewMapper;
-import com.origin.banyu.publisher.service.BaseEntityService;
 import com.origin.banyu.publisher.service.PublisherTaskShareReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +35,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PublisherTaskTaskShareReviewServiceImpl extends BaseEntityService<PublisherShareReview, ShareReviewResponse, String> implements PublisherTaskShareReviewService {
+public class PublisherTaskTaskShareReviewServiceImpl extends BaseService implements PublisherTaskShareReviewService {
     
     private final PublisherShareReviewMapper shareReviewMapper;
     private final UserFeignClient userFeignClient;
@@ -42,19 +44,15 @@ public class PublisherTaskTaskShareReviewServiceImpl extends BaseEntityService<P
     @Transactional(rollbackFor = Exception.class)
     public String submitShareReview(ShareReviewRequest request) {
         log.info("提交分享审核，请求参数：{}", request);
-        
+      String  taskId =  shareReviewMapper.selectById(request.getShareReviewId()).getTaskId();
         PublisherShareReview review = new PublisherShareReview();
-        review.setTaskId(request.getTaskId());
-        review.setShareContent(request.getShareContent());
-        review.setSharePlatform(request.getSharePlatform());
-        review.setShareUrl(request.getShareUrl());
-        review.setScreenshotUrl(request.getScreenshotUrl());
-        review.setReviewStatusId(1); // 待审核状态
-        
-        shareReviewMapper.insert(review);
-        
-        log.info("分享审核提交成功，ID：{}", review.getShareReviewId());
-        return review.getShareReviewId();
+        review.setShareReviewId(request.getShareReviewId());
+        review.setTaskId(taskId);
+        review.setReviewComment(request.getReviewComment());
+        review.setReviewStatusId(request.getReviewStatusId());
+        shareReviewMapper.insertOrUpdate(review);
+
+        return "成功";
     }
     
     @Override
@@ -100,7 +98,7 @@ public class PublisherTaskTaskShareReviewServiceImpl extends BaseEntityService<P
 		} else {
 			try {
 				ResultData<List<SysUser>> batch = userFeignClient.getBatchUserInfo(ids);
-				users = (batch != null && batch.isSuccess() && batch.getData() != null)
+				users = (batch != null && batch.getCode() == 200&& batch.getData() != null)
 						? batch.getData()
 						: java.util.Collections.emptyList();
 			} catch (Exception ex) {
@@ -138,7 +136,7 @@ public class PublisherTaskTaskShareReviewServiceImpl extends BaseEntityService<P
         } else {
             try {
                 ResultData<List<SysUser>> batch = userFeignClient.getBatchUserInfo(ids);
-                users = (batch != null && batch.isSuccess() && batch.getData() != null)
+                users = (batch != null && batch.getCode()==200 && batch.getData() != null)
                         ? batch.getData()
                         : java.util.Collections.emptyList();
             } catch (Exception ex) {
@@ -156,36 +154,29 @@ public class PublisherTaskTaskShareReviewServiceImpl extends BaseEntityService<P
                 .map(r -> convertToResponse(r, userMap))
                 .collect(Collectors.toList());
     }
-    
+
+    @Override
+    public String submitShareReviewList(SubmitShareReviewListDTO request) {
+        LambdaUpdateWrapper<PublisherShareReview> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.in(PublisherShareReview::getReviewerId, request.getReviewList())
+                .set(PublisherShareReview::getShareReviewId, request.getReviewStatusId())
+                .set(PublisherShareReview::getReviewComment,request.getReviewComment())    ;
+        return "ok";
+    }
+
     private ShareReviewResponse convertToResponse(PublisherShareReview review, Map<String, SysUser> userMap) {
         ShareReviewResponse response = new ShareReviewResponse();
         BeanUtils.copyProperties(review, response);
-        // 补充 userId（提交人），保证非空
-        response.setUserId(review.getCreatedBy() == null ? "" : review.getCreatedBy());
-        // 处理多链接与多图片：以逗号分隔，保证非空列表
-        List<String> links = (review.getShareUrl() == null || review.getShareUrl().isEmpty())
-                ? new java.util.ArrayList<>()
-                : java.util.Arrays.stream(review.getShareUrl().split(","))
-                    .map(String::trim)
-                    .filter(s -> !s.isEmpty())
-                    .collect(Collectors.toList());
-        response.setLinks(links);
-        List<String> images = (review.getScreenshotUrl() == null || review.getScreenshotUrl().isEmpty())
-                ? new java.util.ArrayList<>()
-                : java.util.Arrays.stream(review.getScreenshotUrl().split(","))
-                    .map(String::trim)
-                    .filter(s -> !s.isEmpty())
-                    .collect(Collectors.toList());
-        response.setImages(images);
-        // 查询微信昵称（优先使用批量结果），保证非空
-        String nickname = "";
-        if (response.getUserId() != null && !response.getUserId().isEmpty() && userMap != null) {
-            SysUser u = userMap.get(response.getUserId());
-            if (u != null && u.getWechatNickname() != null) {
-                nickname = u.getWechatNickname();
-            }
+        
+        // 设置微信昵称
+        SysUser user = userMap.get(review.getCreatedBy());
+        if (user != null) {
+            response.setWechatNickname(user.getWechatNickname());
         }
-        response.setWechatNickname(nickname);
+        
         return response;
     }
+    
+
+
 } 

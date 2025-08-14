@@ -1,9 +1,9 @@
 package com.origin.banyu.publisher.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.origin.banyu.common.dto.CompletionDetailResponseDto;
 import com.origin.banyu.common.dto.ResultData;
 import com.origin.banyu.publisher.dto.request.CompletionsGetDetailsRequestDto;
-import com.origin.banyu.publisher.dto.response.CompletionDetailResponseDto;
 import com.origin.banyu.publisher.dto.response.TaskCompletionResponse;
 import com.origin.banyu.publisher.service.PublisherTaskCompletionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,7 +68,7 @@ public class PiblisherTaskCompletionController {
         wrapped.put("pages", result.getPages());
         // 仅返回具体数据记录
         wrapped.put("records", result.getRecords());
-        return ResultData.success("任务完成提交成功", wrapped);
+        return ResultData.success("查询任务完成情况成功", wrapped);
     }
 
 } 

@@ -3,6 +3,7 @@ package com.origin.banyu.publisher.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.origin.banyu.base.service.BaseService;
 import com.origin.banyu.common.entity.ErrorCode;
 import com.origin.banyu.common.exception.BusinessException;
 import com.origin.banyu.publisher.dto.request.TaskCreateRequest;
@@ -15,7 +16,6 @@ import com.origin.banyu.publisher.entity.PublisherTaskDetail;
 import com.origin.banyu.publisher.mapper.PublisherTaskCompletionMapper;
 import com.origin.banyu.publisher.mapper.PublisherTaskDetailMapper;
 import com.origin.banyu.publisher.mapper.PublisherTaskMapper;
-import com.origin.banyu.publisher.service.BaseEntityService;
 import com.origin.banyu.publisher.service.PublisherTaskService;
 import com.origin.banyu.publisher.util.TaskValidator;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PublisherTaskServiceImpl extends BaseEntityService<PublisherTask, TaskListResponse, String> implements PublisherTaskService {
+public class PublisherTaskServiceImpl extends BaseService implements PublisherTaskService {
     
     private final PublisherTaskMapper taskMapper;
     private final PublisherTaskDetailMapper taskDetailMapper;
@@ -271,4 +271,7 @@ public class PublisherTaskServiceImpl extends BaseEntityService<PublisherTask, T
         
         return response;
     }
+    
+
+
 } 
