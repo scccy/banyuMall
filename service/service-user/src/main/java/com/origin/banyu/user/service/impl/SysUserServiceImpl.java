@@ -4,17 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.origin.banyu.common.exception.BusinessException;
 import com.origin.banyu.common.entity.ErrorCode;
-import com.origin.banyu.user.dto.UserCreateRequest;
-import com.origin.banyu.user.dto.UserQueryRequest;
-import com.origin.banyu.user.dto.UserUpdateRequest;
 import com.origin.banyu.common.entity.SysUser;
-import com.origin.banyu.user.feign.OssFileFeignClient;
+import com.origin.banyu.common.exception.BusinessException;
+import com.origin.banyu.common.util.PasswordUtil;
+import com.origin.banyu.user.dto.UserQueryRequest;
 import com.origin.banyu.user.feign.AuthFeignClient;
-import org.springframework.util.DigestUtils;
+import com.origin.banyu.user.feign.OssFileFeignClient;
 import com.origin.banyu.user.mapper.SysUserMapper;
 import com.origin.banyu.user.service.SysUserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +28,7 @@ import java.util.Objects;
 /**
  * 系统用户基础服务实现类
  * 专注于用户基础CRUD操作和权限验证
+ * 继承BaseService，异常处理由AOP自动完成
  * 
  * @author scccy
  * @since 2025-07-31
@@ -50,7 +50,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public SysUser createUser(UserCreateRequest request) {
+    public SysUser createUser(SysUser request) {
         log.info("创建用户 - 请求参数: {}", request);
         
         // 验证用户创建参数
@@ -69,46 +69,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         log.info("用户创建成功 - 用户ID: {}", user.getUserId());
         return user;
     }
-    
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public SysUser createUserWithAvatar(UserCreateRequest request, MultipartFile avatarFile) {
-        log.info("创建用户（支持头像上传） - 请求参数: {}, 是否有头像: {}", request, avatarFile != null);
-        
-        // 验证用户创建参数
-        validateUserCreateRequest(request);
-        
-        // 创建用户实体
-        SysUser user = buildUserFromRequest(request);
-        
-        // 加密密码
-        encryptUserPassword(user, request.getPassword());
-        
-        // 设置默认值
-        setUserDefaults(user);
-        
-        // 处理头像上传
-        if (avatarFile != null && !avatarFile.isEmpty()) {
-            // 先保存用户（不包含头像）
-            save(user);
-            
-            // 上传头像到OSS
-            try {
-                String avatarUrl = ossFileFeignClient.uploadFile(avatarFile).getData();
-                user.setAvatar(avatarUrl);
-                updateById(user);
-                log.info("用户头像上传成功 - 用户ID: {}, 头像URL: {}", user.getUserId(), avatarUrl);
-            } catch (Exception e) {
-                log.error("用户头像上传失败 - 用户ID: {}", user.getUserId(), e);
-                // 头像上传失败不影响用户创建，记录日志即可
-            }
-        } else {
-            save(user);
-        }
-        
-        log.info("用户创建成功（支持头像上传） - 用户ID: {}", user.getUserId());
-        return user;
-    }
+
     
     @Override
     public SysUser getUserById(String userId) {
@@ -124,7 +85,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public SysUser updateUser(String userId, UserUpdateRequest request) {
+    public SysUser updateUser(String userId, SysUser request) {
         log.info("更新用户信息 - 用户ID: {}, 请求参数: {}", userId, request);
         
         // 验证用户是否存在
@@ -142,7 +103,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public SysUser updateUserWithAvatar(String userId, UserUpdateRequest request, MultipartFile avatarFile) {
+    public SysUser updateUserWithAvatar(String userId, @Valid SysUser request, MultipartFile avatarFile) {
         log.info("更新用户信息（支持头像上传） - 用户ID: {}, 请求参数: {}, 是否有头像: {}", userId, request, avatarFile != null);
         
         // 验证用户是否存在
@@ -153,14 +114,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         
         // 处理头像上传
         if (avatarFile != null && !avatarFile.isEmpty()) {
-            try {
-                String avatarUrl = ossFileFeignClient.uploadFile(avatarFile).getData();
-                updatedUser.setAvatar(avatarUrl);
-                log.info("用户头像上传成功 - 用户ID: {}, 头像URL: {}", userId, avatarUrl);
-            } catch (Exception e) {
-                log.error("用户头像上传失败 - 用户ID: {}", userId, e);
-                throw new BusinessException(ErrorCode.USER_AVATAR_UPLOAD_FAILED, "头像上传失败");
-            }
+            String avatarUrl = ossFileFeignClient.uploadFile(avatarFile).getData();
+            updatedUser.setAvatar(avatarUrl);
+            log.info("用户头像上传成功 - 用户ID: {}, 头像URL: {}", userId, avatarUrl);
         }
         
         // 更新用户信息
@@ -197,7 +153,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public IPage<SysUser> getUserPage(UserQueryRequest request) {
         log.debug("分页查询用户列表 - 查询条件: {}", request);
         
-        Page<SysUser> page = new Page<>(request.getCurrent(), request.getSize());
+        Page<SysUser> page = new Page<>(request.getPage(), request.getSize());
         LambdaQueryWrapper<SysUser> queryWrapper = buildUserQueryWrapper(request);
         
         return page(page, queryWrapper);
@@ -238,7 +194,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     // 私有辅助方法
     
-    private void validateUserCreateRequest(UserCreateRequest request) {
+    private void validateUserCreateRequest(SysUser request) {
         if (request == null) {
             throw new BusinessException(ErrorCode.PARAM_ERROR, "用户创建请求不能为空");
         }
@@ -256,17 +212,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
     }
     
-    private SysUser buildUserFromRequest(UserCreateRequest request) {
+    private SysUser buildUserFromRequest(SysUser request) {
         SysUser user = new SysUser();
         BeanUtils.copyProperties(request, user);
         
         // 设置用户ID
-        user.setUserId(generateUserId());
+        user.setUserId(request.getUsername());
+        user.setPhone(request.getUsername());
         
         return user;
     }
     
-    private SysUser buildUserFromUpdateRequest(UserUpdateRequest request, String userId) {
+    private SysUser buildUserFromUpdateRequest(@Valid SysUser request, String userId) {
         SysUser user = new SysUser();
         BeanUtils.copyProperties(request, user);
         user.setUserId(userId);
@@ -276,8 +233,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     private void encryptUserPassword(SysUser user, String rawPassword) {
         if (StringUtils.hasText(rawPassword)) {
-            String encryptedPassword = DigestUtils.md5DigestAsHex(rawPassword.getBytes());
-            user.setPassword(encryptedPassword);
+            try {
+                // 使用common模块的统一密码加密工具
+                String encryptedPassword = PasswordUtil.encrypt(rawPassword);
+                user.setPassword(encryptedPassword);
+                log.debug("密码加密成功 - 用户名: {}", user.getUsername());
+            } catch (Exception e) {
+                log.error("密码加密失败 - 用户名: {}, 错误: {}", user.getUsername(), e.getMessage());
+                throw new BusinessException(ErrorCode.INTERNAL_ERROR, "密码加密失败");
+            }
         }
     }
     

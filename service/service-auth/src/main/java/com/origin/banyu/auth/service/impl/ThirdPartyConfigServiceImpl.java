@@ -1,17 +1,14 @@
 package com.origin.banyu.auth.service.impl;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.origin.banyu.auth.mapper.ThirdPartyConfigMapper;
 import com.origin.banyu.auth.service.ThirdPartyConfigService;
-import com.origin.banyu.common.entity.ThirdPartyConfig;
 import com.origin.banyu.common.dto.ThirdPartyConfigQueryRequest;
-import com.origin.banyu.common.dto.ThirdPartyPlatformConfigDTO;
-import com.origin.banyu.common.enums.PlatformType;
-import com.origin.banyu.common.util.ThirdPartyConfigParser;
+import com.origin.banyu.common.entity.ThirdPartyConfig;
+import com.origin.banyu.common.entity.ErrorCode;
+import com.origin.banyu.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -39,7 +36,7 @@ public class ThirdPartyConfigServiceImpl implements ThirdPartyConfigService {
         // 检查平台类型是否已存在
         ThirdPartyConfig existingConfig = thirdPartyConfigMapper.selectByPlatformType(config.getPlatformType());
         if (existingConfig != null) {
-            throw new RuntimeException("平台类型已存在：" + config.getPlatformType());
+            throw new BusinessException(ErrorCode.CONFLICT, "平台类型已存在：" + config.getPlatformType());
         }
         // 创建新配置
         ThirdPartyConfig newConfig = new ThirdPartyConfig();
@@ -60,7 +57,7 @@ public class ThirdPartyConfigServiceImpl implements ThirdPartyConfigService {
         // 检查配置是否存在
         ThirdPartyConfig existingConfig = thirdPartyConfigMapper.selectById(configId);
         if (existingConfig == null) {
-            throw new RuntimeException("配置不存在：" + configId);
+            throw new BusinessException(ErrorCode.NOT_FOUND, "配置不存在：" + configId);
         }
         // 更新配置
         BeanUtils.copyProperties(config, existingConfig);
@@ -77,7 +74,7 @@ public class ThirdPartyConfigServiceImpl implements ThirdPartyConfigService {
         // 检查配置是否存在
         ThirdPartyConfig existingConfig = thirdPartyConfigMapper.selectById(configId);
         if (existingConfig == null) {
-            throw new RuntimeException("配置不存在：" + configId);
+            throw new BusinessException(ErrorCode.NOT_FOUND, "配置不存在：" + configId);
         }
         // 逻辑删除
         int result = thirdPartyConfigMapper.deleteById(configId);
@@ -89,7 +86,10 @@ public class ThirdPartyConfigServiceImpl implements ThirdPartyConfigService {
     public ThirdPartyConfig getConfigById(Integer configId) {
         log.debug("根据配置ID查询配置，配置ID：{}", configId);
         ThirdPartyConfig config = thirdPartyConfigMapper.selectById(configId);
-        if (config != null && config.getPlatformConfig() != null) {
+        if (config == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "配置不存在：" + configId);
+        }
+        if (config.getPlatformConfig() != null) {
             // 根据platformType转换platformConfig为具体的DTO类型
             Object parsedConfig = com.origin.banyu.common.util.ThirdPartyConfigParser.parseConfigByType(
                 config.getPlatformType(), 
@@ -104,7 +104,10 @@ public class ThirdPartyConfigServiceImpl implements ThirdPartyConfigService {
     public ThirdPartyConfig getConfigByPlatformType(Integer platformType) {
         log.debug("根据平台类型查询配置，平台类型：{}", platformType);
         ThirdPartyConfig config = thirdPartyConfigMapper.selectByPlatformType(platformType);
-        if (config != null && config.getPlatformConfig() != null) {
+        if (config == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND, "平台类型配置不存在或已禁用：" + platformType);
+        }
+        if (config.getPlatformConfig() != null) {
             // 根据platformType转换platformConfig为具体的DTO类型
             Object parsedConfig = com.origin.banyu.common.util.ThirdPartyConfigParser.parseConfigByType(
                 platformType, 
@@ -136,7 +139,7 @@ public class ThirdPartyConfigServiceImpl implements ThirdPartyConfigService {
         log.info("更新第三方平台配置状态，配置ID：{}，状态：{}", configId, status);
         ThirdPartyConfig config = thirdPartyConfigMapper.selectById(configId);
         if (config == null) {
-            throw new RuntimeException("配置不存在：" + configId);
+            throw new BusinessException(ErrorCode.NOT_FOUND, "配置不存在：" + configId);
         }
         config.setConfigStatus(status);
         int result = thirdPartyConfigMapper.updateById(config);

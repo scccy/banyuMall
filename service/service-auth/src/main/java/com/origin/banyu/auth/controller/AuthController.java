@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +29,6 @@ public class AuthController {
     private final AuthService authService;
     private final SysUserService sysUserService;
     private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder;
 
     /**
      * 用户登录
@@ -78,24 +77,18 @@ public class AuthController {
         
         token = token.substring(7);
         
-        try {
-            // 从token中提取用户信息用于日志记录
-            String userId = jwtUtil.getUserIdFromToken(token);
-            String username = jwtUtil.getUsernameFromToken(token);
-            
-            // 记录登出日志
-            log.info("用户登出 - 用户ID: {}, 用户名: {}, 客户端IP: {}, 用户代理: {}, 请求ID: {}", 
-                    userId, username, clientIp, userAgent, requestId);
-            
-            // 调用业务层处理登出逻辑
-            authService.logout(token);
-            
-            return ResultData.success("登出成功");
-            
-        } catch (Exception e) {
-            log.error("登出失败: {}", e.getMessage());
-            return ResultData.fail("登出失败：" + e.getMessage());
-        }
+        // 从token中提取用户信息用于日志记录
+        String userId = jwtUtil.getUserIdFromToken(token);
+        String username = jwtUtil.getUsernameFromToken(token);
+        
+        // 记录登出日志
+        log.info("用户登出 - 用户ID: {}, 用户名: {}, 客户端IP: {}, 用户代理: {}, 请求ID: {}", 
+                userId, username, clientIp, userAgent, requestId);
+        
+        // 调用业务层处理登出逻辑
+        authService.logout(token);
+        
+        return ResultData.success("登出成功");
     }
 
     /**
@@ -136,71 +129,13 @@ public class AuthController {
         log.info("强制登出用户 - RequestId: {}, ClientIP: {}, UserAgent: {}, UserId: {}", 
                 requestId, clientIp, userAgent, userId);
         
-        try {
-            authService.forceLogout(userId);
-            return ResultData.success("强制登出成功");
-        } catch (Exception e) {
-            log.error("强制登出失败: {}", e.getMessage());
-            return ResultData.fail("强制登出失败：" + e.getMessage());
-        }
+        authService.forceLogout(userId);
+        return ResultData.success("强制登出成功");
     }
 
-    /**
-     * 密码加密
-     *
-     * @param request 密码加密请求
-     * @return 加密后的密码
-     */
-    @Operation(summary = "密码加密", description = "为其他微服务提供密码加密功能")
-    @PostMapping("/password/encrypt")
-    public ResultData<PasswordEncryptResponse> encryptPassword(@RequestBody PasswordEncryptRequest request) {
-        log.info("密码加密请求 - 用户名: {}", request.getUsername());
-        
-        try {
-            String encryptedPassword = passwordEncoder.encode(request.getPassword());
-            
-            PasswordEncryptResponse response = new PasswordEncryptResponse();
-            response.setUsername(request.getUsername());
-            response.setEncryptedPassword(encryptedPassword);
-            
-            log.info("密码加密成功 - 用户名: {}", request.getUsername());
-            return ResultData.success("密码加密成功", response);
-            
-        } catch (Exception e) {
-            log.error("密码加密失败 - 用户名: {}, 错误: {}", request.getUsername(), e.getMessage());
-            // 从业务角度考虑，密码加密失败不应该影响服务可用性
-            // 返回200状态码，通过业务状态码500表示加密失败
-            return ResultData.fail("密码加密失败：" + e.getMessage());
-        }
-    }
 
-    /**
-     * 密码验证
-     *
-     * @param request 密码验证请求
-     * @return 验证结果
-     */
-    @Operation(summary = "密码验证", description = "为其他微服务提供密码验证功能")
-    @PostMapping("/password/verify")
-    public ResultData<Boolean> verifyPassword(@RequestBody PasswordEncryptRequest request) {
-        log.info("密码验证请求 - 用户名: {}", request.getUsername());
-        
-        try {
-            SysUser user = sysUserService.getByUsername(request.getUsername());
-            if (user == null) {
-                return ResultData.success("用户不存在", false);
-            }
-            
-            boolean isValid = passwordEncoder.matches(request.getPassword(), user.getPassword());
-            
-            log.info("密码验证完成 - 用户名: {}, 验证结果: {}", request.getUsername(), isValid);
-            return ResultData.success("密码验证完成", isValid);
-            
-        } catch (Exception e) {
-            log.error("密码验证失败 - 用户名: {}, 错误: {}", request.getUsername(), e.getMessage());
-            return ResultData.fail("密码验证失败：" + e.getMessage());
-        }
-    }
+
+
 
     /**
      * 获取用户信息
@@ -213,20 +148,8 @@ public class AuthController {
     public ResultData<SysUser> getUserInfo(@RequestParam("userId") String userId) {
         log.info("获取用户信息 - 用户ID: {}", userId);
         
-        try {
-            SysUser user = sysUserService.getById(userId);
-            if (user == null) {
-                return ResultData.success("用户不存在", null);
-            }
-            
-            return ResultData.success("获取用户信息成功", user);
-            
-        } catch (Exception e) {
-            log.error("获取用户信息失败 - 用户ID: {}, 错误: {}", userId, e.getMessage());
-            // 从业务角度考虑，获取用户信息失败不应该影响服务可用性
-            // 返回200状态码，通过业务状态码500表示查询失败
-            return ResultData.fail("获取用户信息失败：" + e.getMessage());
-        }
+        SysUser user = authService.getUserInfoEntity(userId);
+        return ResultData.success("获取用户信息成功", user);
     }
 
     /**
@@ -240,13 +163,7 @@ public class AuthController {
     public ResultData<Boolean> validateToken(@RequestParam("token") String token) {
         log.debug("验证JWT令牌");
         
-        try {
-            boolean isValid = jwtUtil.validateToken(token);
-            return ResultData.success("令牌验证完成", isValid);
-            
-        } catch (Exception e) {
-            log.error("令牌验证失败: {}", e.getMessage());
-            return ResultData.fail("令牌验证失败：" + e.getMessage());
-        }
+        boolean isValid = jwtUtil.validateToken(token);
+        return ResultData.success("令牌验证完成", isValid);
     }
 }
