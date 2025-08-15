@@ -20,3 +20,7 @@
 {"level":30,"time":1755178128611,"pid":39227,"hostname":"HuaWei-Magic-mini","msg":"MySQL MCP server running on stdio"}
 {"level":30,"time":1755227789826,"pid":13879,"hostname":"HuaWei-Magic-mini","msg":"config>{\"host\":\"117.50.197.170\",\"user\":\"root\",\"password\":\"******\",\"database\":\"banyu\",\"port\":3306}"}
 {"level":30,"time":1755227789826,"pid":13879,"hostname":"HuaWei-Magic-mini","msg":"MySQL MCP server running on stdio"}
+{"level":30,"time":1755231094713,"pid":28809,"hostname":"HuaWei-Magic-mini","msg":"config>{\"host\":\"117.50.197.170\",\"user\":\"root\",\"password\":\"******\",\"database\":\"banyu\",\"port\":3306}"}
+{"level":30,"time":1755231094713,"pid":28809,"hostname":"HuaWei-Magic-mini","msg":"MySQL MCP server running on stdio"}
+{"level":30,"time":1755238469711,"pid":58171,"hostname":"HuaWei-Magic-mini","msg":"config>{\"host\":\"117.50.197.170\",\"user\":\"root\",\"password\":\"******\",\"database\":\"banyu\",\"port\":3306}"}
+{"level":30,"time":1755238469711,"pid":58171,"hostname":"HuaWei-Magic-mini","msg":"MySQL MCP server running on stdio"}
