@@ -1,5 +1,6 @@
 package com.origin.banyu.wechatWork.dto;
 
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Data;
@@ -162,5 +163,47 @@ public class WechatWorkUserInfo {
         userInfo.setOpenUserid(apiResponse.getString("open_userid"));
         
         return userInfo;
+    }
+
+    /**
+     * 转换为WechatworkContacts实体对象
+     * 
+     * @return WechatworkContacts实体对象
+     */
+    public WechatworkContacts toEntity() {
+        WechatworkContacts contact = new WechatworkContacts();
+        contact.setContactId(this.userid);
+        contact.setName(this.name);
+        
+        // 处理部门信息，转换为JSON字符串
+        if (this.depIds != null) {
+            contact.setDepIds(JSON.toJSONString(this.depIds));
+        }
+        
+        contact.setPosition(this.position);
+        contact.setMobile(this.mobile);
+        contact.setGender(this.gender);
+        contact.setEmail(this.email);
+        contact.setBizMail(this.bizMail);
+        contact.setAvatar(this.avatar);
+        contact.setStatus(this.status);
+        contact.setEnable(this.enable);
+        contact.setAlias(this.alias);
+        contact.setIsleader(this.isleader);
+        contact.setHideMobile(this.hideMobile);
+        contact.setTelephone(this.telephone);
+        contact.setEnglishName(this.englishName);
+        contact.setMainDepartment(this.mainDepartment);
+        contact.setQrCode(this.qrCode);
+        contact.setExternalPosition(this.externalPosition);
+        
+        // 处理对外属性，转换为JSON字符串
+        if (this.externalProfile != null) {
+            contact.setExternalProfile(this.externalProfile.toJSONString());
+        }
+        
+        contact.setOpenUserid(this.openUserid);
+        
+        return contact;
     }
 }
