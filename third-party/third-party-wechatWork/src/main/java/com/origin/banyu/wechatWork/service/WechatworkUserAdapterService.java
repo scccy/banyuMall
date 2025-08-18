@@ -27,7 +27,7 @@ public class WechatworkUserAdapterService extends ServiceImpl<WechatworkUserMapp
     
     private final WechatWorkUserApiAdapter userApiAdapter;
     private final AccessTokenService accessTokenService;
-    private final WechatworkDepartmentService departmentService;
+    private final WechatworkDepartmentAdapterService departmentAdapterService;
 
     /**
      * 同步企业微信用户信息（迭代器专用）
@@ -106,8 +106,8 @@ public class WechatworkUserAdapterService extends ServiceImpl<WechatworkUserMapp
         log.info("迭代器开始同步所有部门的用户信息，递归获取: {}", fetchChild);
         
         try {
-            // 获取所有部门信息（改由适配器服务提供）
-            List<WechatworkDepartment> allDepartments = departmentService.buildDepartmentTree();
+            // 获取所有部门信息（适配器服务）
+            List<WechatworkDepartment> allDepartments = departmentAdapterService.getAllDepartments();
             
             int totalCount = 0;
             
