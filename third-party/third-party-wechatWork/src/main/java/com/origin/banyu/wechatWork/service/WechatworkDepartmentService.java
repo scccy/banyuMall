@@ -1,12 +1,11 @@
 package com.origin.banyu.wechatWork.service;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.origin.banyu.wechatWork.entity.WechatworkDepartment;
 import com.origin.banyu.wechatWork.mapper.WechatworkDepartmentMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * 企业微信部门业务服务类
@@ -18,9 +17,8 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class WechatworkDepartmentService {
+public class WechatworkDepartmentService extends ServiceImpl<WechatworkDepartmentMapper, WechatworkDepartment> {
     
-    private final WechatworkDepartmentMapper departmentMapper;
     private final WechatworkDepartmentAdapterService departmentAdapterService;
 
     /**
@@ -46,20 +44,5 @@ public class WechatworkDepartmentService {
         }
     }
 
-    /**
-     * 获取所有部门信息（控制器专用）
-     * 
-     * @return 部门列表
-     */
-    public List<WechatworkDepartment> getAllDepartments() {
-        try {
-            log.info("控制器开始获取所有部门信息");
-            List<WechatworkDepartment> departments = departmentMapper.selectAllDepartments();
-            log.info("控制器获取所有部门信息成功，部门数量: {}", departments.size());
-            return departments;
-        } catch (Exception e) {
-            log.error("控制器获取所有部门信息失败", e);
-            throw new RuntimeException("控制器获取所有部门信息失败: " + e.getMessage(), e);
-        }
-    }
+
 }
