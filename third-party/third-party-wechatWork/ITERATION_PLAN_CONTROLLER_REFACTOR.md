@@ -297,3 +297,22 @@ Controller → WechatworkUserService → WechatworkUserAdapterService → Mapper
 - 每个阶段完成后进行充分测试
 - 遇到问题及时记录和解决
 - 拆分完成后更新相关文档
+
+## 第四轮迭代：Service 方法清理与使用清单
+
+> 目标：去除未使用/不必要的方法，确保 Service 层聚焦最小必要接口。
+
+### WechatworkUserService 方法清单（第1个 Service）
+
+| 方法名 | 功能说明 | 使用位置 | 使用状态 | 处理建议 |
+|---|---|---|---|---|
+| `syncWechatWorkUsers(Integer depId, Integer fetchChild)` | 触发用户同步，委托给 `WechatworkUserAdapterService` 执行 | `WechatWorkUserController.sync` | 已使用 | 保留 |
+| `getUserByWechatworkUserId(String wechatworkUserId)` | 按用户ID从MySQL查询用户详情 | `WechatWorkUserController.getUserById` | 已使用 | 保留 |
+| `getUsersByDepId(Integer depId)` | 按部门ID查询用户列表 | 暂无直接引用 | 未使用 | 待删除或在新增部门用户查询API时复用 |
+| `getAllUsers()` | 查询全部用户 | 暂无直接引用 | 未使用 | 待删除（建议后续走分页查询/索引化） |
+| `getUserStatistics()` | 计算启用/禁用用户数量等统计信息 | 暂无直接引用 | 未使用 | 待删除或迁移至报表/运营模块 |
+| `searchUsers(String keyword)` | 本地内存过滤搜索用户 | 暂无直接引用 | 未使用 | 待删除或重构为基于数据库索引的分页检索 |
+
+说明：以上“使用位置”为当前代码内直接引用位置的梳理结果；后续如新增 API/任务可按需恢复或重构。
+
+下一步：输出 `WechatworkDepartmentService` 方法清单并给出处理建议。
