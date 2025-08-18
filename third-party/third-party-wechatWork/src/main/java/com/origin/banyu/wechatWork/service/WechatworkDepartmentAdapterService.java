@@ -1,5 +1,8 @@
 package com.origin.banyu.wechatWork.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.origin.banyu.wechatWork.adapter.WechatWorkDepartmentApiAdapter;
 import com.origin.banyu.wechatWork.dto.WechatWorkDepartmentInfo;
 import com.origin.banyu.wechatWork.entity.WechatworkDepartment;
@@ -23,9 +26,8 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class WechatworkDepartmentAdapterService {
+public class WechatworkDepartmentAdapterService extends ServiceImpl<WechatworkDepartmentMapper, WechatworkDepartment> {
     
-    private final WechatworkDepartmentMapper departmentMapper;
     private final WechatWorkDepartmentApiAdapter wechatWorkApiAdapter;
     private final AccessTokenService accessTokenService;
 
@@ -102,24 +104,22 @@ public class WechatworkDepartmentAdapterService {
             log.info("迭代器开始批量保存 {} 个部门到MySQL", departments.size());
             
             // 1. 清空现有部门数据（全量同步模式）
-            int deletedCount = departmentMapper.delete(null);
+            int deletedCount = this.getBaseMapper().delete(null);
             log.info("迭代器清空现有部门数据，删除 {} 条记录", deletedCount);
             
             // 2. 批量插入新数据
-            int insertedCount = 0;
+            java.util.List<WechatworkDepartment> entityList = new java.util.ArrayList<>(departments.size());
             for (WechatWorkDepartmentInfo deptInfo : departments) {
                 try {
                     WechatworkDepartment department = convertToEntity(deptInfo);
-                    departmentMapper.insert(department);
-                    insertedCount++;
+                    entityList.add(department);
                 } catch (Exception e) {
-                    log.error("迭代器插入部门失败: depId={}, name={}", deptInfo.getId(), deptInfo.getName(), e);
-                    // 继续处理其他部门，不中断整个流程
+                    log.error("迭代器构建部门实体失败: depId={}, name={}", deptInfo.getId(), deptInfo.getName(), e);
                 }
             }
-            
-            log.info("迭代器批量插入完成，成功插入 {}/{} 个部门", insertedCount, departments.size());
-            return insertedCount;
+            boolean saved = this.saveBatch(entityList);
+            log.info("迭代器批量插入完成，成功插入 {}/{} 个部门", saved ? entityList.size() : 0, departments.size());
+            return saved ? entityList.size() : 0;
             
         } catch (Exception e) {
             log.error("迭代器批量保存部门信息失败", e);
@@ -137,7 +137,7 @@ public class WechatworkDepartmentAdapterService {
         try {
             log.info("迭代器从MySQL同步部门信息，部门ID: {}", departmentId);
             
-            WechatworkDepartment department = departmentMapper.selectByDepId(departmentId);
+            WechatworkDepartment department = this.getById(departmentId);
             if (department == null) {
                 log.warn("迭代器部门不存在，部门ID: {}", departmentId);
                 return 0;
@@ -177,7 +177,7 @@ public class WechatworkDepartmentAdapterService {
      */
     public List<WechatworkDepartment> getAllDepartments() {
         try {
-            return departmentMapper.selectAllDepartments();
+            return this.list();
         } catch (Exception e) {
             log.error("迭代器获取所有部门信息失败", e);
             throw new RuntimeException("迭代器获取所有部门信息失败: " + e.getMessage(), e);
@@ -192,7 +192,7 @@ public class WechatworkDepartmentAdapterService {
      */
     public List<WechatworkDepartment> getDepartmentsByParentId(Integer parentId) {
         try {
-            return departmentMapper.selectByParentId(parentId);
+            return this.list(new QueryWrapper<WechatworkDepartment>().eq("parentid", parentId));
         } catch (Exception e) {
             log.error("迭代器获取子部门列表失败，父部门ID: {}", parentId, e);
             throw new RuntimeException("迭代器获取子部门列表失败: " + e.getMessage(), e);
@@ -243,7 +243,7 @@ public class WechatworkDepartmentAdapterService {
             Integer currentId = departmentId;
             
             while (currentId != null && currentId != 0) {
-                WechatworkDepartment dept = departmentMapper.selectByDepId(currentId);
+                WechatworkDepartment dept = this.getById(currentId);
                 if (dept == null) {
                     break;
                 }
@@ -306,7 +306,7 @@ public class WechatworkDepartmentAdapterService {
             Integer currentId = departmentId;
             
             while (currentId != null && currentId != 0) {
-                WechatworkDepartment dept = departmentMapper.selectByDepId(currentId);
+                WechatworkDepartment dept = this.getById(currentId);
                 if (dept == null) {
                     break;
                 }
@@ -333,7 +333,7 @@ public class WechatworkDepartmentAdapterService {
             
             for (WechatworkDepartment dept : allDepartments) {
                 if (dept.getParentid() != null && dept.getParentid() != 0) {
-                    WechatworkDepartment parent = departmentMapper.selectByDepId(dept.getParentid());
+                    WechatworkDepartment parent = this.getById(dept.getParentid());
                     if (parent == null) {
                         log.error("迭代器部门层级关系验证失败：部门 {} 的父部门 {} 不存在", 
                                 dept.getDepId(), dept.getParentid());
@@ -351,21 +351,4 @@ public class WechatworkDepartmentAdapterService {
         }
     }
 
-    /**
-     * 清空所有部门数据（迭代器专用）
-     * 
-     * @return 删除的记录数
-     */
-    @Transactional
-    public int clearAllDepartments() {
-        try {
-            log.info("迭代器开始清空所有部门数据");
-            int deletedCount = departmentMapper.delete(null);
-            log.info("迭代器清空所有部门数据完成，删除 {} 条记录", deletedCount);
-            return deletedCount;
-        } catch (Exception e) {
-            log.error("迭代器清空所有部门数据失败", e);
-            throw new RuntimeException("迭代器清空所有部门数据失败: " + e.getMessage(), e);
-        }
-    }
 }
