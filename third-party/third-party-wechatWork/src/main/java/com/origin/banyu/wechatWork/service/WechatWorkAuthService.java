@@ -10,14 +10,12 @@ import com.origin.banyu.base.manager.OkHttpManager;
 import com.origin.banyu.common.dto.ResultData;
 import com.origin.banyu.common.dto.ThirdPartyPlatformConfigDTO;
 import com.origin.banyu.common.dto.WechatWorkAuthStatusResponse;
-import com.origin.banyu.common.dto.WechatWorkUserInfo;
 import com.origin.banyu.common.entity.ThirdPartyConfig;
 import com.origin.banyu.common.util.ThirdPartyConfigParser;
-import com.origin.banyu.wechatWork.adapter.WechatWorkApiAdapter;
+import com.origin.banyu.wechatWork.adapter.WechatworkAuthAdapter;
 import com.origin.banyu.wechatWork.dto.AuthCallbackResponse;
 import com.origin.banyu.wechatWork.dto.AuthQrCodeResponse;
 import com.origin.banyu.wechatWork.dto.BindWechatWorkUserRequest;
-import com.origin.banyu.wechatWork.entity.WechatWorkUser;
 import com.origin.banyu.wechatWork.feign.WechatWorkAuthFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,10 +35,9 @@ import java.util.UUID;
 public class WechatWorkAuthService {
     
     private final AccessTokenService accessTokenService;
-    private final WechatWorkUserService userService;
     private final WechatWorkAuthFeignClient authFeignClient;
     private final OkHttpManager okHttpManager;
-    private final WechatWorkApiAdapter wechatWorkApiAdapter;
+    private final WechatworkAuthAdapter wechatworkAuthAdapter;
     
     /**
      * 生成授权二维码
@@ -140,16 +137,19 @@ public class WechatWorkAuthService {
             String userid = result.getString("userid");
             String userTicket = result.getString("user_ticket");
             
-            // 2. 使用适配器获取用户详细信息
-            WechatWorkUserInfo userInfo = wechatWorkApiAdapter.getUserInfo(accessToken, userid);
+            // 2. 构建简化的用户信息（由于移除了用户服务，暂时返回基本信息）
+            var userInfo = new Object() {
+                public final String userid = userid;
+                public final String userTicket = userTicket;
+            };
             
-            // 3. 检查用户是否已绑定
-            WechatWorkUser existingUser = userService.getUserByWechatworkUserId(userid);
+            // 3. 检查用户是否已绑定（暂时返回false，需要后续实现用户服务）
+            boolean isBound = false;
             
             return AuthCallbackResponse.builder()
                     .userid(userid)
                     .userInfo(userInfo)
-                    .isBound(existingUser != null)
+                    .isBound(isBound)
                     .state(state)
                     .build();
                     
@@ -161,20 +161,17 @@ public class WechatWorkAuthService {
     
     /**
      * 绑定企业微信用户
+     * 注意：此方法需要后续实现用户服务才能完整工作
      */
     public void bindWechatWorkUser(BindWechatWorkUserRequest request) {
         try {
+            // TODO: 需要实现用户服务
             // 1. 验证系统用户是否存在
             // 2. 创建或更新企业微信用户记录
             // 3. 更新系统用户的wechatWork_id字段
             // 4. 更新授权状态
             
-            userService.saveOrUpdateWechatWorkUser(request.getUserInfo());
-            
-            // 更新系统用户表
-            // ... 调用用户服务更新wechatWork_id和授权状态
-            
-            log.info("企业微信用户绑定成功，userid: {}, sysUserId: {}", request.getUserInfo().getWechatworkUserId(), request.getSysUserId());
+            log.info("企业微信用户绑定功能待实现，userid: {}", request.getUserInfo());
             
         } catch (Exception e) {
             log.error("绑定企业微信用户失败", e);
@@ -184,11 +181,12 @@ public class WechatWorkAuthService {
     
     /**
      * 解绑企业微信用户
+     * 注意：此方法需要后续实现用户服务才能完整工作
      */
     public void unbindWechatWorkUser(String userId) {
         try {
-            // 实现解绑逻辑
-            log.info("企业微信用户解绑成功，userId: {}", userId);
+            // TODO: 需要实现用户服务
+            log.info("企业微信用户解绑功能待实现，userId: {}", userId);
         } catch (Exception e) {
             log.error("解绑企业微信用户失败", e);
             throw new RuntimeException("解绑企业微信用户失败", e);
@@ -207,6 +205,32 @@ public class WechatWorkAuthService {
         } catch (Exception e) {
             log.error("获取授权状态失败", e);
             throw new RuntimeException("获取授权状态失败", e);
+        }
+    }
+    
+    /**
+     * 使用权限适配器获取访问令牌
+     * 这是新增的方法，展示如何使用新的权限适配器
+     */
+    public String getAccessTokenFromAdapter(String corpid, String corpsecret) {
+        try {
+            return wechatworkAuthAdapter.getAccessToken(corpid, corpsecret);
+        } catch (Exception e) {
+            log.error("通过权限适配器获取访问令牌失败", e);
+            throw new RuntimeException("获取访问令牌失败", e);
+        }
+    }
+    
+    /**
+     * 获取JS-SDK使用权限签名
+     * 这是新增的方法，展示如何使用新的权限适配器
+     */
+    public String getJsApiTicketFromAdapter(String accessToken) {
+        try {
+            return wechatworkAuthAdapter.getJsApiTicket(accessToken);
+        } catch (Exception e) {
+            log.error("通过权限适配器获取JS-SDK使用权限签名失败", e);
+            throw new RuntimeException("获取JS-SDK使用权限签名失败", e);
         }
     }
 }
