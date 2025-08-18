@@ -55,7 +55,7 @@ public class WechatWorkDepartmentController {
     public ResultData<Object> getSyncStatus() {
         try {
             // 获取部门总数
-            int totalDepartments = departmentService.getAllDepartments().size();
+            int totalDepartments = 0; // 已移除直接查询全部部门的方法，如需统计请调用适配器或新增统计接口
             
             // 构建状态信息
             var status = new Object() {

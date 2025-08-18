@@ -1,5 +1,6 @@
 package com.origin.banyu.wechatWork.service;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.origin.banyu.wechatWork.entity.WechatworkUser;
 import com.origin.banyu.wechatWork.mapper.WechatworkUserMapper;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,7 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class WechatworkUserService {
-    
-    private final WechatworkUserMapper userMapper;
+public class WechatworkUserService extends ServiceImpl<WechatworkUserMapper, WechatworkUser> {
     private final WechatworkUserAdapterService userAdapterService;
 
     /**
@@ -61,7 +60,7 @@ public class WechatworkUserService {
         
         try {
             log.info("控制器查询用户信息，用户ID: {}", wechatworkUserId);
-            WechatworkUser user = userMapper.selectByWechatworkUserId(wechatworkUserId);
+            WechatworkUser user = this.getById(wechatworkUserId);
             
             if (user == null) {
                 log.info("控制器查询用户信息：用户不存在，用户ID: {}", wechatworkUserId);
