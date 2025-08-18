@@ -1,7 +1,6 @@
 package com.origin.banyu.wechatWork.service;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
+
 import com.origin.banyu.wechatWork.adapter.WechatWorkUserApiAdapter;
 import com.origin.banyu.wechatWork.dto.WechatWorkUserInfo;
 import com.origin.banyu.wechatWork.entity.WechatworkContacts;

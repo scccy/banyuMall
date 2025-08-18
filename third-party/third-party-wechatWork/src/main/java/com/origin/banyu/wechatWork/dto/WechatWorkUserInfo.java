@@ -3,6 +3,7 @@ package com.origin.banyu.wechatWork.dto;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.origin.banyu.wechatWork.entity.WechatworkContacts;
 import lombok.Data;
 
 import java.util.List;
