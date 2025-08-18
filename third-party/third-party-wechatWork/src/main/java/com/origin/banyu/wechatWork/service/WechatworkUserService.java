@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 /**
  * 企业微信用户业务服务类
  * 专门负责业务逻辑和API接口，给控制器使用

@@ -3,7 +3,7 @@ import com.origin.banyu.wechatWork.adapter.WechatWorkUserApiAdapter;
 import com.origin.banyu.wechatWork.dto.WechatWorkUserInfo;
 import com.origin.banyu.wechatWork.entity.WechatworkDepartment;
 import com.origin.banyu.wechatWork.entity.WechatworkUser;
-import com.origin.banyu.wechatWork.mapper.WechatworkUserMapper;
+import com.origin.banyu.wechatWork.service.persistence.WechatworkUserPersistenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class WechatworkUserAdapterService {
     private final WechatWorkUserApiAdapter userApiAdapter;
     private final AccessTokenService accessTokenService;
     private final WechatworkDepartmentAdapterService departmentAdapterService;
-    private final WechatworkUserService userService;
+    private final WechatworkUserPersistenceService userPersistenceService;
 
     /**
      * 同步企业微信用户信息（迭代器专用）
@@ -152,8 +152,8 @@ public class WechatworkUserAdapterService {
                 entityList.add(entity);
             }
             
-            // 批量保存（委托给业务Service的 MyBatis-Plus 能力）
-            boolean saved = userService.saveBatch(entityList);
+            // 批量保存（委托给公共持久化Service的 MyBatis-Plus 能力）
+            boolean saved = userPersistenceService.saveBatch(entityList);
             int savedCount = saved ? entityList.size() : 0;
             log.info("迭代器批量保存用户信息完成，成功保存 {} 条记录", savedCount);
             return savedCount;
