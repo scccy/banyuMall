@@ -7,6 +7,7 @@ import com.origin.banyu.common.dto.ResultData;
 import com.origin.banyu.common.dto.ThirdPartyPlatformConfigDTO;
 import com.origin.banyu.common.entity.ThirdPartyConfig;
 import com.origin.banyu.common.util.ThirdPartyConfigParser;
+import com.origin.banyu.wechatWork.adapter.WechatworkAuthAdapter;
 import com.origin.banyu.wechatWork.feign.WechatWorkAuthFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class AccessTokenService {
     
     private final WechatWorkAuthFeignClient authFeignClient;
     private final RedisTemplate<String, String> redisTemplate;
+    private final WechatworkAuthAdapter authAdapter;
 
     private final OkHttpManager okHttpManager;
     
@@ -78,23 +80,15 @@ public class AccessTokenService {
                 throw new RuntimeException("企业微信配置信息不完整");
             }
             
-            // 3. 调用企业微信API获取token
-            String url = String.format("https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=%s&corpsecret=%s",
-                    wechatWorkConfig.getCorpId(), wechatWorkConfig.getCorpSecret());
-            
-            String responseBody = okHttpManager.get(url);
-            JSONObject result = JSON.parseObject(responseBody);
-            
-            if (result.getInteger("errcode") != 0) {
-                throw new RuntimeException("获取access_token失败: " + result.getString("errmsg"));
-            }
-            
-            String accessToken = result.getString("access_token");
-            long expiresIn = result.getLong("expires_in");
+            // 3. 调用企业微信API获取token（使用适配器）
+            String accessToken = authAdapter.getAccessToken(
+                wechatWorkConfig.getCorpId(), 
+                wechatWorkConfig.getCorpSecret()
+            );
             
             // 4. 缓存到Redis（优先执行，确保token可用）
-            redisTemplate.opsForValue().set(ACCESS_TOKEN_KEY, accessToken, expiresIn - REFRESH_THRESHOLD, TimeUnit.SECONDS);
-            redisTemplate.opsForValue().set(ACCESS_TOKEN_EXPIRE_KEY, String.valueOf(System.currentTimeMillis() + expiresIn * 1000));
+            redisTemplate.opsForValue().set(ACCESS_TOKEN_KEY, accessToken, TOKEN_EXPIRE_TIME - REFRESH_THRESHOLD, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(ACCESS_TOKEN_EXPIRE_KEY, String.valueOf(System.currentTimeMillis() + TOKEN_EXPIRE_TIME * 1000));
             
             log.info("access_token刷新成功，已缓存到Redis");
             return accessToken;
