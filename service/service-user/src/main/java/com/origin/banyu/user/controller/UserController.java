@@ -9,7 +9,6 @@ import com.origin.banyu.user.service.SysUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -84,15 +83,13 @@ public class UserController {
     /**
      * 更新用户信息
      *
-     * @param userId      用户ID
      * @param request     更新请求
      * @param httpRequest HTTP请求
      * @return 更新结果
      */
-    @Operation(summary = "更新用户信息", description = "更新用户的基础信息（昵称、头像、邮箱等），可选择上传头像")
-    @PostMapping("/{userId}")
-    public ResultData<SysUser> updateUser(
-            @Parameter(description = "用户ID") @PathVariable String userId,
+    @Operation(summary = "更新用户信息", description = "")
+    @PostMapping("/update")
+    public ResultData<String> updateUser(
             @RequestBody SysUser request,
             HttpServletRequest httpRequest) {
         // 从请求头中获取链路追踪信息
@@ -101,8 +98,8 @@ public class UserController {
         String userAgent = httpRequest.getHeader("X-User-Agent");
 
 
-        SysUser user = sysUserService.updateUser(userId, request);
-        return ResultData.success("用户信息更新成功", user);
+        sysUserService.updateUser(request);
+        return ResultData.success("用户信息更新成功");
     }
 
     /**
@@ -140,8 +137,8 @@ public class UserController {
      * @return 分页结果
      */
     @Operation(summary = "用户列表查询", description = "分页查询用户列表，支持多条件筛选")
-    @GetMapping("/list")
-    public ResultData<IPage<SysUser>> getUserList(@Valid UserQueryRequest request,
+    @PostMapping("/list")
+    public ResultData<IPage<SysUser>> getUserList(@RequestBody UserQueryRequest request,
                                                   HttpServletRequest httpRequest) {
         // 从请求头中获取链路追踪信息
         String requestId = httpRequest.getHeader("X-Request-ID");
@@ -153,6 +150,33 @@ public class UserController {
 
         IPage<SysUser> page = sysUserService.getUserPage(request);
         return ResultData.success("查询成功", page);
+    }
+
+    /**
+     * 更新用户最后登录时间
+     *
+     * @param userId      用户ID
+     * @param httpRequest HTTP请求
+     * @return 更新结果
+     */
+    @Operation(summary = "更新最后登录时间", description = "更新指定用户的最后登录时间")
+    @PostMapping("/{userId}/last-login")
+    public ResultData<String> updateLastLoginTime(@Parameter(description = "用户ID") @PathVariable String userId,
+                                                 HttpServletRequest httpRequest) {
+        // 从请求头中获取链路追踪信息
+        String requestId = httpRequest.getHeader("X-Request-ID");
+        String clientIp = httpRequest.getHeader("X-Client-IP");
+        String userAgent = httpRequest.getHeader("X-User-Agent");
+
+        log.info("更新用户最后登录时间 - RequestId: {}, ClientIP: {}, UserAgent: {}, UserId: {}",
+                requestId, clientIp, userAgent, userId);
+
+        boolean success = sysUserService.updateLastLoginTime(userId);
+        if (success) {
+            return ResultData.success("最后登录时间更新成功");
+        } else {
+            return ResultData.fail(ErrorCode.USER_UPDATE_FAILED, "最后登录时间更新失败");
+        }
     }
 
 }

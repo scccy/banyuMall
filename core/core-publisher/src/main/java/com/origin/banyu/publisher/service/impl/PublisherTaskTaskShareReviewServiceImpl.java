@@ -15,8 +15,8 @@ import com.origin.banyu.publisher.dto.response.ShareReviewResponse;
 import com.origin.banyu.publisher.entity.PublisherShareReview;
 import com.origin.banyu.publisher.feign.UserFeignClient;
 import com.origin.banyu.publisher.mapper.PublisherShareReviewMapper;
-import com.origin.banyu.publisher.service.PublisherTaskShareReviewService;
 import com.origin.banyu.publisher.service.PublisherTaskService;
+import com.origin.banyu.publisher.service.PublisherTaskShareReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -131,8 +131,8 @@ public class PublisherTaskTaskShareReviewServiceImpl extends BaseService impleme
     
     @Override
     public List<ShareReviewResponse> getShareReviewListAll(ShareReviewListRequest request) {
-        log.info("获取分享审核列表（不分页，用于导出），请求: taskId={}, taskName={}, reviewStatus={}, userId={}, wechatNickname={}",
-                request.getTaskId(), request.getTaskName(), request.getReviewStatus(), request.getUserId(), request.getWechatNickname());
+        log.info("获取分享审核列表（不分页，用于导出），请求: taskIds={}, taskName={}, reviewStatus={}, userIds={}, wechatNickname={}",
+                request.getTaskIds(), request.getTaskName(), request.getReviewStatus(), request.getUserIds(), request.getWechatNickname());
 
         // 查询所有数据（不分页）
         List<PublisherShareReview> result = shareReviewMapper.selectAllByConditions(request);

@@ -15,12 +15,12 @@ spring:
   config:
     import: nacos:${spring.application.name}.${spring.cloud.nacos.config.file-extension}
   
-  # Spring Security 默认用户配置（开发环境）
+   # Spring Security 默认用户配置（开发环境）
   security:
-    user:
-      name: ${SECURITY_USER_NAME:admin}
-      password: ${SECURITY_USER_PASSWORD:admin123}
-      roles: ${SECURITY_USER_ROLES:ADMIN}
+     user:
+       name: ${SECURITY_USER_NAME:admin}
+       password: ${SECURITY_USER_PASSWORD:admin123}
+       roles: ${SECURITY_USER_ROLES:ADMIN}
 
   # Nacos服务注册与发现配置
   cloud:

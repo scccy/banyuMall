@@ -4,14 +4,15 @@ package com.origin.banyu.auth.controller;
 import com.origin.banyu.auth.service.AuthService;
 import com.origin.banyu.auth.service.SysUserService;
 import com.origin.banyu.auth.util.JwtUtil;
-import com.origin.banyu.common.dto.*;
+import com.origin.banyu.common.dto.LoginRequest;
+import com.origin.banyu.common.dto.LoginResponse;
+import com.origin.banyu.common.dto.ResultData;
 import com.origin.banyu.common.entity.SysUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -50,6 +51,8 @@ public class AuthController {
                 requestId, clientIp, userAgent, loginRequest.getUsername());
         
         LoginResponse loginResponse = authService.login(loginRequest);
+//        System.out.println(1);
+//        LoginResponse loginResponse1 = new LoginResponse();
         return ResultData.success("登录成功", loginResponse);
     }
 

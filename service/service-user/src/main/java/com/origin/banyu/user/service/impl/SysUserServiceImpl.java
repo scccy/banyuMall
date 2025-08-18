@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.origin.banyu.common.entity.ErrorCode;
 import com.origin.banyu.common.entity.SysUser;
 import com.origin.banyu.common.exception.BusinessException;
-import com.origin.banyu.common.util.PasswordUtil;
 import com.origin.banyu.user.dto.UserQueryRequest;
 import com.origin.banyu.user.feign.AuthFeignClient;
 import com.origin.banyu.user.feign.OssFileFeignClient;
@@ -17,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -40,6 +40,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     private final OssFileFeignClient ossFileFeignClient;
     private final AuthFeignClient authFeignClient;
+    private final PasswordEncoder passwordEncoder;
     
     // 常量定义
     private static final int USER_STATUS_NORMAL = 1;
@@ -85,20 +86,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public SysUser updateUser(String userId, SysUser request) {
-        log.info("更新用户信息 - 用户ID: {}, 请求参数: {}", userId, request);
-        
+    public String updateUser(SysUser request) {
+
+
         // 验证用户是否存在
-        SysUser existingUser = validateUserExists(userId);
+        SysUser existingUser = validateUserExists(request.getUserId());
+
         
-        // 构建更新后的用户信息
-        SysUser updatedUser = buildUserFromUpdateRequest(request, userId);
-        
-        // 更新用户信息
-        updateById(updatedUser);
-        
-        log.info("用户信息更新成功 - 用户ID: {}", userId);
-        return updatedUser;
+        // 更新用户信息ok
+        encryptUserPassword(request, request.getPassword());
+        log.info("用户信息更新成功 - 用户ID: {}", request.getUserId());
+        return request.getUserId()+"ok";
     }
     
     @Override
@@ -234,8 +232,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private void encryptUserPassword(SysUser user, String rawPassword) {
         if (StringUtils.hasText(rawPassword)) {
             try {
-                // 使用common模块的统一密码加密工具
-                String encryptedPassword = PasswordUtil.encrypt(rawPassword);
+                // 使用Spring注入的PasswordEncoder进行密码加密
+                String encryptedPassword = passwordEncoder.encode(rawPassword);
                 user.setPassword(encryptedPassword);
                 log.debug("密码加密成功 - 用户名: {}", user.getUsername());
             } catch (Exception e) {
@@ -281,26 +279,46 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             queryWrapper.like(SysUser::getPhone, request.getPhone());
         }
         
-        // 邮箱模糊查询
-        if (StringUtils.hasText(request.getEmail())) {
-            queryWrapper.like(SysUser::getEmail, request.getEmail());
-        }
-        
-        // 创建时间范围查询
-        if (StringUtils.hasText(request.getStartTime())) {
-            queryWrapper.ge(SysUser::getCreatedTime, request.getStartTime());
-        }
-        if (StringUtils.hasText(request.getEndTime())) {
-            queryWrapper.le(SysUser::getCreatedTime, request.getEndTime());
-        }
+
+
         
         // 排序
-        queryWrapper.orderByDesc(SysUser::getCreatedTime);
+        queryWrapper.orderByDesc(SysUser::getUsername);
         
         return queryWrapper;
     }
     
     private String generateUserId() {
         return "U" + System.currentTimeMillis() + String.valueOf((int)(Math.random() * 1000));
+    }
+    
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean updateLastLoginTime(String userId) {
+        log.info("更新用户最后登录时间 - 用户ID: {}", userId);
+        
+        try {
+            // 验证用户是否存在
+            SysUser existingUser = validateUserExists(userId);
+            
+            // 更新最后登录时间
+            SysUser updateUser = new SysUser();
+            updateUser.setUserId(userId);
+            updateUser.setLastLoginTime(LocalDateTime.now());
+            updateUser.setUpdatedTime(LocalDateTime.now());
+            
+            boolean success = updateById(updateUser);
+            
+            if (success) {
+                log.info("用户最后登录时间更新成功 - 用户ID: {}", userId);
+            } else {
+                log.warn("用户最后登录时间更新失败 - 用户ID: {}", userId);
+            }
+            
+            return success;
+        } catch (Exception e) {
+            log.error("更新用户最后登录时间时发生异常 - 用户ID: {}, 错误: {}", userId, e.getMessage());
+            return false;
+        }
     }
 } 

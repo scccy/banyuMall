@@ -17,19 +17,18 @@ server:
 spring:
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+            exposedHeaders: "Authorization,Content-Disposition"
       discovery:
         locator:
           enabled: false
           lower-case-service-id: false
-
-      # 全局超时配置
-      httpclient:
-        connect-timeout: ${GATEWAY_HTTP_CONNECT_TIMEOUT:10000}
-        response-timeout: ${GATEWAY_HTTP_RESPONSE_TIMEOUT:15000}
-        pool:
-          max-connections: ${GATEWAY_HTTP_MAX_CONNECTIONS:200}
-          max-idle-time: ${GATEWAY_HTTP_MAX_IDLE_TIME:30000}
-          acquire-timeout: ${GATEWAY_HTTP_ACQUIRE_TIMEOUT:5000}
 
       # 路由配置
       routes:
@@ -42,12 +41,6 @@ spring:
             - StripPrefix=0
             - AddRequestHeader=X-Gateway-Source, service-gateway
             - AddRequestHeader=X-Service-Name, service-auth
-            # 添加重试过滤器
-            - name: Retry
-              args:
-                retries: 2
-                statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE
-                methods: GET,POST
 
         # 用户服务路由
         - id: user-service
@@ -58,12 +51,6 @@ spring:
             - StripPrefix=0
             - AddRequestHeader=X-Gateway-Source, service-gateway
             - AddRequestHeader=X-Service-Name, service-user
-            # 添加重试过滤器
-            - name: Retry
-              args:
-                retries: 2
-                statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE
-                methods: GET,POST
 
         # 发布者服务路由
         - id: publisher-service
@@ -74,37 +61,17 @@ spring:
             - StripPrefix=0
             - AddRequestHeader=X-Gateway-Source, service-gateway
             - AddRequestHeader=X-Service-Name, core-publisher
-            # 添加重试过滤器
-            - name: Retry
-              args:
-                retries: 2
-                statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE
-                methods: GET,POST
 
         # OSS文件服务路由
         - id: oss-service
-          uri: lb://aliyun-oss
+          uri: lb://third-party-aliyunOss
           predicates:
             - Path=/tp/oss/**
           filters:
             - StripPrefix=0
             - AddRequestHeader=X-Gateway-Source, service-gateway
-            - AddRequestHeader=X-Service-Name, aliyun-oss
-            # 添加重试过滤器
-            - name: Retry
-              args:
-                retries: 2
-                statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE
-                methods: GET,POST
+            - AddRequestHeader=X-Service-Name, third-party-aliyunOss
 
-      # 全局CORS配置
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: ${CORS_ALLOWED_ORIGINS:"*"}
-            allowedMethods: ${CORS_ALLOWED_METHODS:"*"}
-            allowedHeaders: ${CORS_ALLOWED_HEADERS:"*"}
-            allowCredentials: ${CORS_ALLOW_CREDENTIALS:true}
 
 # 网关特定配置
 

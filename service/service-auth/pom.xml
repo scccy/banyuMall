@@ -39,25 +39,21 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
-
-
-        <!-- Spring Security -->
-        <dependency>
+        <!-- 移除Spring Security，使用base模块的PasswordEncoder -->
+        <!-- <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
             <exclusions>
-                <!-- 排除默认日志，使用Log4j2 -->
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
-                <!-- 排除可能引入的logback -->
                 <exclusion>
                     <groupId>ch.qos.logback</groupId>
                     <artifactId>logback-classic</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency> -->
 
         <!-- Nacos Discovery -->
         <dependency>
@@ -70,6 +66,12 @@
                     <artifactId>logback-classic</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <!-- Spring Cloud LoadBalancer - Feign负载均衡支持 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
         </dependency>
 
         <!-- Nacos Config -->

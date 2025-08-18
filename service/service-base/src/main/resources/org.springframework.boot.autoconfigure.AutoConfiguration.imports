@@ -6,8 +6,10 @@ com.origin.banyu.base.config.OpenFeignConfig
 com.origin.banyu.base.config.RedisConfig
 com.origin.banyu.base.config.Knife4jConfig
 com.origin.banyu.base.config.OkHttpConfig
+com.origin.banyu.base.config.PasswordEncoderConfig
 com.origin.banyu.base.exception.GlobalExceptionHandler
 com.origin.banyu.base.service.BaseService
 com.origin.banyu.base.exception.BaseExceptionHandler
 com.origin.banyu.base.aspect.ServiceLayerExceptionAspect
 com.origin.banyu.base.aspect.ControllerExceptionAspect
+

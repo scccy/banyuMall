@@ -1,12 +1,10 @@
 package com.origin.banyu.base.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
-import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import org.apache.ibatis.reflection.MetaObject;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @Configuration
-@ConditionalOnClass(MybatisConfiguration.class)
 public class MyBatisPlusConfig {
     
     /**

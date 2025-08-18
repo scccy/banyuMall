@@ -36,11 +36,10 @@ public interface SysUserService extends IService<SysUser> {
     /**
      * 更新用户信息
      *
-     * @param userId 用户ID
      * @param request 更新请求
      * @return 更新后的用户信息
      */
-    SysUser updateUser(String userId, SysUser request);
+    String updateUser(SysUser request);
     
     /**
      * 更新用户信息（支持头像上传）
@@ -100,4 +99,12 @@ public interface SysUserService extends IService<SysUser> {
      * @return 是否为接受者
      */
     boolean isReceiver(String userId);
+    
+    /**
+     * 更新用户最后登录时间
+     *
+     * @param userId 用户ID
+     * @return 是否更新成功
+     */
+    boolean updateLastLoginTime(String userId);
 } 

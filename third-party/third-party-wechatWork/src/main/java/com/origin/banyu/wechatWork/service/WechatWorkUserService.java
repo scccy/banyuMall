@@ -27,6 +27,9 @@ public class WechatWorkUserService {
     private final WechatWorkUserMapper userMapper;
     private final AccessTokenService accessTokenService;
     private final WechatWorkApiAdapter wechatWorkApiAdapter;
+
+
+
     
     /**
      * 同步企业微信用户信息

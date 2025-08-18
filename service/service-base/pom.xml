@@ -287,12 +287,12 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Spring Security Test - 安全测试 -->
-        <dependency>
+        <!-- 移除Spring Security Test - 不再需要安全测试 -->
+        <!-- <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
-        </dependency>
+        </dependency> -->
 
         <!-- OkHttp3 - HTTP客户端 -->
         <dependency>

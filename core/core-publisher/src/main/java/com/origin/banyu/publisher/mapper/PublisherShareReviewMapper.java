@@ -37,4 +37,25 @@ public interface PublisherShareReviewMapper extends BaseMapper<PublisherShareRev
      * @return 分享审核列表
      */
     List<PublisherShareReview> selectAllByConditions(@Param("req") ShareReviewListRequest request);
+    
+    /**
+     * 根据任务ID列表批量查询
+     * @param taskIds 任务ID列表
+     * @return 分享审核列表
+     */
+    List<PublisherShareReview> selectByTaskIds(@Param("taskIds") List<String> taskIds);
+    
+    /**
+     * 根据用户ID列表批量查询
+     * @param userIds 用户ID列表
+     * @return 分享审核列表
+     */
+    List<PublisherShareReview> selectByUserIds(@Param("userIds") List<String> userIds);
+    
+    /**
+     * 统计指定条件下的记录数量
+     * @param request 查询条件
+     * @return 记录数量
+     */
+    Long countByConditions(@Param("req") ShareReviewListRequest request);
 } 

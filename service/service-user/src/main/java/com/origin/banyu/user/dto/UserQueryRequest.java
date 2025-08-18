@@ -44,11 +44,7 @@ public class UserQueryRequest {
      * 手机号（精确查询）
      */
     private String phone;
-    
-    /**
-     * 邮箱（模糊查询）
-     */
-    private String email;
+
     
     /**
      * 用户类型：1-最高权限，2-普通发布者
@@ -59,19 +55,6 @@ public class UserQueryRequest {
      * 状态：0-禁用，1-正常，2-待审核，3-已删除
      */
     private Integer status;
-    
-    /**
-     * 性别：0-未知，1-男，2-女
-     */
-    private Integer gender;
-    
-    /**
-     * 开始时间
-     */
-    private String startTime;
-    
-    /**
-     * 结束时间
-     */
-    private String endTime;
+
+
 } 

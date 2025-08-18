@@ -14,7 +14,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * @since 2024-07-30
  */
 @Slf4j
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.origin.banyu.*"})
 @EnableFeignClients
 @EnableDiscoveryClient
 @MapperScan("com.origin.banyu.user.mapper")

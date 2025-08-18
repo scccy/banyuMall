@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.origin.banyu.wechatWork.mapper.WechatworkDepartmentMapper">
+  <resultMap id="BaseResultMap" type="com.origin.banyu.wechatWork.entity.WechatworkDepartment">
+    <!--@mbg.generated-->
+    <!--@Table wechatwork_department-->
+    <id column="dep_id" jdbcType="INTEGER" property="depId" />
+    <id column="parentid" jdbcType="INTEGER" property="parentid" />
+    <result column="dep_name" jdbcType="VARCHAR" property="depName" />
+    <result column="order" jdbcType="VARCHAR" property="order" />
+    <result column="department_leader" jdbcType="VARCHAR" property="departmentLeader" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    dep_id, parentid, dep_name, `order`, department_leader
+  </sql>
+</mapper>

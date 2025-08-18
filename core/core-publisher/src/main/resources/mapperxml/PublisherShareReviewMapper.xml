@@ -38,15 +38,18 @@
         ORDER BY created_time DESC
     </select>
 
-    <!-- 多条件分页查询：taskId / taskName / reviewStatus / userId / wechatNickname 任意组合 -->
+    <!-- 多条件分页查询：taskIds / taskName / reviewStatus / userIds / wechatNickname 任意组合 -->
     <select id="selectByConditions" resultMap="BaseResultMap">
         SELECT psr.*
         FROM publisher_share_review psr
         LEFT JOIN publisher_task pt ON psr.task_id = pt.task_id
         LEFT JOIN sys_user u ON psr.created_by = u.user_id
         WHERE psr.deleted = 0
-        <if test="req.taskId != null and req.taskId != ''">
-            AND psr.task_id = #{req.taskId}
+        <if test="req.taskIds != null and req.taskIds.size() > 0">
+            AND psr.task_id IN
+            <foreach collection="req.taskIds" item="taskId" open="(" separator="," close=")">
+                #{taskId}
+            </foreach>
         </if>
         <if test="req.taskName != null and req.taskName != ''">
             AND pt.task_name LIKE CONCAT('%', #{req.taskName}, '%')
@@ -54,8 +57,11 @@
         <if test="req.reviewStatus != null">
             AND psr.review_status_id = #{req.reviewStatus}
         </if>
-        <if test="req.userId != null and req.userId != ''">
-            AND psr.created_by = #{req.userId}
+        <if test="req.userIds != null and req.userIds.size() > 0">
+            AND psr.created_by IN
+            <foreach collection="req.userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
         </if>
         <if test="req.wechatNickname != null and req.wechatNickname != ''">
             AND u.wechat_nickname LIKE CONCAT('%', #{req.wechatNickname}, '%')
@@ -63,15 +69,18 @@
         ORDER BY psr.created_time DESC
     </select>
 
-    <!-- 多条件查询所有数据（不分页，用于导出）：taskId / taskName / reviewStatus / userId / wechatNickname 任意组合 -->
+    <!-- 多条件查询所有数据（不分页，用于导出）：taskIds / taskName / reviewStatus / userIds / wechatNickname 任意组合 -->
     <select id="selectAllByConditions" resultMap="BaseResultMap">
         SELECT psr.*
         FROM publisher_share_review psr
         LEFT JOIN publisher_task pt ON psr.task_id = pt.task_id
         LEFT JOIN sys_user u ON psr.created_by = u.user_id
         WHERE psr.deleted = 0
-        <if test="req.taskId != null and req.taskId != ''">
-            AND psr.task_id = #{req.taskId}
+        <if test="req.taskIds != null and req.taskIds.size() > 0">
+            AND psr.task_id IN
+            <foreach collection="req.taskIds" item="taskId" open="(" separator="," close=")">
+                #{taskId}
+            </foreach>
         </if>
         <if test="req.taskName != null and req.taskName != ''">
             AND pt.task_name LIKE CONCAT('%', #{req.taskName}, '%')
@@ -79,13 +88,76 @@
         <if test="req.reviewStatus != null">
             AND psr.review_status_id = #{req.reviewStatus}
         </if>
-        <if test="req.userId != null and req.userId != ''">
-            AND psr.created_by = #{req.userId}
+        <if test="req.userIds != null and req.userIds.size() > 0">
+            AND psr.created_by IN
+            <foreach collection="req.userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
         </if>
         <if test="req.wechatNickname != null and req.wechatNickname != ''">
             AND u.wechat_nickname LIKE CONCAT('%', #{req.wechatNickname}, '%')
         </if>
         ORDER BY psr.created_time DESC
+    </select>
+    
+    <!-- 根据任务ID列表批量查询 -->
+    <select id="selectByTaskIds" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM publisher_share_review psr
+        WHERE psr.deleted = 0
+        <if test="taskIds != null and taskIds.size() > 0">
+            AND psr.task_id IN
+            <foreach collection="taskIds" item="taskId" open="(" separator="," close=")">
+                #{taskId}
+            </foreach>
+        </if>
+        ORDER BY psr.created_time DESC
+    </select>
+    
+    <!-- 根据用户ID列表批量查询 -->
+    <select id="selectByUserIds" resultMap="BaseResultMap">
+        SELECT 
+        <include refid="Base_Column_List"/>
+        FROM publisher_share_review psr
+        WHERE psr.deleted = 0
+        <if test="userIds != null and userIds.size() > 0">
+            AND psr.created_by IN
+            <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+        </if>
+        ORDER BY psr.created_time DESC
+    </select>
+    
+    <!-- 统计指定条件下的记录数量 -->
+    <select id="countByConditions" resultType="long">
+        SELECT COUNT(*)
+        FROM publisher_share_review psr
+        LEFT JOIN publisher_task pt ON psr.task_id = pt.task_id
+        LEFT JOIN sys_user u ON psr.created_by = u.user_id
+        WHERE psr.deleted = 0
+        <if test="req.taskIds != null and req.taskIds.size() > 0">
+            AND psr.task_id IN
+            <foreach collection="req.taskIds" item="taskId" open="(" separator="," close=")">
+                #{taskId}
+            </foreach>
+        </if>
+        <if test="req.taskName != null and req.taskName != ''">
+            AND pt.task_name LIKE CONCAT('%', #{req.taskName}, '%')
+        </if>
+        <if test="req.reviewStatus != null">
+            AND psr.review_status_id = #{req.reviewStatus}
+        </if>
+        <if test="req.userIds != null and req.userIds.size() > 0">
+            AND psr.created_by IN
+            <foreach collection="req.userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+        </if>
+        <if test="req.wechatNickname != null and req.wechatNickname != ''">
+            AND u.wechat_nickname LIKE CONCAT('%', #{req.wechatNickname}, '%')
+        </if>
     </select>
 
 </mapper> 

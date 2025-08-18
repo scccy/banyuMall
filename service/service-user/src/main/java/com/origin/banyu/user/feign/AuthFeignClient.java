@@ -3,9 +3,7 @@ package com.origin.banyu.user.feign;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.origin.banyu.common.dto.ResultData;
 import com.origin.banyu.common.dto.ThirdPartyConfigQueryRequest;
-
 import com.origin.banyu.common.entity.ThirdPartyConfig;
-
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 /**

@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 基础WebMvc配置
+
  * 只包含通用的WebMvc配置，不包含业务相关的拦截器
  * 排除Gateway服务，因为Gateway使用WebFlux
  */

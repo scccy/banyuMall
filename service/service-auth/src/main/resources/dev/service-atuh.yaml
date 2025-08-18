@@ -74,38 +74,25 @@ jwt:
 
 #安全配置
 security:
-  # 不需要认证的路径
+  # 不需要认证的路径 - 完全放行所有路径
+  # 这样配置可以确保：
+  # 1. Feign调用所有微服务时不会被拦截
+  # 2. 所有API接口都可以正常访问
+  # 3. 避免权限配置冲突
   permit-all:
     - /**
-    # # 认证相关接口
-    # - /service/auth/login
-    # - /service/auth/logout
-    # - /service/auth/register
-    # - /service/auth/captcha
-
-    # # 密码相关接口
-    # - /service/auth/password/encrypt
-    # - /service/auth/password/verify
-
-    # # 用户信息接口
-    # - /service/auth/user/info
-
-    # # JWT验证接口
-    # - /service/auth/validate
-
-    # # 强制登出接口
-    # - /service/auth/logout/force/**
-
-    # # 测试相关接口
-    # - /service/auth/test/**
-    # - /test
-
-    # # 文档相关接口
+    # 如果需要更细粒度的控制，可以取消注释下面的配置
+    # - /service/auth/**
+    # - /service/user/**
+    # - /service/base/**
+    # - /service/common/**
+    # - /core/**
+    # - /third-party/**
     # - /swagger-ui/**
     # - /v3/api-docs/**
-
-    # # 监控相关接口
-    # - /service/auth/**
+    # - /actuator/**
+    # - /health
+    # - /error
 
 
 # Swagger配置（开发环境启用）

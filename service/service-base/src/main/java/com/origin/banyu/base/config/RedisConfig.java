@@ -2,7 +2,6 @@ package com.origin.banyu.base.config;
 
 
 import com.alibaba.fastjson2.support.spring6.data.redis.FastJsonRedisSerializer;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -16,7 +15,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * @since 2024-12-19
  */
 @Configuration
-@ConditionalOnClass(RedisTemplate.class)
 public class RedisConfig {
 
     /**
