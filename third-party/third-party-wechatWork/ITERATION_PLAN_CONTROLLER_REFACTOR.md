@@ -334,3 +334,14 @@ Controller → WechatworkUserService → WechatworkUserAdapterService → Mapper
 | `searchDepartments(String keyword)` | 本地内存过滤搜索部门 | 暂无直接引用 | 未使用 | 待删除或重构为基于数据库索引的分页检索 |
 
 说明：上述“使用位置”基于当前仓库检索结果；若后续引入新的控制器/任务，可按需恢复或迁移到更合适的层（优先使用 `WechatworkDepartmentAdapterService` 的数据层能力）。
+
+### WechatworkUserAdapterService 方法清单（第3个 Service，Adapter专用）
+
+| 方法名 | 功能说明 | 使用位置 | 使用状态 | 处理建议 |
+|---|---|---|---|---|
+| `syncWechatWorkUsers(Integer depId, Integer fetchChild)` | 迭代器入口：按部门/全量同步用户，内部调用部门遍历与批量保存 | `WechatworkUserService.syncWechatWorkUsers` | 已使用 | 保留 |
+| `getAllUsers()` | 获取全部用户（适配器侧） | 暂无直接引用 | 未使用 | 待删除（如需导出/校验再启用，建议分页） |
+| `getUsersByDepId(Integer depId)` | 根据部门ID获取用户列表（适配器侧） | 暂无直接引用 | 未使用 | 待删除或留作内部调试使用 |
+| `clearAllUsers()` | 清空用户表（适配器侧） | 暂无直接引用 | 未使用 | 待删除；如支持“全量重建”流程再单独提供运维接口 |
+
+注：`syncDepartmentUsers(...)`、`syncAllDepartmentUsers(...)`、`batchSaveUsers(...)` 为适配器内部私有方法，不纳入对外方法清单。
