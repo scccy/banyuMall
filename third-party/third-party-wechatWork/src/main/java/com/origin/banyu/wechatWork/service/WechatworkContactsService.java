@@ -34,33 +34,33 @@ public class WechatworkContactsService {
 
     /**
      * 同步企业微信联系人信息
-     * 主要逻辑：从MySQL中变量查询部门id，然后批量保存
      * 
-     * @param departmentId 部门ID，为null时同步所有部门
-     * @param fetchChild 是否递归获取子部门下面的成员：1-是，0-否
-     * @return 同步的联系人数量
-     * @throws WechatWorkServiceException 当同步失败时抛出
+     * @param depId 部门ID，为null时同步所有部门
+     * @param fetchChild 是否递归获取子部门成员，0-否，1-是
+     * @return 同步成功的联系人数量
      */
-    public int syncWechatWorkContacts(Integer departmentId, Integer fetchChild) {
+    public int syncWechatWorkContacts(Integer depId, Integer fetchChild) {
         try {
+            log.info("开始同步企业微信联系人信息，depId={}, fetchChild={}", depId, fetchChild);
+            
             String accessToken = accessTokenService.getAccessToken();
             int totalCount = 0;
             
-            if (departmentId != null) {
+            if (depId != null) {
                 // 同步指定部门的联系人
-                totalCount = syncDepartmentContacts(accessToken, departmentId, fetchChild != null ? fetchChild : 0);
+                totalCount = syncDepartmentContacts(accessToken, depId, fetchChild != null ? fetchChild : 0);
             } else {
                 // 同步所有部门的联系人
                 totalCount = syncAllDepartmentContacts(accessToken, fetchChild != null ? fetchChild : 0);
             }
             
-            log.info("企业微信联系人同步完成，共同步 {} 个联系人", totalCount);
+            log.info("企业微信联系人同步完成，总共同步 {} 个联系人", totalCount);
             return totalCount;
             
         } catch (Exception e) {
-            log.error("同步企业微信联系人失败", e);
+            log.error("同步企业微信联系人信息失败", e);
             throw new WechatWorkServiceException("WECHATWORK_CONTACTS_SYNC_FAILED", 
-                    "同步企业微信联系人失败: " + e.getMessage(), e);
+                    "同步企业微信联系人信息失败: " + e.getMessage(), e);
         }
     }
 
@@ -107,34 +107,34 @@ public class WechatworkContactsService {
     }
 
     /**
-     * 同步指定部门的联系人
+     * 同步指定部门的联系人信息
      * 
      * @param accessToken 访问令牌
-     * @param departmentId 部门ID
-     * @param fetchChild 是否递归获取子部门下面的成员：1-是，0-否
-     * @return 同步的联系人数量
+     * @param depId 部门ID
+     * @param fetchChild 是否递归获取子部门成员
+     * @return 同步成功的联系人数量
      */
-    private int syncDepartmentContacts(String accessToken, Integer departmentId, Integer fetchChild) {
+    private int syncDepartmentContacts(String accessToken, Integer depId, Integer fetchChild) {
         try {
-            log.info("开始同步部门 {} 的联系人信息，fetchChild={}", departmentId, fetchChild);
+            log.info("开始同步部门 {} 的联系人信息，fetchChild={}", depId, fetchChild);
             
-            // 1. 从企业微信API获取部门成员详情（适配器只负责单次API调用）
-            List<WechatWorkUserInfo> users = userApiAdapter.getDepartmentUsers(accessToken, departmentId, fetchChild);
-            log.info("从企业微信API获取到部门 {} 的 {} 个成员", departmentId, users.size());
+            // 1. 从企业微信API获取部门成员信息
+            List<WechatWorkUserInfo> users = userApiAdapter.getDepartmentUsers(accessToken, depId, fetchChild);
+            log.info("从企业微信API获取到部门 {} 的 {} 个成员", depId, users.size());
             
             if (users.isEmpty()) {
-                log.info("部门 {} 没有成员", departmentId);
+                log.info("部门 {} 没有成员", depId);
                 return 0;
             }
             
-            // 2. 批量保存联系人信息
+            // 2. 批量保存到MySQL
             int savedCount = batchSaveContacts(users);
             
-            log.info("部门 {} 的联系人同步完成，成功保存 {} 个联系人", departmentId, savedCount);
+            log.info("部门 {} 的联系人同步完成，成功保存 {} 个联系人", depId, savedCount);
             return savedCount;
             
         } catch (Exception e) {
-            log.error("同步部门 {} 的联系人失败", departmentId, e);
+            log.error("同步部门 {} 的联系人失败", depId, e);
             throw new WechatWorkServiceException("WECHATWORK_DEPARTMENT_CONTACTS_SYNC_FAILED", 
                     "同步部门联系人失败: " + e.getMessage(), e);
         }
@@ -170,7 +170,7 @@ public class WechatworkContactsService {
                         contactsMapper.insert(contact);
                         insertedCount++;
                     } catch (Exception e) {
-                        log.error("插入联系人失败: userid={}, name={}", contact.getUserid(), contact.getName(), e);
+                        log.error("插入联系人失败: contactId={}, name={}", contact.getContactId(), contact.getName(), e);
                         // 继续处理其他联系人，不中断整个流程
                     }
                 }

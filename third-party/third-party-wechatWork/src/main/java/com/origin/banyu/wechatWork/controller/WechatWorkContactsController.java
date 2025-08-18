@@ -25,21 +25,21 @@ public class WechatWorkContactsController {
      * 主要逻辑：从MySQL中变量查询部门id，然后批量保存
      * 完全按照企业微信官方文档实现：https://developer.work.weixin.qq.com/document/path/90337
      * 
-     * @param departmentId 部门ID，为null时同步所有部门
+     * @param depId 部门ID，为null时同步所有部门
      * @param fetchChild 是否递归获取子部门下面的成员：1-是，0-否
      * @return 同步结果
      */
     @PostMapping("/sync")
     public ResultData<String> syncWechatWorkContacts(
-            @RequestParam(value = "departmentId", required = false) Integer departmentId,
+            @RequestParam(value = "depId", required = false) Integer depId,
             @RequestParam(value = "fetchChild", required = false, defaultValue = "0") Integer fetchChild) {
         try {
-            log.info("开始同步企业微信联系人信息: departmentId={}, fetchChild={}", departmentId, fetchChild);
+            log.info("开始同步企业微信联系人信息: depId={}, fetchChild={}", depId, fetchChild);
             
-            int count = contactsService.syncWechatWorkContacts(departmentId, fetchChild);
+            int count = contactsService.syncWechatWorkContacts(depId, fetchChild);
             
-            String message = departmentId != null ? 
-                    String.format("部门 %d 联系人同步成功，共同步 %d 个联系人", departmentId, count) :
+            String message = depId != null ? 
+                    String.format("部门 %d 联系人同步成功，共同步 %d 个联系人", depId, count) :
                     String.format("全量联系人同步成功，共同步 %d 个联系人", count);
             
             log.info("企业微信联系人同步完成: {}", message);
