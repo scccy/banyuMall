@@ -25,6 +25,17 @@
 - Service中的 `convertToEntity` 方法现在调用实体的静态构造方法
 - 符合面向对象设计原则，实体类负责自己的数据转换逻辑
 
+### 修复问题5: 控制器重构和表名规范化
+**问题描述**: 需要重构整个用户管理模块，统一命名规范
+**修复内容**: 
+- `WechatWorkContactsController` 重命名为 `WechatWorkUserController`
+- 表名 `wechatwork_contacts` 改为 `wechatwork_user`
+- 主键 `contact_id` 改为 `wechatwork_user_id`
+- 实体类 `WechatworkContacts` 改为 `WechatworkUser`
+- 服务类 `WechatworkContactsService` 改为 `WechatworkUserService`
+- Mapper接口 `WechatworkContactsMapper` 改为 `WechatworkUserMapper`
+- 控制器只保留2个路由：同步用户信息、根据用户ID查询信息
+
 ### 修复问题4: MySQL表结构设计
 **问题描述**: 需要根据企业微信官方文档返回的数据设计完整的表结构
 **修复内容**: 
@@ -46,7 +57,7 @@
 
 ### 服务层职责
 - **WechatworkDepartmentService**: 处理部门同步的业务逻辑
-- **WechatworkContactsService**: 处理联系人同步的业务逻辑，包括递归逻辑判断
+- **WechatworkUserService**: 处理用户同步的业务逻辑，包括递归逻辑判断
 - 递归逻辑在Service层处理：从MySQL获取部门ID，然后决定是否递归调用API
 
 ### API接口选择说明
