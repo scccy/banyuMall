@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import com.origin.banyu.wechatWork.entity.WechatworkDepartment;
 
 /**
  * 企业微信用户服务类
@@ -104,19 +105,19 @@ public class WechatworkUserService {
         log.info("开始同步所有部门的用户信息，递归获取: {}", fetchChild);
         
         try {
-            // 获取所有部门ID
-            List<Integer> departmentIds = departmentService.getAllDepartmentIds();
+            // 获取所有部门信息
+            List<WechatworkDepartment> allDepartments = departmentService.getAllDepartments();
             
             int totalCount = 0;
             
             // 遍历每个部门，同步用户信息
-            for (Integer depId : departmentIds) {
+            for (WechatworkDepartment dept : allDepartments) {
                 try {
-                    int count = syncDepartmentUsers(accessToken, depId, fetchChild);
+                    int count = syncDepartmentUsers(accessToken, dept.getDepId(), fetchChild);
                     totalCount += count;
-                    log.info("部门 {} 用户同步完成，同步 {} 个用户", depId, count);
+                    log.info("部门 {} 用户同步完成，同步 {} 个用户", dept.getDepId(), count);
                 } catch (Exception e) {
-                    log.error("同步部门 {} 用户失败，继续处理其他部门", depId, e);
+                    log.error("同步部门 {} 用户失败，继续处理其他部门", dept.getDepId(), e);
                     // 继续处理其他部门，不中断整个同步过程
                 }
             }
