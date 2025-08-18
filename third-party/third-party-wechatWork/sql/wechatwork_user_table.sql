@@ -1,0 +1,30 @@
+-- 企业微信用户表（维度表）
+DROP TABLE IF EXISTS `wechatwork_user`;
+CREATE TABLE `wechatwork_user` (
+  `wechatwork_user_id` varchar(255) NOT NULL COMMENT '企业微信用户ID（主键）',
+  `name` varchar(255) NOT NULL COMMENT '成员名称',
+  `dep_ids` text DEFAULT NULL COMMENT '成员所属部门id列表（JSON格式）',
+  `position` varchar(255) DEFAULT NULL COMMENT '职位信息',
+  `mobile` varchar(255) DEFAULT NULL COMMENT '手机号',
+  `gender` varchar(255) DEFAULT NULL COMMENT '性别',
+  `email` varchar(255) DEFAULT NULL COMMENT '邮箱',
+  `biz_mail` varchar(255) DEFAULT NULL COMMENT '企业邮箱',
+  `avatar` text DEFAULT NULL COMMENT '头像url',
+  `status` int DEFAULT NULL COMMENT '激活状态',
+  `enable` int DEFAULT NULL COMMENT '成员启用状态',
+  `alias` varchar(255) DEFAULT NULL COMMENT '别名',
+  `isleader` int DEFAULT NULL COMMENT '是否是部门领导',
+  `hide_mobile` int DEFAULT NULL COMMENT '是否隐藏手机号',
+  `telephone` varchar(255) DEFAULT NULL COMMENT '座机',
+  `english_name` varchar(255) DEFAULT NULL COMMENT '英文名',
+  `main_department` int DEFAULT NULL COMMENT '主部门',
+  `qr_code` text DEFAULT NULL COMMENT '员工个人二维码',
+  `external_position` varchar(255) DEFAULT NULL COMMENT '对外职务',
+  `external_profile` text DEFAULT NULL COMMENT '对外属性（JSON格式）',
+  `open_userid` varchar(255) DEFAULT NULL COMMENT '全局唯一ID',
+  PRIMARY KEY (`wechatwork_user_id`),
+  KEY `idx_name` (`name`),
+  KEY `idx_main_department` (`main_department`),
+  KEY `idx_status` (`status`),
+  KEY `idx_enable` (`enable`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin COMMENT='企业微信用户维度表';
