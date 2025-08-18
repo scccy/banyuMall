@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 企业微信API适配器
+ * 企业微信部门API适配器
  * 符合第三方架构特殊规则：使用适配器模式封装第三方API
  * 
  * @author scccy
@@ -22,7 +22,7 @@ import java.util.List;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class WechatWorkApiAdapter {
+public class WechatWorkDepartmentApiAdapter {
     
     private final OkHttpManager okHttpManager;
     
@@ -55,7 +55,8 @@ public class WechatWorkApiAdapter {
 
             for (int i = 0; i < departmentList.size(); i++) {
                 JSONObject dept = departmentList.getJSONObject(i);
-                WechatWorkDepartmentInfo deptInfo = convertToDepartmentInfo(dept);
+                // 使用DTO的静态构造方法进行数据转换
+                WechatWorkDepartmentInfo deptInfo = WechatWorkDepartmentInfo.fromApiResponse(dept);
                 departments.add(deptInfo);
             }
 
@@ -69,36 +70,5 @@ public class WechatWorkApiAdapter {
             throw new WechatWorkServiceException("WECHATWORK_API_ERROR", 
                     "调用企业微信API异常: " + e.getMessage());
         }
-    }
-    
-    /**
-     * 转换API响应为部门信息对象
-     * 
-     * @param result API响应结果
-     * @return 部门信息对象
-     */
-    private WechatWorkDepartmentInfo convertToDepartmentInfo(JSONObject result) {
-        WechatWorkDepartmentInfo deptInfo = new WechatWorkDepartmentInfo();
-        deptInfo.setId(result.getInteger("id"));
-        deptInfo.setName(result.getString("name"));
-        deptInfo.setParentid(result.getInteger("parentid"));
-        deptInfo.setOrder(result.getInteger("order"));
-        
-        // 处理部门负责人列表
-        JSONArray leaderArray = result.getJSONArray("department_leader");
-        if (leaderArray != null) {
-            List<String> leaders = new ArrayList<>();
-            for (int i = 0; i < leaderArray.size(); i++) {
-                leaders.add(leaderArray.getString(i));
-            }
-            deptInfo.setDepartmentLeader(leaders);
-        }
-        
-        deptInfo.setStatus(result.getInteger("status"));
-        deptInfo.setDescription(result.getString("description"));
-        deptInfo.setCreateTime(result.getLong("create_time"));
-        deptInfo.setUpdateTime(result.getLong("update_time"));
-        
-        return deptInfo;
     }
 } 

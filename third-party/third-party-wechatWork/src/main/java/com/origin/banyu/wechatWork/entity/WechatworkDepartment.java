@@ -7,10 +7,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import java.time.LocalDateTime;
-
 /**
  * 企业微信部门实体
+ * 对应wechatwork_department表
+ * 注意：这是维度表，不需要继承基础父类
  * 
  * @author scccy
  */
@@ -21,9 +21,14 @@ import java.time.LocalDateTime;
 public class WechatworkDepartment {
 
     /**
-     * 部门ID
+     * 主键ID
      */
-    @TableId(value = "dep_id", type = IdType.INPUT)
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
+
+    /**
+     * 企业微信部门ID
+     */
     private Integer depId;
 
     /**
@@ -42,27 +47,7 @@ public class WechatworkDepartment {
     private String order;
 
     /**
-     * 部门负责人
+     * 部门负责人列表（JSON格式）
      */
     private String departmentLeader;
-
-    /**
-     * 创建时间
-     */
-    private LocalDateTime createdTime;
-
-    /**
-     * 更新时间
-     */
-    private LocalDateTime updatedTime;
-
-    /**
-     * 创建人
-     */
-    private String createdBy;
-
-    /**
-     * 更新人
-     */
-    private String updatedBy;
 }

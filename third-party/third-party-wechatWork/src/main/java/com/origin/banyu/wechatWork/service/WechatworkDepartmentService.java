@@ -1,6 +1,6 @@
 package com.origin.banyu.wechatWork.service;
 
-import com.origin.banyu.wechatWork.adapter.WechatWorkApiAdapter;
+import com.origin.banyu.wechatWork.adapter.WechatWorkDepartmentApiAdapter;
 import com.origin.banyu.wechatWork.dto.WechatWorkDepartmentInfo;
 import com.origin.banyu.wechatWork.entity.WechatworkDepartment;
 import com.origin.banyu.wechatWork.exception.WechatWorkServiceException;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class WechatworkDepartmentService {
 
     private final WechatworkDepartmentMapper departmentMapper;
-    private final WechatWorkApiAdapter wechatWorkApiAdapter;
+    private final WechatWorkDepartmentApiAdapter wechatWorkApiAdapter;
     private final AccessTokenService accessTokenService;
 
     /**

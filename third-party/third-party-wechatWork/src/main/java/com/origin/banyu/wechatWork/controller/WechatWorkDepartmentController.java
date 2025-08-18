@@ -59,7 +59,6 @@ public class WechatWorkDepartmentController {
             
             // 构建状态信息
             var status = new Object() {
-                public final int totalDepartments = totalDepartments;
                 public final String lastSyncTime = java.time.LocalDateTime.now().toString();
                 public final String status = "ready";
             };
