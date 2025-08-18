@@ -360,3 +360,20 @@ Controller → WechatworkUserService → WechatworkUserAdapterService → Mapper
 | `validateDepartmentHierarchy()` | 验证部门层级完整性 | `WechatworkDepartmentService.validateDepartmentHierarchy` | 已使用 | 保留 |
 
 注：`syncAllDepartmentsBatch(...)`、`batchSaveDepartments(...)`、`syncSingleDepartmentFromDB(...)`、`buildTree(...)`、`collectChildIds(...)`、`convertToEntity(...)` 为适配器内部私有方法，不纳入对外方法清单。
+
+### AccessTokenService 方法清单（第5个 Service，Access）
+
+| 方法名 | 功能说明 | 使用位置 | 使用状态 | 处理建议 |
+|---|---|---|---|---|
+| `getAccessToken()` | 从 Redis 读取缓存；无则刷新并缓存 | `WechatworkUserAdapterService`、`WechatworkDepartmentAdapterService` | 已使用 | 保留 |
+| `refreshAccessToken()` | 通过 Feign 获取配置，调用 `WechatworkAuthAdapter.getAccessToken` 刷新，写入 Redis | 被 `getAccessToken()` 间接调用 | 已使用 | 保留 |
+
+说明：采用 Redis 缓存 + 过期阈值预刷新；配置由 `WechatWorkAuthFeignClient` 提供，适配器负责 API 调用。
+
+### WechatworkAuthAdapter 方法清单（Adapter）
+
+| 方法名 | 功能说明 | 使用位置 | 使用状态 | 处理建议 |
+|---|---|---|---|---|
+| `getAccessToken(String corpid, String corpsecret)` | 基于企业微信官方接口获取 `access_token` | `AccessTokenService.refreshAccessToken` | 已使用 | 保留 |
+
+说明：已移除未使用的 JS-SDK 相关方法，仅保留获取 `access_token`。
