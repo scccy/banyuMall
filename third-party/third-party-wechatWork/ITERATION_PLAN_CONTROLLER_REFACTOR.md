@@ -316,3 +316,21 @@ Controller → WechatworkUserService → WechatworkUserAdapterService → Mapper
 说明：以上“使用位置”为当前代码内直接引用位置的梳理结果；后续如新增 API/任务可按需恢复或重构。
 
 下一步：输出 `WechatworkDepartmentService` 方法清单并给出处理建议。
+
+### WechatworkDepartmentService 方法清单（第2个 Service）
+
+| 方法名 | 功能说明 | 使用位置 | 使用状态 | 处理建议 |
+|---|---|---|---|---|
+| `syncWechatWorkDepartments(Integer departmentId)` | 触发部门同步，委托给 `WechatworkDepartmentAdapterService` 执行 | `WechatWorkDepartmentController.syncWechatWorkDepartments` | 已使用 | 保留 |
+| `getAllDepartments()` | 查询全部部门列表 | `WechatWorkDepartmentController.getSyncStatus`；`WechatworkUserAdapterService` 中用于遍历部门（行110） | 已使用 | 保留 |
+| `getDepartmentById(Integer depId)` | 根据部门ID查询部门 | 暂无直接引用 | 未使用 | 待删除或待后续“按ID查询部门”API再启用 |
+| `getDepartmentsByParentId(Integer parentId)` | 根据父部门ID查询子部门 | 暂无直接引用 | 未使用 | 建议删除（同名能力已在 `WechatworkDepartmentAdapterService` 提供） |
+| `buildDepartmentTree()` | 构建部门层级树（委托给 AdapterService） | 暂无直接引用 | 未使用 | 待删除，后续若新增“部门树”API再恢复 |
+| `calculateDepartmentPath(Integer departmentId)` | 计算部门层级路径（委托给 AdapterService） | 暂无直接引用 | 未使用 | 待删除，需要时走 AdapterService 能力 |
+| `getAllChildDepartmentIds(Integer departmentId)` | 获取部门所有子部门ID（委托给 AdapterService） | 暂无直接引用 | 未使用 | 待删除，需要时走 AdapterService 能力 |
+| `getDepartmentDepth(Integer departmentId)` | 获取部门深度（委托给 AdapterService） | 暂无直接引用 | 未使用 | 待删除，需要时走 AdapterService 能力 |
+| `validateDepartmentHierarchy()` | 验证部门层级关系（委托给 AdapterService） | 暂无直接引用 | 未使用 | 待删除，需要时走 AdapterService 能力 |
+| `getDepartmentStatistics()` | 统计部门数量、根/子部门数等 | 暂无直接引用 | 未使用 | 待删除或迁移到报表/运营模块 |
+| `searchDepartments(String keyword)` | 本地内存过滤搜索部门 | 暂无直接引用 | 未使用 | 待删除或重构为基于数据库索引的分页检索 |
+
+说明：上述“使用位置”基于当前仓库检索结果；若后续引入新的控制器/任务，可按需恢复或迁移到更合适的层（优先使用 `WechatworkDepartmentAdapterService` 的数据层能力）。
