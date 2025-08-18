@@ -1,6 +1,7 @@
 -- 企业微信相关表结构
 -- 根据企业微信官方文档：https://developer.work.weixin.qq.com/document/path/90337
 -- 创建时间：2025-01-18
+-- 注意：访问令牌和JS-SDK票据通过feign客户端从third_party_config表获取，无需单独建表
 
 -- 1. 企业微信部门表（维度表）
 DROP TABLE IF EXISTS `wechatwork_department`;
@@ -50,53 +51,6 @@ CREATE TABLE `wechatwork_contacts` (
   KEY `idx_enable` (`enable`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='企业微信联系人维度表';
 
--- 3. 企业微信访问令牌表（配置表）
-DROP TABLE IF EXISTS `wechatwork_access_token`;
-CREATE TABLE `wechatwork_access_token` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `corp_id` varchar(255) NOT NULL COMMENT '企业ID',
-  `corp_secret` varchar(255) NOT NULL COMMENT '应用凭证密钥',
-  `access_token` text NOT NULL COMMENT '访问令牌',
-  `expires_in` int(11) NOT NULL COMMENT '过期时间（秒）',
-  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_corp_secret` (`corp_id`, `corp_secret`),
-  KEY `idx_created_time` (`created_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='企业微信访问令牌配置表';
-
--- 4. 企业微信JS-SDK票据表（配置表）
-DROP TABLE IF EXISTS `wechatwork_jsapi_ticket`;
-CREATE TABLE `wechatwork_jsapi_ticket` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `corp_id` varchar(255) NOT NULL COMMENT '企业ID',
-  `jsapi_ticket` text NOT NULL COMMENT 'JS-SDK使用权限签名',
-  `expires_in` int(11) NOT NULL COMMENT '过期时间（秒）',
-  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_corp_id` (`corp_id`),
-  KEY `idx_created_time` (`created_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='企业微信JS-SDK票据配置表';
-
--- 5. 企业微信同步日志表（日志表）
-DROP TABLE IF EXISTS `wechatwork_sync_log`;
-CREATE TABLE `wechatwork_sync_log` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `sync_type` varchar(50) NOT NULL COMMENT '同步类型（department/contacts）',
-  `department_id` int(11) DEFAULT NULL COMMENT '部门ID（同步联系人时使用）',
-  `total_count` int(11) NOT NULL COMMENT '总数量',
-  `success_count` int(11) NOT NULL COMMENT '成功数量',
-  `error_count` int(11) NOT NULL COMMENT '错误数量',
-  `error_message` text DEFAULT NULL COMMENT '错误信息',
-  `sync_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '同步时间',
-  `duration` int(11) DEFAULT NULL COMMENT '同步耗时（毫秒）',
-  PRIMARY KEY (`id`),
-  KEY `idx_sync_type` (`sync_type`),
-  KEY `idx_department_id` (`department_id`),
-  KEY `idx_sync_time` (`sync_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='企业微信同步日志表';
-
 -- 插入示例数据（可选）
 -- INSERT INTO `wechatwork_department` (`dep_id`, `dep_name`, `parentid`, `order`) VALUES (1, '根部门', 0, '100000000');
 -- INSERT INTO `wechatwork_department` (`dep_id`, `dep_name`, `parentid`, `order`) VALUES (2, '技术部', 1, '100000001');
@@ -105,13 +59,10 @@ CREATE TABLE `wechatwork_sync_log` (
 -- 表结构说明：
 -- 1. wechatwork_department: 部门维度表，存储企业微信部门信息
 -- 2. wechatwork_contacts: 联系人维度表，存储企业微信用户信息
--- 3. wechatwork_access_token: 访问令牌配置表，存储API调用凭证
--- 4. wechatwork_jsapi_ticket: JS-SDK票据表，存储前端调用凭证
--- 5. wechatwork_sync_log: 同步日志表，记录数据同步历史
 
 -- 注意事项：
 -- 1. 维度表不包含审计字段（创建时间、更新时间等）
--- 2. 配置表和日志表包含必要的审计字段
+-- 2. 访问令牌和JS-SDK票据通过feign客户端从third_party_config表获取
 -- 3. 所有表使用utf8mb4字符集，支持emoji等特殊字符
 -- 4. 添加了必要的索引，提高查询性能
 -- 5. 字段类型和长度根据企业微信API返回数据设计
