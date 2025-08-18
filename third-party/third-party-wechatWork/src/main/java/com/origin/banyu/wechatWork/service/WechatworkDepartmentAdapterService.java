@@ -1,11 +1,9 @@
 package com.origin.banyu.wechatWork.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.origin.banyu.wechatWork.adapter.WechatWorkDepartmentApiAdapter;
 import com.origin.banyu.wechatWork.dto.WechatWorkDepartmentInfo;
 import com.origin.banyu.wechatWork.entity.WechatworkDepartment;
-import com.origin.banyu.wechatWork.mapper.WechatworkDepartmentMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,15 +41,10 @@ public class WechatworkDepartmentAdapterService {
             log.info("迭代器开始同步企业微信部门信息，部门ID: {}", departmentId);
             
             String accessToken = accessTokenService.getAccessToken();
-            int totalCount = 0;
-            
-            if (departmentId != null) {
-                // 同步指定部门 - 从MySQL查询现有数据
-                totalCount = syncSingleDepartmentFromDB(departmentId);
-            } else {
+
                 // 全量同步所有部门 - 从企业微信API获取，批量保存到MySQL
-                totalCount = syncAllDepartmentsBatch(accessToken);
-            }
+            int   totalCount = syncAllDepartmentsBatch(accessToken);
+
             
             log.info("迭代器企业微信部门同步完成，共同步 {} 个部门", totalCount);
             return totalCount;
@@ -111,7 +104,7 @@ public class WechatworkDepartmentAdapterService {
             java.util.List<WechatworkDepartment> entityList = new java.util.ArrayList<>(departments.size());
             for (WechatWorkDepartmentInfo deptInfo : departments) {
                 try {
-                    WechatworkDepartment department = convertToEntity(deptInfo);
+                    WechatworkDepartment department = WechatworkDepartment.fromDto(deptInfo);
                     entityList.add(department);
                 } catch (Exception e) {
                     log.error("迭代器构建部门实体失败: depId={}, name={}", deptInfo.getId(), deptInfo.getName(), e);
@@ -153,22 +146,7 @@ public class WechatworkDepartmentAdapterService {
         }
     }
 
-    /**
-     * 将DTO转换为实体对象
-     * 
-     * @param deptInfo 部门信息DTO
-     * @return 部门实体对象
-     */
-    private WechatworkDepartment convertToEntity(WechatWorkDepartmentInfo deptInfo) {
-        WechatworkDepartment department = new WechatworkDepartment();
-        department.setDepId(deptInfo.getId());
-        department.setDepName(deptInfo.getName());
-        department.setParentid(deptInfo.getParentid());
-        department.setOrder(deptInfo.getOrder() != null ? deptInfo.getOrder().toString() : null);
-        department.setDepartmentLeader(deptInfo.getDepartmentLeader() != null ?
-                String.join(",", deptInfo.getDepartmentLeader()) : null);
-        return department;
-    }
+    // 转换逻辑已迁移至实体：WechatworkDepartment.fromDto(WechatWorkDepartmentInfo)
 
     /**
      * 获取所有部门信息（迭代器专用）

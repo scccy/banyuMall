@@ -3,6 +3,7 @@ package com.origin.banyu.wechatWork.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.origin.banyu.wechatWork.dto.WechatWorkDepartmentInfo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -46,4 +47,17 @@ public class WechatworkDepartment {
      * 部门负责人列表（JSON格式）
      */
     private String departmentLeader;
+
+    /**
+     * 根据企业微信部门DTO构建实体
+     */
+    public static WechatworkDepartment fromDto(WechatWorkDepartmentInfo deptInfo) {
+        WechatworkDepartment department = new WechatworkDepartment();
+        department.setDepId(deptInfo.getId());
+        department.setDepName(deptInfo.getName());
+        department.setParentid(deptInfo.getParentid());
+        department.setOrder(deptInfo.getOrder() != null ? deptInfo.getOrder().toString() : null);
+        department.setDepartmentLeader(deptInfo.getDepartmentLeader() != null ? String.join(",", deptInfo.getDepartmentLeader()) : null);
+        return department;
+    }
 }
