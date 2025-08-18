@@ -1,6 +1,7 @@
 package com.origin.banyu.wechatWork.service;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.origin.banyu.wechatWork.adapter.WechatWorkUserApiAdapter;
 import com.origin.banyu.wechatWork.dto.WechatWorkUserInfo;
 import com.origin.banyu.wechatWork.entity.WechatworkContacts;
@@ -156,6 +157,7 @@ public class WechatworkContactsService {
             // 2. 批量插入新数据
             List<WechatworkContacts> entityList = new ArrayList<>();
             for (WechatWorkUserInfo userInfo : users) {
+                // 使用实体的静态构造方法进行数据转换
                 WechatworkContacts entity = convertToEntity(userInfo);
                 entityList.add(entity);
             }
@@ -181,7 +183,7 @@ public class WechatworkContactsService {
         } catch (Exception e) {
             log.error("批量保存联系人信息失败", e);
             throw new WechatWorkServiceException("WECHATWORK_CONTACTS_BATCH_SAVE_FAILED", 
-                    "批量保存联系人信息失败: " + e.getMessage(), e);
+                    "批量保存联系人信息失败: " + e.getMessage());
         }
     }
 
@@ -192,40 +194,31 @@ public class WechatworkContactsService {
      * @return 联系人实体对象
      */
     private WechatworkContacts convertToEntity(WechatWorkUserInfo userInfo) {
-        WechatworkContacts contact = new WechatworkContacts();
-        contact.setUserid(userInfo.getUserid());
-        contact.setName(userInfo.getName());
+        // 将DTO转换为JSONObject，然后使用实体的静态构造方法
+        JSONObject apiResponse = new JSONObject();
+        apiResponse.put("userid", userInfo.getUserid());
+        apiResponse.put("name", userInfo.getName());
+        apiResponse.put("department", userInfo.getDepartment());
+        apiResponse.put("position", userInfo.getPosition());
+        apiResponse.put("mobile", userInfo.getMobile());
+        apiResponse.put("gender", userInfo.getGender());
+        apiResponse.put("email", userInfo.getEmail());
+        apiResponse.put("biz_mail", userInfo.getBizMail());
+        apiResponse.put("avatar", userInfo.getAvatar());
+        apiResponse.put("status", userInfo.getStatus());
+        apiResponse.put("enable", userInfo.getEnable());
+        apiResponse.put("alias", userInfo.getAlias());
+        apiResponse.put("isleader", userInfo.getIsleader());
+        apiResponse.put("hide_mobile", userInfo.getHideMobile());
+        apiResponse.put("telephone", userInfo.getTelephone());
+        apiResponse.put("english_name", userInfo.getEnglishName());
+        apiResponse.put("main_department", userInfo.getMainDepartment());
+        apiResponse.put("qr_code", userInfo.getQrCode());
+        apiResponse.put("external_position", userInfo.getExternalPosition());
+        apiResponse.put("external_profile", userInfo.getExternalProfile());
+        apiResponse.put("open_userid", userInfo.getOpenUserid());
         
-        // 处理部门信息，转换为JSON字符串
-        if (userInfo.getDepartment() != null) {
-            contact.setDepartment(userInfo.getDepartment().toJSONString());
-        }
-        
-        contact.setPosition(userInfo.getPosition());
-        contact.setMobile(userInfo.getMobile());
-        contact.setGender(userInfo.getGender());
-        contact.setEmail(userInfo.getEmail());
-        contact.setBizMail(userInfo.getBizMail());
-        contact.setAvatar(userInfo.getAvatar());
-        contact.setStatus(userInfo.getStatus());
-        contact.setEnable(userInfo.getEnable());
-        contact.setAlias(userInfo.getAlias());
-        contact.setIsleader(userInfo.getIsleader());
-        contact.setHideMobile(userInfo.getHideMobile());
-        contact.setTelephone(userInfo.getTelephone());
-        contact.setEnglishName(userInfo.getEnglishName());
-        contact.setMainDepartment(userInfo.getMainDepartment());
-        contact.setQrCode(userInfo.getQrCode());
-        contact.setExternalPosition(userInfo.getExternalPosition());
-        
-        // 处理对外属性，转换为JSON字符串
-        if (userInfo.getExternalProfile() != null) {
-            contact.setExternalProfile(userInfo.getExternalProfile().toJSONString());
-        }
-        
-        contact.setOpenUserid(userInfo.getOpenUserid());
-        
-        return contact;
+        return WechatworkContacts.fromApiResponse(apiResponse);
     }
 
     /**

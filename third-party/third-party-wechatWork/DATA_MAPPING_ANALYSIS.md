@@ -18,6 +18,21 @@
 - 根据[企业微信官方文档](https://developer.work.weixin.qq.com/document/path/90337)完善参数映射
 - 确保所有API返回字段都被正确保存到数据库
 
+### 修复问题3: convertToEntity方法位置错误
+**问题描述**: `convertToEntity` 方法应该在实体类中，而不是在Service中
+**修复内容**: 
+- 在 `WechatworkContacts` 实体类中添加了 `fromApiResponse()` 静态构造方法
+- Service中的 `convertToEntity` 方法现在调用实体的静态构造方法
+- 符合面向对象设计原则，实体类负责自己的数据转换逻辑
+
+### 修复问题4: MySQL表结构设计
+**问题描述**: 需要根据企业微信官方文档返回的数据设计完整的表结构
+**修复内容**: 
+- 创建了完整的MySQL表结构SQL文件 `wechatwork_tables.sql`
+- 设计了5个表：部门表、联系人表、访问令牌表、JS-SDK票据表、同步日志表
+- 维度表不包含审计字段，配置表和日志表包含必要的审计字段
+- 添加了必要的索引和约束，提高查询性能
+
 ## 架构设计说明
 
 ### 适配器层职责

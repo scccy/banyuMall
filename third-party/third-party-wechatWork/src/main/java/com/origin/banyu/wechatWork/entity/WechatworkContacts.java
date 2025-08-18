@@ -1,5 +1,7 @@
 package com.origin.banyu.wechatWork.entity;
 
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -130,4 +132,48 @@ public class WechatworkContacts {
      * 全局唯一ID
      */
     private String openUserid;
+
+    /**
+     * 从企业微信API响应创建WechatworkContacts对象
+     * 静态构造方法，负责数据转换逻辑
+     * 
+     * @param apiResponse 企业微信API响应结果
+     * @return WechatworkContacts对象
+     */
+    public static WechatworkContacts fromApiResponse(JSONObject apiResponse) {
+        WechatworkContacts contact = new WechatworkContacts();
+        contact.setUserid(apiResponse.getString("userid"));
+        contact.setName(apiResponse.getString("name"));
+        
+        // 处理部门信息，转换为JSON字符串
+        if (apiResponse.getJSONArray("department") != null) {
+            contact.setDepartment(apiResponse.getJSONArray("department").toJSONString());
+        }
+        
+        contact.setPosition(apiResponse.getString("position"));
+        contact.setMobile(apiResponse.getString("mobile"));
+        contact.setGender(apiResponse.getString("gender"));
+        contact.setEmail(apiResponse.getString("email"));
+        contact.setBizMail(apiResponse.getString("biz_mail"));
+        contact.setAvatar(apiResponse.getString("avatar"));
+        contact.setStatus(apiResponse.getInteger("status"));
+        contact.setEnable(apiResponse.getInteger("enable"));
+        contact.setAlias(apiResponse.getString("alias"));
+        contact.setIsleader(apiResponse.getInteger("isleader"));
+        contact.setHideMobile(apiResponse.getInteger("hide_mobile"));
+        contact.setTelephone(apiResponse.getString("telephone"));
+        contact.setEnglishName(apiResponse.getString("english_name"));
+        contact.setMainDepartment(apiResponse.getInteger("main_department"));
+        contact.setQrCode(apiResponse.getString("qr_code"));
+        contact.setExternalPosition(apiResponse.getString("external_position"));
+        
+        // 处理对外属性，转换为JSON字符串
+        if (apiResponse.getJSONObject("external_profile") != null) {
+            contact.setExternalProfile(apiResponse.getJSONObject("external_profile").toJSONString());
+        }
+        
+        contact.setOpenUserid(apiResponse.getString("open_userid"));
+        
+        return contact;
+    }
 }
