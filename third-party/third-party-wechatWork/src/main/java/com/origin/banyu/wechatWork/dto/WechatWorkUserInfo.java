@@ -3,8 +3,8 @@ package com.origin.banyu.wechatWork.dto;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import com.origin.banyu.wechatWork.entity.WechatworkContacts;
 import lombok.Data;
+import com.origin.banyu.wechatWork.entity.WechatworkUser;
 
 import java.util.List;
 
@@ -167,44 +167,44 @@ public class WechatWorkUserInfo {
     }
 
     /**
-     * 转换为WechatworkContacts实体对象
+     * 转换为WechatworkUser实体对象
      * 
-     * @return WechatworkContacts实体对象
+     * @return WechatworkUser实体对象
      */
-    public WechatworkContacts toEntity() {
-        WechatworkContacts contact = new WechatworkContacts();
-        contact.setContactId(this.userid);
-        contact.setName(this.name);
+    public WechatworkUser toEntity() {
+        WechatworkUser user = new WechatworkUser();
+        user.setWechatworkUserId(this.userid);
+        user.setName(this.name);
         
         // 处理部门信息，转换为JSON字符串
         if (this.depIds != null) {
-            contact.setDepIds(JSON.toJSONString(this.depIds));
+            user.setDepIds(JSON.toJSONString(this.depIds));
         }
         
-        contact.setPosition(this.position);
-        contact.setMobile(this.mobile);
-        contact.setGender(this.gender);
-        contact.setEmail(this.email);
-        contact.setBizMail(this.bizMail);
-        contact.setAvatar(this.avatar);
-        contact.setStatus(this.status);
-        contact.setEnable(this.enable);
-        contact.setAlias(this.alias);
-        contact.setIsleader(this.isleader);
-        contact.setHideMobile(this.hideMobile);
-        contact.setTelephone(this.telephone);
-        contact.setEnglishName(this.englishName);
-        contact.setMainDepartment(this.mainDepartment);
-        contact.setQrCode(this.qrCode);
-        contact.setExternalPosition(this.externalPosition);
+        user.setPosition(this.position);
+        user.setMobile(this.mobile);
+        user.setGender(this.gender);
+        user.setEmail(this.email);
+        user.setBizMail(this.bizMail);
+        user.setAvatar(this.avatar);
+        user.setStatus(this.status);
+        user.setEnable(this.enable);
+        user.setAlias(this.alias);
+        user.setIsleader(this.isleader);
+        user.setHideMobile(this.hideMobile);
+        user.setTelephone(this.telephone);
+        user.setEnglishName(this.englishName);
+        user.setMainDepartment(this.mainDepartment);
+        user.setQrCode(this.qrCode);
+        user.setExternalPosition(this.externalPosition);
         
         // 处理对外属性，转换为JSON字符串
         if (this.externalProfile != null) {
-            contact.setExternalProfile(this.externalProfile.toJSONString());
+            user.setExternalProfile(this.externalProfile.toJSONString());
         }
         
-        contact.setOpenUserid(this.openUserid);
+        user.setOpenUserid(this.openUserid);
         
-        return contact;
+        return user;
     }
 }

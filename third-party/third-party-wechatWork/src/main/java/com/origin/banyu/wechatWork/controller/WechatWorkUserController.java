@@ -44,7 +44,7 @@ public class WechatWorkUserController {
             
         } catch (Exception e) {
             log.error("同步企业微信用户信息失败", e);
-            return ResultData.error("同步失败: " + e.getMessage());
+            return ResultData.fail("同步失败: " + e.getMessage());
         }
     }
 
@@ -65,12 +65,12 @@ public class WechatWorkUserController {
             if (user != null) {
                 return ResultData.success(user);
             } else {
-                return ResultData.error("用户不存在");
+                return ResultData.fail("用户不存在");
             }
             
         } catch (Exception e) {
             log.error("查询用户信息失败，用户ID: {}", wechatworkUserId, e);
-            return ResultData.error("查询失败: " + e.getMessage());
+            return ResultData.fail("查询失败: " + e.getMessage());
         }
     }
 }
