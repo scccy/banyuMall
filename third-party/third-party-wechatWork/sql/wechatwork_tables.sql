@@ -19,10 +19,9 @@ CREATE TABLE `wechatwork_department` (
 -- 2. 企业微信联系人表（维度表）
 DROP TABLE IF EXISTS `wechatwork_contacts`;
 CREATE TABLE `wechatwork_contacts` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `userid` varchar(255) NOT NULL COMMENT '企业微信用户ID',
+  `contact_id` varchar(255) NOT NULL COMMENT '企业微信用户ID（主键）',
   `name` varchar(255) NOT NULL COMMENT '成员名称',
-  `department` text DEFAULT NULL COMMENT '成员所属部门id列表（JSON格式）',
+  `dep_ids` text DEFAULT NULL COMMENT '成员所属部门id列表（JSON格式）',
   `position` varchar(255) DEFAULT NULL COMMENT '职位信息',
   `mobile` varchar(255) DEFAULT NULL COMMENT '手机号',
   `gender` varchar(255) DEFAULT NULL COMMENT '性别',
@@ -41,8 +40,7 @@ CREATE TABLE `wechatwork_contacts` (
   `external_position` varchar(255) DEFAULT NULL COMMENT '对外职务',
   `external_profile` text DEFAULT NULL COMMENT '对外属性（JSON格式）',
   `open_userid` varchar(255) DEFAULT NULL COMMENT '全局唯一ID',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_userid` (`userid`),
+  PRIMARY KEY (`contact_id`),
   KEY `idx_name` (`name`),
   KEY `idx_main_department` (`main_department`),
   KEY `idx_status` (`status`),
@@ -59,7 +57,9 @@ CREATE TABLE `wechatwork_contacts` (
 --    - 使用dep_id作为主键，因为企业微信部门ID本身就是唯一的
 --    - 不包含自增ID字段，避免冗余
 -- 2. wechatwork_contacts: 联系人维度表，存储企业微信用户信息
---    - 保留自增ID作为主键，因为userid可能包含特殊字符
+--    - 使用contact_id作为主键，对应企业微信的userid
+--    - 将department字段改为dep_ids，更清晰地表示部门ID列表
+--    - 不包含自增ID字段，避免冗余
 
 -- 注意事项：
 -- 1. 维度表不包含审计字段（创建时间、更新时间等）
@@ -67,4 +67,5 @@ CREATE TABLE `wechatwork_contacts` (
 -- 3. 所有表使用utf8mb4字符集，支持emoji等特殊字符
 -- 4. 添加了必要的索引，提高查询性能
 -- 5. 字段类型和长度根据企业微信API返回数据设计
--- 6. 部门表使用dep_id作为主键，符合业务逻辑
+-- 6. 部门表使用dep_id作为主键，联系人表使用contact_id作为主键，符合业务逻辑
+-- 7. 字段命名更加清晰：dep_ids表示部门ID列表，与dep_id呼应

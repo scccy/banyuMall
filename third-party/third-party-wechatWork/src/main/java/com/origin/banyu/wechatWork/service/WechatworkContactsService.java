@@ -198,7 +198,7 @@ public class WechatworkContactsService {
         JSONObject apiResponse = new JSONObject();
         apiResponse.put("userid", userInfo.getUserid());
         apiResponse.put("name", userInfo.getName());
-        apiResponse.put("department", userInfo.getDepartment());
+        apiResponse.put("department", userInfo.getDepIds());
         apiResponse.put("position", userInfo.getPosition());
         apiResponse.put("mobile", userInfo.getMobile());
         apiResponse.put("gender", userInfo.getGender());
@@ -224,21 +224,21 @@ public class WechatworkContactsService {
     /**
      * 根据企业微信用户ID获取联系人信息
      * 
-     * @param userid 企业微信用户ID
+     * @param contactId 企业微信用户ID
      * @return 联系人信息
      */
-    public WechatworkContacts getContactByUserid(String userid) {
+    public WechatworkContacts getContactByContactId(String contactId) {
         try {
-            WechatworkContacts contact = contactsMapper.selectByUserid(userid);
+            WechatworkContacts contact = contactsMapper.selectByContactId(contactId);
             if (contact == null) {
                 throw new WechatWorkServiceException("WECHATWORK_CONTACT_NOT_FOUND", 
-                        "联系人不存在: " + userid);
+                        "联系人不存在: " + contactId);
             }
             return contact;
         } catch (WechatWorkServiceException e) {
             throw e;
         } catch (Exception e) {
-            log.error("获取联系人信息失败: userid={}", userid, e);
+            log.error("获取联系人信息失败: contactId={}", contactId, e);
             throw new WechatWorkServiceException("WECHATWORK_CONTACT_GET_FAILED", 
                     "获取联系人信息失败: " + e.getMessage(), e);
         }
@@ -262,14 +262,14 @@ public class WechatworkContactsService {
     /**
      * 根据部门ID获取联系人列表
      * 
-     * @param departmentId 部门ID
+     * @param depId 部门ID
      * @return 联系人列表
      */
-    public List<WechatworkContacts> getContactsByDepartmentId(Integer departmentId) {
+    public List<WechatworkContacts> getContactsByDepId(Integer depId) {
         try {
-            return contactsMapper.selectByDepartmentId(departmentId);
+            return contactsMapper.selectByDepId(depId);
         } catch (Exception e) {
-            log.error("获取部门联系人列表失败: departmentId={}", departmentId, e);
+            log.error("获取部门联系人列表失败: depId={}", depId, e);
             throw new WechatWorkServiceException("WECHATWORK_DEPARTMENT_CONTACTS_GET_FAILED", 
                     "获取部门联系人列表失败: " + e.getMessage(), e);
         }

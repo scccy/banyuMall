@@ -1,7 +1,7 @@
 package com.origin.banyu.wechatWork.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.origin.banyu.wechatWork.entity.WechatworkContacts;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -18,18 +18,18 @@ public interface WechatworkContactsMapper extends BaseMapper<WechatworkContacts>
     /**
      * 根据企业微信用户ID查询联系人信息
      * 
-     * @param userid 企业微信用户ID
+     * @param contactId 企业微信用户ID
      * @return 联系人信息
      */
-    WechatworkContacts selectByUserid(@Param("userid") String userid);
+    WechatworkContacts selectByContactId(@Param("contactId") String contactId);
 
     /**
      * 根据部门ID查询联系人列表
      * 
-     * @param departmentId 部门ID
+     * @param depId 部门ID
      * @return 联系人列表
      */
-    List<WechatworkContacts> selectByDepartmentId(@Param("departmentId") Integer departmentId);
+    List<WechatworkContacts> selectByDepId(@Param("depId") Integer depId);
 
     /**
      * 查询所有联系人信息

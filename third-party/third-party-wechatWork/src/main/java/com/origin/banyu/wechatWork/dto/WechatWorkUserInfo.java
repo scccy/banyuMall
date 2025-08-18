@@ -4,9 +4,11 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 企业微信用户信息DTO
- * 根据企业微信官方文档：https://developer.work.weixin.qq.com/document/path/90337
+ * 对应企业微信API返回的用户信息
  * 
  * @author scccy
  */
@@ -14,7 +16,7 @@ import lombok.Data;
 public class WechatWorkUserInfo {
 
     /**
-     * 成员UserID
+     * 企业微信用户ID
      */
     private String userid;
 
@@ -26,7 +28,7 @@ public class WechatWorkUserInfo {
     /**
      * 成员所属部门id列表
      */
-    private JSONArray department;
+    private List<Integer> depIds;
 
     /**
      * 职位信息
@@ -39,7 +41,7 @@ public class WechatWorkUserInfo {
     private String mobile;
 
     /**
-     * 性别。0表示未定义，1表示男性，2表示女性
+     * 性别
      */
     private String gender;
 
@@ -59,12 +61,12 @@ public class WechatWorkUserInfo {
     private String avatar;
 
     /**
-     * 激活状态: 1=已激活，2=已禁用，4=未激活，5=退出企业
+     * 激活状态
      */
     private Integer status;
 
     /**
-     * 成员启用状态。1表示启用的成员，0表示被禁用的成员
+     * 成员启用状态
      */
     private Integer enable;
 
@@ -74,12 +76,12 @@ public class WechatWorkUserInfo {
     private String alias;
 
     /**
-     * 是否是部门领导。0-否；1-是
+     * 是否是部门领导
      */
     private Integer isleader;
 
     /**
-     * 是否隐藏手机号。0-否；1-是
+     * 是否隐藏手机号
      */
     private Integer hideMobile;
 
@@ -129,7 +131,17 @@ public class WechatWorkUserInfo {
         WechatWorkUserInfo userInfo = new WechatWorkUserInfo();
         userInfo.setUserid(apiResponse.getString("userid"));
         userInfo.setName(apiResponse.getString("name"));
-        userInfo.setDepartment(apiResponse.getJSONArray("department"));
+        
+        // 处理部门信息
+        JSONArray deptArray = apiResponse.getJSONArray("department");
+        if (deptArray != null) {
+            List<Integer> deptIds = new java.util.ArrayList<>();
+            for (int i = 0; i < deptArray.size(); i++) {
+                deptIds.add(deptArray.getInteger(i));
+            }
+            userInfo.setDepIds(deptIds);
+        }
+        
         userInfo.setPosition(apiResponse.getString("position"));
         userInfo.setMobile(apiResponse.getString("mobile"));
         userInfo.setGender(apiResponse.getString("gender"));
@@ -147,6 +159,7 @@ public class WechatWorkUserInfo {
         userInfo.setQrCode(apiResponse.getString("qr_code"));
         userInfo.setExternalPosition(apiResponse.getString("external_position"));
         userInfo.setExternalProfile(apiResponse.getJSONObject("external_profile"));
+        userInfo.setOpenUserid(apiResponse.getString("open_userid"));
         
         return userInfo;
     }

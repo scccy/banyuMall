@@ -13,6 +13,7 @@ import lombok.experimental.Accessors;
  * 企业微信联系人实体
  * 对应wechatwork_contacts表
  * 注意：这是维度表，不需要继承基础父类
+ * 使用contact_id作为主键，对应企业微信的userid
  * 
  * @author scccy
  */
@@ -23,15 +24,10 @@ import lombok.experimental.Accessors;
 public class WechatworkContacts {
 
     /**
-     * 主键ID
+     * 企业微信用户ID（主键）
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
-
-    /**
-     * 企业微信用户ID
-     */
-    private String userid;
+    @TableId(value = "contact_id", type = IdType.INPUT)
+    private String contactId;
 
     /**
      * 成员名称
@@ -41,7 +37,7 @@ public class WechatworkContacts {
     /**
      * 成员所属部门id列表（JSON格式）
      */
-    private String department;
+    private String depIds;
 
     /**
      * 职位信息
@@ -142,12 +138,12 @@ public class WechatworkContacts {
      */
     public static WechatworkContacts fromApiResponse(JSONObject apiResponse) {
         WechatworkContacts contact = new WechatworkContacts();
-        contact.setUserid(apiResponse.getString("userid"));
+        contact.setContactId(apiResponse.getString("userid"));
         contact.setName(apiResponse.getString("name"));
         
         // 处理部门信息，转换为JSON字符串
         if (apiResponse.getJSONArray("department") != null) {
-            contact.setDepartment(apiResponse.getJSONArray("department").toJSONString());
+            contact.setDepIds(apiResponse.getJSONArray("department").toJSONString());
         }
         
         contact.setPosition(apiResponse.getString("position"));
