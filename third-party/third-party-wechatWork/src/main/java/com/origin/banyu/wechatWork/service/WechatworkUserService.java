@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import com.origin.banyu.wechatWork.entity.WechatworkDepartment;
 
 /**
  * 企业微信用户业务服务类
@@ -23,7 +22,6 @@ public class WechatworkUserService {
     
     private final WechatworkUserMapper userMapper;
     private final WechatworkUserAdapterService userAdapterService;
-    private final WechatworkDepartmentAdapterService departmentService;
 
     /**
      * 同步企业微信用户信息（控制器专用）
@@ -46,43 +44,6 @@ public class WechatworkUserService {
         } catch (Exception e) {
             log.error("控制器同步企业微信用户信息失败", e);
             throw new RuntimeException("控制器同步企业微信用户信息失败: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * 同步所有部门的用户信息
-     * 
-     * @param accessToken 访问令牌
-     * @param fetchChild 是否递归获取子部门用户
-     * @return 同步的用户总数
-     */
-    private int syncAllDepartmentUsers(String accessToken, Integer fetchChild) {
-        log.info("开始同步所有部门的用户信息，递归获取: {}", fetchChild);
-        
-        try {
-            // 获取所有部门信息 - 使用适配器服务
-            List<WechatworkDepartment> allDepartments = departmentService.getAllDepartments();
-            
-            int totalCount = 0;
-            
-            // 遍历每个部门，同步用户信息
-            for (WechatworkDepartment dept : allDepartments) {
-                try {
-                    int count = syncDepartmentUsers(accessToken, dept.getDepId(), fetchChild);
-                    totalCount += count;
-                    log.info("部门 {} 用户同步完成，同步 {} 个用户", dept.getDepId(), count);
-                } catch (Exception e) {
-                    log.error("同步部门 {} 用户失败，继续处理其他部门", dept.getDepId(), e);
-                    // 继续处理其他部门，不中断整个同步过程
-                }
-            }
-            
-            log.info("所有部门用户信息同步完成，共处理 {} 条记录", totalCount);
-            return totalCount;
-            
-        } catch (Exception e) {
-            log.error("同步所有部门用户信息失败", e);
-            throw new RuntimeException("同步所有部门用户信息失败: " + e.getMessage(), e);
         }
     }
 
