@@ -345,3 +345,18 @@ Controller → WechatworkUserService → WechatworkUserAdapterService → Mapper
 | `clearAllUsers()` | 清空用户表（适配器侧） | 暂无直接引用 | 未使用 | 待删除；如支持“全量重建”流程再单独提供运维接口 |
 
 注：`syncDepartmentUsers(...)`、`syncAllDepartmentUsers(...)`、`batchSaveUsers(...)` 为适配器内部私有方法，不纳入对外方法清单。
+
+### WechatworkDepartmentAdapterService 方法清单（第4个 Service，Adapter专用）
+
+| 方法名 | 功能说明 | 使用位置 | 使用状态 | 处理建议 |
+|---|---|---|---|---|
+| `syncWechatWorkDepartments(Integer departmentId)` | 迭代器入口：按部门/全量同步部门，内部批量保存 | `WechatworkDepartmentService.syncWechatWorkDepartments` | 已使用 | 保留 |
+| `getAllDepartments()` | 获取全部部门 | `WechatworkDepartmentService.buildDepartmentTree/validate...` 等 | 已使用（间接） | 保留 |
+| `getDepartmentsByParentId(Integer parentId)` | 获取子部门列表 | 仅被本类内部 `collectChildIds` 使用 | 已使用（内部） | 保留（内部能力） |
+| `buildDepartmentTree()` | 构建部门层级树 | `WechatworkDepartmentService.buildDepartmentTree` | 已使用 | 保留 |
+| `calculateDepartmentPath(Integer departmentId)` | 计算部门层级路径 | `WechatworkDepartmentService.calculateDepartmentPath` | 已使用 | 保留 |
+| `getAllChildDepartmentIds(Integer departmentId)` | 获取所有子部门ID | `WechatworkDepartmentService.getAllChildDepartmentIds` | 已使用 | 保留 |
+| `getDepartmentDepth(Integer departmentId)` | 获取部门深度 | `WechatworkDepartmentService.getDepartmentDepth` | 已使用 | 保留 |
+| `validateDepartmentHierarchy()` | 验证部门层级完整性 | `WechatworkDepartmentService.validateDepartmentHierarchy` | 已使用 | 保留 |
+
+注：`syncAllDepartmentsBatch(...)`、`batchSaveDepartments(...)`、`syncSingleDepartmentFromDB(...)`、`buildTree(...)`、`collectChildIds(...)`、`convertToEntity(...)` 为适配器内部私有方法，不纳入对外方法清单。
