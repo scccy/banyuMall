@@ -132,16 +132,15 @@ public class WechatworkUserService {
             long enabledUsers = allUsers.stream().filter(user -> user.getEnable() != null && user.getEnable() == 1).count();
             long disabledUsers = allUsers.stream().filter(user -> user.getEnable() != null && user.getEnable() == 0).count();
             
-            // 构建统计信息
-            var statistics = new Object() {
-                public final long totalUsers = allUsers.size();
-                public final long enabledUsers = enabledUsers;
-                public final long disabledUsers = disabledUsers;
-                public final String lastUpdateTime = java.time.LocalDateTime.now().toString();
-            };
+            // 构建统计信息 - 使用Map避免匿名内部类字段访问问题
+            java.util.Map<String, Object> statistics = new java.util.HashMap<>();
+            statistics.put("totalUsers", allUsers.size());
+            statistics.put("enabledUsers", enabledUsers);
+            statistics.put("disabledUsers", disabledUsers);
+            statistics.put("lastUpdateTime", java.time.LocalDateTime.now().toString());
             
             log.info("控制器获取用户统计信息成功，总用户数: {}, 启用用户: {}, 禁用用户: {}", 
-                    statistics.totalUsers, statistics.enabledUsers, statistics.disabledUsers);
+                    statistics.get("totalUsers"), statistics.get("enabledUsers"), statistics.get("disabledUsers"));
             
             return statistics;
             
