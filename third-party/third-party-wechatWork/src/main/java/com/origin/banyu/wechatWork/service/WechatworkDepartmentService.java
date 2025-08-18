@@ -113,30 +113,22 @@ public class WechatworkDepartmentService {
                 entityList.add(entity);
             }
             
-            // 3. 使用MyBatis-Plus的批量插入
+            // 3. 直接批量插入所有数据
             int insertedCount = 0;
             if (!entityList.isEmpty()) {
-                // 分批插入，避免单次插入过多数据
-                int batchSize = 100;
-                for (int i = 0; i < entityList.size(); i += batchSize) {
-                    int endIndex = Math.min(i + batchSize, entityList.size());
-                    List<WechatworkDepartment> batch = entityList.subList(i, endIndex);
-                    
-                    for (WechatworkDepartment dept : batch) {
-                        try {
-                            departmentMapper.insert(dept);
-                            insertedCount++;
-                        } catch (Exception e) {
-                            log.error("插入部门失败: id={}, name={}", dept.getDepId(), dept.getDepName(), e);
-                            // 继续处理其他部门，不中断整个流程
-                        }
+                for (WechatworkDepartment dept : entityList) {
+                    try {
+                        departmentMapper.insert(dept);
+                        insertedCount++;
+                    } catch (Exception e) {
+                        log.error("插入部门失败: id={}, name={}", dept.getDepId(), dept.getDepName(), e);
+                        // 继续处理其他部门，不中断整个流程
                     }
-                    
-                    log.info("批量插入进度: {}/{}", Math.min(i + batchSize, entityList.size()), entityList.size());
                 }
+                
+                log.info("批量插入完成，成功插入 {}/{} 个部门", insertedCount, entityList.size());
             }
             
-            log.info("批量保存完成，成功插入 {} 个部门", insertedCount);
             return insertedCount;
             
         } catch (Exception e) {

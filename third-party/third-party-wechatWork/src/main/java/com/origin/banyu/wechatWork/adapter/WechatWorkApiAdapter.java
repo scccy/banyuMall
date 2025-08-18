@@ -207,62 +207,6 @@ public class WechatWorkApiAdapter {
                     "调用企业微信API异常: " + e.getMessage());
         }
     }
-
-    /**
-     * 批量获取部门信息（支持分页，避免一次性获取过多数据）
-     * 
-     * @param accessToken 访问令牌
-     * @param batchSize 批次大小，建议100-1000
-     * @return 部门信息列表
-     * @throws WechatWorkServiceException 当API调用失败时抛出
-     */
-    public List<WechatWorkDepartmentInfo> getDepartmentsBatch(String accessToken, int batchSize) {
-        try {
-            String url = String.format("https://qyapi.weixin.qq.com/cgi-bin/department/list?access_token=%s",
-                    accessToken);
-            
-            log.info("调用企业微信API批量获取部门信息，批次大小: {}", batchSize);
-            String responseBody = okHttpManager.get(url);
-            JSONObject result = JSON.parseObject(responseBody);
-            
-            if (result.getInteger("errcode") != 0) {
-                String errorMsg = result.getString("errmsg");
-                log.error("批量获取部门信息失败: errcode={}, errmsg={}", 
-                        result.getInteger("errcode"), errorMsg);
-                throw new WechatWorkServiceException("WECHATWORK_DEPARTMENTS_BATCH_GET_FAILED", 
-                        "批量获取部门信息失败: " + errorMsg);
-            }
-            
-            JSONArray departmentList = result.getJSONArray("department");
-            List<WechatWorkDepartmentInfo> departments = new ArrayList<>();
-
-            // 分批处理，避免内存占用过大
-            int totalCount = departmentList.size();
-            int processedCount = 0;
-            
-            for (int i = 0; i < totalCount; i++) {
-                JSONObject dept = departmentList.getJSONObject(i);
-                WechatWorkDepartmentInfo deptInfo = convertToDepartmentInfo(dept);
-                departments.add(deptInfo);
-                processedCount++;
-                
-                // 每处理一批次，记录进度
-                if (processedCount % batchSize == 0) {
-                    log.info("部门信息批量处理进度: {}/{}", processedCount, totalCount);
-                }
-            }
-
-            log.info("批量获取部门信息成功: 总数={}, 批次大小={}", totalCount, batchSize);
-            return departments;
-            
-        } catch (WechatWorkServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("调用企业微信API批量获取部门信息异常", e);
-            throw new WechatWorkServiceException("WECHATWORK_API_ERROR", 
-                    "调用企业微信API异常: " + e.getMessage());
-        }
-    }
     
     /**
      * 获取外部联系人列表
