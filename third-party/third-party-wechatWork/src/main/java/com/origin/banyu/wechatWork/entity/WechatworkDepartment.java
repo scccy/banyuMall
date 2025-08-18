@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
  * 企业微信部门实体
  * 对应wechatwork_department表
  * 注意：这是维度表，不需要继承基础父类
+ * 使用dep_id作为主键，因为企业微信部门ID本身就是唯一的
  * 
  * @author scccy
  */
@@ -21,14 +22,9 @@ import lombok.experimental.Accessors;
 public class WechatworkDepartment {
 
     /**
-     * 主键ID
+     * 企业微信部门ID（主键）
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
-
-    /**
-     * 企业微信部门ID
-     */
+    @TableId(value = "dep_id", type = IdType.INPUT)
     private Integer depId;
 
     /**

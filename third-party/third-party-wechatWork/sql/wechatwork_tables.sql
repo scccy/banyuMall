@@ -6,14 +6,12 @@
 -- 1. 企业微信部门表（维度表）
 DROP TABLE IF EXISTS `wechatwork_department`;
 CREATE TABLE `wechatwork_department` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-  `dep_id` int(11) NOT NULL COMMENT '企业微信部门ID',
+  `dep_id` int(11) NOT NULL COMMENT '企业微信部门ID（主键）',
   `dep_name` varchar(255) NOT NULL COMMENT '部门名称',
   `parentid` int(11) DEFAULT NULL COMMENT '父部门ID',
   `order` varchar(255) DEFAULT NULL COMMENT '排序',
   `department_leader` text DEFAULT NULL COMMENT '部门负责人列表（JSON格式）',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_dep_id` (`dep_id`),
+  PRIMARY KEY (`dep_id`),
   KEY `idx_parentid` (`parentid`),
   KEY `idx_dep_name` (`dep_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='企业微信部门维度表';
@@ -58,7 +56,10 @@ CREATE TABLE `wechatwork_contacts` (
 
 -- 表结构说明：
 -- 1. wechatwork_department: 部门维度表，存储企业微信部门信息
+--    - 使用dep_id作为主键，因为企业微信部门ID本身就是唯一的
+--    - 不包含自增ID字段，避免冗余
 -- 2. wechatwork_contacts: 联系人维度表，存储企业微信用户信息
+--    - 保留自增ID作为主键，因为userid可能包含特殊字符
 
 -- 注意事项：
 -- 1. 维度表不包含审计字段（创建时间、更新时间等）
@@ -66,3 +67,4 @@ CREATE TABLE `wechatwork_contacts` (
 -- 3. 所有表使用utf8mb4字符集，支持emoji等特殊字符
 -- 4. 添加了必要的索引，提高查询性能
 -- 5. 字段类型和长度根据企业微信API返回数据设计
+-- 6. 部门表使用dep_id作为主键，符合业务逻辑

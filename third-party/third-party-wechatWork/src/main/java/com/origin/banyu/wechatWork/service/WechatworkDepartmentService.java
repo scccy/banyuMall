@@ -179,11 +179,7 @@ public class WechatworkDepartmentService {
         department.setDepartmentLeader(deptInfo.getDepartmentLeader() != null ? 
                 String.join(",", deptInfo.getDepartmentLeader()) : null);
         
-        // 设置时间字段
-        LocalDateTime now = LocalDateTime.now();
-        department.setCreatedTime(now);
-        department.setUpdatedTime(now);
-        
+        // 注意：维度表不包含时间字段，符合数据仓库设计原则
         return department;
     }
 
