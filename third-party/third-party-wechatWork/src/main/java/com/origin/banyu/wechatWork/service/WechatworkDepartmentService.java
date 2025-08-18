@@ -1,21 +1,17 @@
 package com.origin.banyu.wechatWork.service;
 
-import com.origin.banyu.wechatWork.adapter.WechatWorkDepartmentApiAdapter;
-import com.origin.banyu.wechatWork.dto.WechatWorkDepartmentInfo;
 import com.origin.banyu.wechatWork.entity.WechatworkDepartment;
-import com.origin.banyu.wechatWork.exception.WechatWorkServiceException;
 import com.origin.banyu.wechatWork.mapper.WechatworkDepartmentMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * 企业微信部门服务
- * 符合第三方架构特殊规则：使用适配器模式封装第三方API
+ * 企业微信部门业务服务类
+ * 专门负责业务逻辑和API接口，给控制器使用
+ * 专注于业务层面的操作，调用WechatworkDepartmentAdapterService进行数据操作
  * 
  * @author scccy
  */
@@ -23,396 +19,271 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class WechatworkDepartmentService {
-
+    
     private final WechatworkDepartmentMapper departmentMapper;
-    private final WechatWorkDepartmentApiAdapter wechatWorkApiAdapter;
-    private final AccessTokenService accessTokenService;
+    private final WechatworkDepartmentAdapterService departmentAdapterService;
 
     /**
-     * 同步企业微信部门信息
+     * 同步企业微信部门信息（控制器专用）
+     * 调用适配器服务进行实际的数据同步操作
      * 
      * @param departmentId 部门ID，为null时同步所有部门
      * @return 同步的部门数量
-     * @throws WechatWorkServiceException 当同步失败时抛出
      */
     public int syncWechatWorkDepartments(Integer departmentId) {
         try {
-            String accessToken = accessTokenService.getAccessToken();
-            int totalCount = 0;
+            log.info("控制器开始同步企业微信部门信息，部门ID: {}", departmentId);
             
-            if (departmentId != null) {
-                // 同步指定部门 - 从MySQL查询现有数据
-                totalCount = syncSingleDepartmentFromDB(departmentId);
-            } else {
-                // 全量同步所有部门 - 从企业微信API获取，批量保存到MySQL
-                totalCount = syncAllDepartmentsBatch(accessToken);
-            }
+            // 调用适配器服务进行数据同步
+            int totalCount = departmentAdapterService.syncWechatWorkDepartments(departmentId);
             
-            log.info("企业微信部门同步完成，共同步 {} 个部门", totalCount);
+            log.info("控制器企业微信部门同步完成，共同步 {} 个部门", totalCount);
             return totalCount;
             
         } catch (Exception e) {
-            log.error("同步企业微信部门失败", e);
-            throw new WechatWorkServiceException("WECHATWORK_DEPARTMENT_SYNC_FAILED", 
-                    "同步企业微信部门失败: " + e.getMessage(), e);
+            log.error("控制器同步企业微信部门失败", e);
+            throw new RuntimeException("控制器同步企业微信部门失败: " + e.getMessage(), e);
         }
     }
 
     /**
-     * 全量批量同步所有部门
-     * 
-     * @param accessToken 访问令牌
-     * @return 同步的部门数量
-     */
-    private int syncAllDepartmentsBatch(String accessToken) {
-        try {
-            log.info("开始全量批量同步企业微信部门信息");
-            
-            // 1. 从企业微信API获取所有部门信息
-            List<WechatWorkDepartmentInfo> allDepartments = wechatWorkApiAdapter.getAllDepartments(accessToken);
-            log.info("从企业微信API获取到 {} 个部门", allDepartments.size());
-            
-            if (allDepartments.isEmpty()) {
-                log.warn("未获取到任何部门信息");
-                return 0;
-            }
-            
-            // 2. 批量保存到MySQL
-            int savedCount = batchSaveDepartments(allDepartments);
-            
-            log.info("全量批量同步完成，成功保存 {} 个部门到MySQL", savedCount);
-            return savedCount;
-            
-        } catch (Exception e) {
-            log.error("全量批量同步部门失败", e);
-            throw new WechatWorkServiceException("WECHATWORK_ALL_DEPARTMENTS_SYNC_FAILED", 
-                    "全量批量同步部门失败: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * 批量保存部门信息到MySQL
-     * 
-     * @param departments 部门信息列表
-     * @return 保存成功的部门数量
-     */
-    private int batchSaveDepartments(List<WechatWorkDepartmentInfo> departments) {
-        try {
-            log.info("开始批量保存 {} 个部门到MySQL", departments.size());
-            
-            // 1. 清空现有部门数据（全量同步模式）
-            int deletedCount = departmentMapper.delete(null);
-            log.info("清空现有部门数据，删除 {} 条记录", deletedCount);
-            
-            // 2. 批量插入新数据
-            List<WechatworkDepartment> entityList = new ArrayList<>();
-            for (WechatWorkDepartmentInfo deptInfo : departments) {
-                WechatworkDepartment entity = convertToEntity(deptInfo);
-                entityList.add(entity);
-            }
-            
-            // 3. 直接批量插入所有数据
-            int insertedCount = 0;
-            if (!entityList.isEmpty()) {
-                for (WechatworkDepartment dept : entityList) {
-                    try {
-                        departmentMapper.insert(dept);
-                        insertedCount++;
-                    } catch (Exception e) {
-                        log.error("插入部门失败: id={}, name={}", dept.getDepId(), dept.getDepName(), e);
-                        // 继续处理其他部门，不中断整个流程
-                    }
-                }
-                
-                log.info("批量插入完成，成功插入 {}/{} 个部门", insertedCount, entityList.size());
-            }
-            
-            return insertedCount;
-            
-        } catch (Exception e) {
-            log.error("批量保存部门信息失败", e);
-            throw new WechatWorkServiceException("WECHATWORK_DEPARTMENTS_BATCH_SAVE_FAILED", 
-                    "批量保存部门信息失败: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * 同步单个部门（从MySQL查询）
-     * 
-     * @param departmentId 部门ID
-     * @return 同步的部门数量
-     */
-    private int syncSingleDepartmentFromDB(Integer departmentId) {
-        try {
-            log.info("从MySQL查询部门 {} 的信息", departmentId);
-            
-            // 从MySQL查询部门信息
-            WechatworkDepartment department = getDepartmentById(departmentId);
-            if (department != null) {
-                log.info("部门 {} 已存在于MySQL中: {}", departmentId, department.getDepName());
-                return 1;
-            } else {
-                log.warn("部门 {} 在MySQL中不存在", departmentId);
-                return 0;
-            }
-            
-        } catch (Exception e) {
-            log.error("从MySQL查询部门 {} 失败", departmentId, e);
-            throw new WechatWorkServiceException("WECHATWORK_SINGLE_DEPARTMENT_SYNC_FROM_DB_FAILED", 
-                    "从MySQL查询部门失败: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * 将DTO转换为实体对象
-     * 
-     * @param deptInfo 部门信息DTO
-     * @return 部门实体对象
-     */
-    private WechatworkDepartment convertToEntity(WechatWorkDepartmentInfo deptInfo) {
-        WechatworkDepartment department = new WechatworkDepartment();
-        department.setDepId(deptInfo.getId());
-        department.setDepName(deptInfo.getName());
-        department.setParentid(deptInfo.getParentid());
-        department.setOrder(deptInfo.getOrder() != null ? deptInfo.getOrder().toString() : null);
-        department.setDepartmentLeader(deptInfo.getDepartmentLeader() != null ? 
-                String.join(",", deptInfo.getDepartmentLeader()) : null);
-        
-        // 注意：维度表不包含时间字段，符合数据仓库设计原则
-        return department;
-    }
-
-    /**
-     * 根据部门ID获取部门信息
-     * 
-     * @param depId 部门ID
-     * @return 部门信息
-     */
-    public WechatworkDepartment getDepartmentById(Integer depId) {
-        try {
-            WechatworkDepartment department = departmentMapper.selectByDepId(depId);
-            if (department == null) {
-                throw new WechatWorkServiceException("WECHATWORK_DEPARTMENT_NOT_FOUND", 
-                        "部门不存在: " + depId);
-            }
-            return department;
-        } catch (WechatWorkServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("获取部门信息失败: depId={}", depId, e);
-            throw new WechatWorkServiceException("WECHATWORK_DEPARTMENT_GET_FAILED", 
-                    "获取部门信息失败: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * 获取所有部门信息
+     * 获取所有部门信息（控制器专用）
      * 
      * @return 部门列表
      */
     public List<WechatworkDepartment> getAllDepartments() {
         try {
-            return departmentMapper.selectAllDepartments();
+            log.info("控制器开始获取所有部门信息");
+            List<WechatworkDepartment> departments = departmentMapper.selectAllDepartments();
+            log.info("控制器获取所有部门信息成功，部门数量: {}", departments.size());
+            return departments;
         } catch (Exception e) {
-            log.error("获取所有部门信息失败", e);
-            throw new WechatWorkServiceException("WECHATWORK_DEPARTMENTS_GET_FAILED", 
-                    "获取所有部门信息失败: " + e.getMessage(), e);
+            log.error("控制器获取所有部门信息失败", e);
+            throw new RuntimeException("控制器获取所有部门信息失败: " + e.getMessage(), e);
         }
     }
 
     /**
-     * 根据父部门ID获取子部门列表
+     * 根据部门ID获取部门信息（控制器专用）
+     * 
+     * @param depId 部门ID
+     * @return 部门信息
+     */
+    public WechatworkDepartment getDepartmentById(Integer depId) {
+        if (depId == null) {
+            log.warn("控制器查询部门信息失败：部门ID为空");
+            return null;
+        }
+        
+        try {
+            log.info("控制器查询部门信息，部门ID: {}", depId);
+            WechatworkDepartment department = departmentMapper.selectByDepId(depId);
+            
+            if (department == null) {
+                log.info("控制器查询部门信息：部门不存在，部门ID: {}", depId);
+            } else {
+                log.info("控制器查询部门信息成功，部门ID: {}, 部门名称: {}", depId, department.getDepName());
+            }
+            
+            return department;
+        } catch (Exception e) {
+            log.error("控制器根据部门ID查询部门信息失败，部门ID: {}", depId, e);
+            throw new RuntimeException("控制器查询部门信息失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 根据父部门ID获取子部门列表（控制器专用）
      * 
      * @param parentId 父部门ID
      * @return 子部门列表
      */
     public List<WechatworkDepartment> getDepartmentsByParentId(Integer parentId) {
+        if (parentId == null) {
+            log.warn("控制器查询子部门列表失败：父部门ID为空");
+            return new java.util.ArrayList<>();
+        }
+        
         try {
-            return departmentMapper.selectByParentId(parentId);
+            log.info("控制器查询子部门列表，父部门ID: {}", parentId);
+            List<WechatworkDepartment> departments = departmentMapper.selectByParentId(parentId);
+            log.info("控制器查询子部门列表成功，父部门ID: {}, 子部门数量: {}", parentId, departments.size());
+            return departments;
         } catch (Exception e) {
-            log.error("获取子部门列表失败: parentId={}", parentId, e);
-            throw new WechatWorkServiceException("WECHATWORK_CHILD_DEPARTMENTS_GET_FAILED", 
-                    "获取子部门列表失败: " + e.getMessage(), e);
+            log.error("控制器获取子部门列表失败，父部门ID: {}", parentId, e);
+            throw new RuntimeException("控制器获取子部门列表失败: " + e.getMessage(), e);
         }
     }
 
     /**
-     * 构建部门层级树
+     * 构建部门层级树（控制器专用）
      * 
      * @return 部门层级树
      */
     public List<WechatworkDepartment> buildDepartmentTree() {
         try {
-            List<WechatworkDepartment> allDepartments = getAllDepartments();
-            return buildTree(allDepartments, 0); // 0表示根部门
+            log.info("控制器开始构建部门层级树");
+            List<WechatworkDepartment> tree = departmentAdapterService.buildDepartmentTree();
+            log.info("控制器构建部门层级树成功");
+            return tree;
         } catch (Exception e) {
-            log.error("构建部门层级树失败", e);
-            throw new WechatWorkServiceException("WECHATWORK_DEPARTMENT_TREE_BUILD_FAILED", 
-                    "构建部门层级树失败: " + e.getMessage(), e);
+            log.error("控制器构建部门层级树失败", e);
+            throw new RuntimeException("控制器构建部门层级树失败: " + e.getMessage(), e);
         }
     }
 
     /**
-     * 递归构建部门树
-     * 
-     * @param allDepartments 所有部门
-     * @param parentId 父部门ID
-     * @return 部门树
-     */
-    private List<WechatworkDepartment> buildTree(List<WechatworkDepartment> allDepartments, Integer parentId) {
-        return allDepartments.stream()
-                .filter(dept -> dept.getParentid().equals(parentId))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * 计算部门层级路径
+     * 计算部门层级路径（控制器专用）
      * 
      * @param departmentId 部门ID
      * @return 层级路径字符串 (如: "1/2/3")
      */
     public String calculateDepartmentPath(Integer departmentId) {
+        if (departmentId == null) {
+            log.warn("控制器计算部门层级路径失败：部门ID为空");
+            return "0";
+        }
+        
         try {
-            if (departmentId == null || departmentId == 0) {
-                return "0";
-            }
-            
-            List<String> pathParts = new ArrayList<>();
-            Integer currentId = departmentId;
-            
-            while (currentId != null && currentId != 0) {
-                WechatworkDepartment dept = departmentMapper.selectByDepId(currentId);
-                if (dept == null) {
-                    break;
-                }
-                pathParts.add(0, currentId.toString());
-                currentId = dept.getParentid();
-            }
-            
-            return String.join("/", pathParts);
-            
+            log.info("控制器开始计算部门层级路径，部门ID: {}", departmentId);
+            String path = departmentAdapterService.calculateDepartmentPath(departmentId);
+            log.info("控制器计算部门层级路径成功，部门ID: {}, 路径: {}", departmentId, path);
+            return path;
         } catch (Exception e) {
-            log.error("计算部门层级路径失败: departmentId={}", departmentId, e);
+            log.error("控制器计算部门层级路径失败，部门ID: {}", departmentId, e);
             return String.valueOf(departmentId);
         }
     }
 
     /**
-     * 获取部门的所有子部门ID（包括子子部门）
+     * 获取部门的所有子部门ID（包括子子部门）（控制器专用）
      * 
      * @param departmentId 部门ID
      * @return 所有子部门ID列表
      */
     public List<Integer> getAllChildDepartmentIds(Integer departmentId) {
+        if (departmentId == null) {
+            log.warn("控制器获取部门所有子部门ID失败：部门ID为空");
+            return new java.util.ArrayList<>();
+        }
+        
         try {
-            List<Integer> allChildIds = new ArrayList<>();
-            collectChildIds(departmentId, allChildIds);
-            return allChildIds;
+            log.info("控制器开始获取部门所有子部门ID，部门ID: {}", departmentId);
+            List<Integer> childIds = departmentAdapterService.getAllChildDepartmentIds(departmentId);
+            log.info("控制器获取部门所有子部门ID成功，部门ID: {}, 子部门数量: {}", departmentId, childIds.size());
+            return childIds;
         } catch (Exception e) {
-            log.error("获取部门所有子部门ID失败: departmentId={}", departmentId, e);
-            return new ArrayList<>();
+            log.error("控制器获取部门所有子部门ID失败，部门ID: {}", departmentId, e);
+            return new java.util.ArrayList<>();
         }
     }
 
     /**
-     * 递归收集子部门ID
-     * 
-     * @param parentId 父部门ID
-     * @param childIds 子部门ID列表
-     */
-    private void collectChildIds(Integer parentId, List<Integer> childIds) {
-        List<WechatworkDepartment> children = departmentMapper.selectByParentId(parentId);
-        for (WechatworkDepartment child : children) {
-            childIds.add(child.getDepId());
-            collectChildIds(child.getDepId(), childIds);
-        }
-    }
-
-    /**
-     * 获取部门的层级深度
+     * 获取部门深度（控制器专用）
      * 
      * @param departmentId 部门ID
-     * @return 层级深度 (0为根部门)
+     * @return 部门深度
      */
     public int getDepartmentDepth(Integer departmentId) {
+        if (departmentId == null) {
+            log.warn("控制器获取部门深度失败：部门ID为空");
+            return 0;
+        }
+        
         try {
-            if (departmentId == null || departmentId == 0) {
-                return 0;
-            }
-            
-            int depth = 0;
-            Integer currentId = departmentId;
-            
-            while (currentId != null && currentId != 0) {
-                WechatworkDepartment dept = departmentMapper.selectByDepId(currentId);
-                if (dept == null) {
-                    break;
-                }
-                depth++;
-                currentId = dept.getParentid();
-            }
-            
+            log.info("控制器开始获取部门深度，部门ID: {}", departmentId);
+            int depth = departmentAdapterService.getDepartmentDepth(departmentId);
+            log.info("控制器获取部门深度成功，部门ID: {}, 深度: {}", departmentId, depth);
             return depth;
-            
         } catch (Exception e) {
-            log.error("获取部门层级深度失败: departmentId={}", departmentId, e);
+            log.error("控制器获取部门深度失败，部门ID: {}", departmentId, e);
             return 0;
         }
     }
 
     /**
-     * 验证部门层级关系的有效性
+     * 验证部门层级关系（控制器专用）
      * 
-     * @return 验证结果，true表示有效，false表示无效
+     * @return 验证结果
      */
     public boolean validateDepartmentHierarchy() {
         try {
-            List<WechatworkDepartment> allDepartments = getAllDepartments();
-            
-            for (WechatworkDepartment dept : allDepartments) {
-                // 检查父部门是否存在
-                if (dept.getParentid() != 0) {
-                    WechatworkDepartment parent = departmentMapper.selectByDepId(dept.getParentid());
-                    if (parent == null) {
-                        log.warn("部门 {} 的父部门 {} 不存在", dept.getDepId(), dept.getParentid());
-                        return false;
-                    }
-                }
-                
-                // 检查是否形成循环引用
-                if (hasCircularReference(dept.getDepId(), new ArrayList<>())) {
-                    log.error("检测到部门层级循环引用: {}", dept.getDepId());
-                    return false;
-                }
-            }
-            
-            return true;
-            
+            log.info("控制器开始验证部门层级关系");
+            boolean isValid = departmentAdapterService.validateDepartmentHierarchy();
+            log.info("控制器验证部门层级关系完成，结果: {}", isValid);
+            return isValid;
         } catch (Exception e) {
-            log.error("验证部门层级关系失败", e);
+            log.error("控制器验证部门层级关系失败", e);
             return false;
         }
     }
 
     /**
-     * 检查是否存在循环引用
+     * 获取部门统计信息（控制器专用）
      * 
-     * @param departmentId 部门ID
-     * @param visitedIds 已访问的部门ID列表
-     * @return true表示存在循环引用
+     * @return 部门统计信息
      */
-    private boolean hasCircularReference(Integer departmentId, List<Integer> visitedIds) {
-        if (visitedIds.contains(departmentId)) {
-            return true;
+    public Object getDepartmentStatistics() {
+        try {
+            log.info("控制器开始获取部门统计信息");
+            
+            // 获取所有部门
+            List<WechatworkDepartment> allDepartments = departmentMapper.selectAllDepartments();
+            
+            // 统计根部门和子部门数量
+            long rootDepartments = allDepartments.stream().filter(dept -> dept.getParentid() == null || dept.getParentid() == 0).count();
+            long childDepartments = allDepartments.size() - rootDepartments;
+            
+            // 构建统计信息
+            java.util.Map<String, Object> statistics = new java.util.HashMap<>();
+            statistics.put("totalDepartments", allDepartments.size());
+            statistics.put("rootDepartments", rootDepartments);
+            statistics.put("childDepartments", childDepartments);
+            statistics.put("lastUpdateTime", java.time.LocalDateTime.now().toString());
+            
+            log.info("控制器获取部门统计信息成功，总部门数: {}, 根部门: {}, 子部门: {}", 
+                    statistics.get("totalDepartments"), statistics.get("rootDepartments"), statistics.get("childDepartments"));
+            
+            return statistics;
+            
+        } catch (Exception e) {
+            log.error("控制器获取部门统计信息失败", e);
+            throw new RuntimeException("控制器获取部门统计信息失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 搜索部门信息（控制器专用）
+     * 
+     * @param keyword 搜索关键词（部门名称等）
+     * @return 匹配的部门列表
+     */
+    public List<WechatworkDepartment> searchDepartments(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            log.warn("控制器搜索部门失败：搜索关键词为空");
+            return new java.util.ArrayList<>();
         }
         
-        visitedIds.add(departmentId);
-        WechatworkDepartment dept = departmentMapper.selectByDepId(departmentId);
-        
-        if (dept != null && dept.getParentid() != 0) {
-            return hasCircularReference(dept.getParentid(), visitedIds);
+        try {
+            log.info("控制器开始搜索部门，关键词: {}", keyword);
+            
+            // 获取所有部门，然后进行本地搜索
+            List<WechatworkDepartment> allDepartments = departmentMapper.selectAllDepartments();
+            
+            // 根据关键词过滤部门
+            List<WechatworkDepartment> matchedDepartments = allDepartments.stream()
+                    .filter(dept -> 
+                        (dept.getDepName() != null && dept.getDepName().contains(keyword)) ||
+                        (dept.getDepId() != null && dept.getDepId().toString().contains(keyword))
+                    )
+                    .collect(java.util.stream.Collectors.toList());
+            
+            log.info("控制器搜索部门完成，关键词: {}, 匹配部门数: {}", keyword, matchedDepartments.size());
+            return matchedDepartments;
+            
+        } catch (Exception e) {
+            log.error("控制器搜索部门失败，关键词: {}", keyword, e);
+            throw new RuntimeException("控制器搜索部门失败: " + e.getMessage(), e);
         }
-        
-        return false;
     }
 }
