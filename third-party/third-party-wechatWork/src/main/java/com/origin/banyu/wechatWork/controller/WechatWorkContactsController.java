@@ -79,16 +79,16 @@ public class WechatWorkContactsController {
     /**
      * 根据部门ID获取联系人列表
      * 
-     * @param departmentId 部门ID
+     * @param depId 部门ID
      * @return 联系人列表
      */
-    @GetMapping("/department/{departmentId}")
-    public ResultData<Object> getContactsByDepartment(@PathVariable("departmentId") Integer departmentId) {
+    @GetMapping("/department/{depId}")
+    public ResultData<Object> getContactsByDepartment(@PathVariable("depId") Integer depId) {
         try {
-            var contacts = contactsService.getContactsByDepartmentId(departmentId);
+            var contacts = contactsService.getContactsByDepId(depId);
             return ResultData.success(contacts);
         } catch (Exception e) {
-            log.error("获取部门联系人列表失败: departmentId={}", departmentId, e);
+            log.error("获取部门联系人列表失败: depId={}", depId, e);
             return ResultData.fail(ErrorCode.WECHATWORK_SERVICE_ERROR, "获取部门联系人失败");
         }
     }
