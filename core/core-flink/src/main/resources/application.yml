@@ -1,0 +1,153 @@
+spring:
+  application:
+    name: core-flink
+  profiles:
+    active: dev
+
+# Flink 配置
+flink:
+  job:
+    name: banyu-realtime-processor
+    description: Banyu实时数据处理作业
+  checkpoint:
+    interval: 60000  # 60秒
+    timeout: 30000   # 30秒
+    min-pause: 5000  # 5秒
+    max-concurrent: 1
+    storage-path: file:///tmp/flink-checkpoints
+    enabled: true
+  parallelism:
+    default: 2
+    source: 2
+    sink: 2
+    processor: 2
+
+# Kafka 配置
+kafka:
+  bootstrap-servers: localhost:9092
+  consumer:
+    group-id: banyu-flink-consumer
+    auto-offset-reset: earliest
+    enable-auto-commit: false
+    auto-commit-interval: 1000
+    session-timeout: 30000
+    heartbeat-interval: 3000
+    max-poll-records: 500
+    fetch-max-wait: 500
+    max-partition-fetch-bytes: 1048576
+  producer:
+    acks: all
+    retries: 3
+    batch-size: 16384
+    linger-ms: 1
+    buffer-memory: 33554432
+    compression-type: snappy
+    max-request-size: 1048576
+    request-timeout: 30000
+    metadata-max-age: 300000
+  topic:
+    input: banyu-input-topic
+    output: banyu-output-topic
+    error: banyu-error-topic
+    partitions: 3
+    replication-factor: 1
+  # 多管道配置示例：按业务拆分 user / order
+  pipelines:
+    user:
+      consumer:
+        group-id: banyu-user-consumer
+      topic:
+        input: user-input-topic
+        output: user-output-topic
+        error: user-error-topic
+    order:
+      consumer:
+        group-id: banyu-order-consumer
+      topic:
+        input: order-input-topic
+        output: order-output-topic
+        error: order-error-topic
+
+# Dubbo 配置
+dubbo:
+  application:
+    name: core-flink
+    version: 1.0.0
+    owner: banyu
+    organization: banyu
+    qos-enable: false
+    qos-port: 22222
+    qos-accept-foreign-ip: false
+  protocol:
+    name: dubbo
+    port: 20880
+    threads: 200
+    queues: 0
+    heartbeat: 60000
+    timeout: 3000
+    retries: 2
+  registry:
+    address: nacos://localhost:8848
+    username: nacos
+    password: nacos
+    namespace: public
+    group: DEFAULT_GROUP
+    register: true
+    subscribe: true
+    timeout: 5000
+  consumer:
+    timeout: 3000
+    retries: 2
+    loadbalance: roundrobin
+    cluster: failover
+    filter: ""
+    check: false
+    async: false
+  provider:
+    timeout: 3000
+    retries: 2
+    loadbalance: random
+    filter: ""
+    delay: -1
+    threads: 200
+    queues: 0
+
+# 数据库配置
+datasource:
+  url: jdbc:mysql://117.50.197.170:3306/banyu?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+  username: root
+  password: qUhquc-dagpup-5rubvu
+  driver-class-name: com.mysql.cj.jdbc.Driver
+
+# Redis 配置
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    password: 
+    database: 0
+    timeout: 5000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+
+# MyBatis 配置
+mybatis:
+  mapper-locations: classpath:mapperxml/*.xml
+  type-aliases-package: com.origin.banyu.coreflink.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 日志配置
+logging:
+  level:
+    com.origin.banyu.coreflink: DEBUG
+    org.apache.flink: INFO
+    org.apache.kafka: INFO
+    org.apache.dubbo: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

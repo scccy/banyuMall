@@ -49,10 +49,13 @@
         <log4j2.version>2.20.0</log4j2.version>
         <aliyun-oss.version>3.17.4</aliyun-oss.version>
         <jakarta.servlet.version>6.0.0</jakarta.servlet.version>
+        <dubbo>3.3.5</dubbo>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+
+
             <!-- Spring Cloud BOM -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -252,6 +255,19 @@
                 <artifactId>fastjson2-extension</artifactId>
                 <version>${fastjson2.version}</version>
             </dependency>
+
+<!--dubbo-->
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-spring-boot-starter</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.dubbo</groupId>
+                <artifactId>dubbo-nacos-spring-boot-starter</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

@@ -31,6 +31,7 @@
     
     <modules>
         <module>core-publisher</module>
+        <module>core-flink</module>
     </modules>
 
     <dependencyManagement>

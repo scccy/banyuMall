@@ -32,7 +32,7 @@
     
     <modules>
         <module>third-party-aliyunOss</module>
-        <module>third-party-wechatWork</module>
+<!--        <module>third-party-wechatWork</module>-->
     </modules>
     
     <dependencyManagement>
